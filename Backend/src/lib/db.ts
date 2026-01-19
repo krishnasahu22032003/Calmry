@@ -2,9 +2,9 @@ import mongoose from "mongoose";
 import { ENV } from "./ENV.js";
 
 
-export const connectDB = () => {
+export const connectDB =async () => {
     
-mongoose.connect(ENV.MONGO_URL as string)
+await mongoose.connect(ENV.MONGO_URL as string)
 .then(()=>{
     console.log("connected to database")
 })

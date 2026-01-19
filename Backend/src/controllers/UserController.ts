@@ -115,7 +115,7 @@ const checkPassword = await bcrypt.compare(password,user.password as string)
     }
 const token = jwt.sign({userId:user?._id},JWT_SECRET,{expiresIn:"7d"})
 
-res.cookie("auth-token",token,{
+res.cookie("auth_token",token,{
        httpOnly: true,
       secure: ENV.NODE_ENV === "production" ,
       sameSite: ENV.NODE_ENV === "production" ? "none" : "lax",

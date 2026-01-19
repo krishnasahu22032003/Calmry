@@ -1,8 +1,10 @@
 import { logger } from "./logger.js";
 import { ENV } from "../lib/ENV.js";
 import type { Express } from "express";
+import { connectDB } from "../lib/db.js";
 export const startServer = async (app :Express ) => {
     try {
+        await connectDB()
 
         const PORT = ENV.PORT || 3001;
         app.listen(PORT, () => {
