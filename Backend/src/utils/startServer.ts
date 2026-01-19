@@ -1,12 +1,10 @@
 import { logger } from "./logger.js";
-import express from "express"
-
-const app = express()
-
-export const startServer = async () => {
+import { ENV } from "../lib/ENV.js";
+import type { Express } from "express";
+export const startServer = async (app :Express ) => {
     try {
 
-        const PORT = process.env.PORT || 3001;
+        const PORT = ENV.PORT || 3001;
         app.listen(PORT, () => {
             logger.info(`Server is running on port ${PORT}`);
             logger.info(

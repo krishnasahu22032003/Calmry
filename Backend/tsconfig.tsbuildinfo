@@ -1,1 +1,1 @@
-{"root":["./src/index.ts","./src/inngest/function.ts","./src/inngest/index.ts","./src/utils/logger.ts","./src/utils/startserver.ts"],"version":"5.9.3"}
+{"root":["./src/index.ts","./src/inngest/function.ts","./src/inngest/index.ts","./src/lib/env.ts","./src/utils/logger.ts","./src/utils/startserver.ts"],"version":"5.9.3"}
