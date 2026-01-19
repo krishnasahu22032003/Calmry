@@ -132,3 +132,26 @@ res.cookie("auth-token",token,{
     return res.status(500).json({ success: false, message: "Server error" });
 }
 }
+
+export const UserLogOut = (req:Request , res: Response)=>{
+
+    try{
+res.clearCookie("auth_token",{
+     httpOnly: true,
+      secure: ENV.NODE_ENV === "production",
+      sameSite: ENV.NODE_ENV === "production" ? "none" : "lax",
+})
+return res.status(200).json({
+    success:true,
+    message:"Logout successful"
+})
+    }catch(err){
+        console.log((err as Error).message , "Error while logout")
+        return res.status(500).json({
+            success: false,
+            message:"Internal server error "
+        })
+    }
+
+
+}
