@@ -5,11 +5,14 @@ import { functions as inngestFunctions } from "./inngest/function.js";
 import { startServer } from "./utils/startServer.js";
 import UserRouter from "./routes/UserRoute.js";
 import cookieParser from "cookie-parser"
-const app = express()
+import cors from "cors"
+import helmet from "helmet";
 
+const app = express()
+app.use(cors())
 app.use(express.json())
 app.use(cookieParser())
-
+app.use(helmet())
 app.use("/api/inngest", serve({ client: inngest, functions:inngestFunctions }));
 
 app.use('/api/user', UserRouter)

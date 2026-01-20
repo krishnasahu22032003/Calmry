@@ -1,0 +1,50 @@
+import { Schema } from "mongoose";
+import mongoose  from "mongoose";
+
+interface ActivityType {
+type:string
+userId : mongoose.Types.ObjectId,
+title:string,
+description?:string,
+duration?:number,
+name:string,
+timestamp:Date
+
+}
+
+const ActivitySchema =  new mongoose.Schema<ActivityType>({
+      userId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+      index: true,
+    },
+    type: {
+      type: String,
+      required: true,
+      enum: [
+        "meditation",
+        "exercise",
+        "walking",
+        "reading",
+        "journaling",
+        "therapy",
+      ],
+    },
+    name: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+    },
+    duration: {
+      type: Number,
+      min: 0,
+    },
+    timestamp: {
+      type: Date,
+      default: Date.now,
+    },
+  
+},{timestamps:true})
