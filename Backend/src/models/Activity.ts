@@ -1,4 +1,4 @@
-import { Schema } from "mongoose";
+import { model, Schema } from "mongoose";
 import mongoose  from "mongoose";
 
 interface ActivityType {
@@ -48,3 +48,9 @@ const ActivitySchema =  new mongoose.Schema<ActivityType>({
     },
   
 },{timestamps:true})
+
+ActivitySchema.index({userId:1,timestamp:-1})
+
+const Activity =  mongoose.model<ActivityType>("Activity",ActivitySchema)
+
+export default Activity
