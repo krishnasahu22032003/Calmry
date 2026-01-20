@@ -5,6 +5,7 @@ import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import JWT_SECRET from "../config/Config.js";
 import { ENV } from "../lib/ENV.js";
+import { SessionModel } from "../models/SessionModel.js";
 export const UserSignup = async (req: Request, res: Response) => {
 
     const requiredbody = z.object({
@@ -72,9 +73,9 @@ export const UserSignup = async (req: Request, res: Response) => {
 
 }
 
-export const UserSignIn = async (req:Request,res:Response)=>{
+export const UserSignIn = async (req: Request, res: Response) => {
 
-const requiredbody = z.object({
+    const requiredbody = z.object({
         email: z.string().email().min(5).max(50).transform((v) => v.trim()),
         password: z.string()
             .min(8).max(128)
@@ -85,73 +86,107 @@ const requiredbody = z.object({
             .transform((v) => v.trim()),
     });
 
-const parseddata = requiredbody.safeParse(req.body)
+    const parseddata = requiredbody.safeParse(req.body)
 
-if(!parseddata.success){
-      return res.status(400).json({
+    if (!parseddata.success) {
+        return res.status(400).json({
             success: false,
             errors: parseddata.error.flatten(),
             message: "Validation Failed"
         })
-}
-
-const {email,password} = parseddata.data
-
-try{
-const user = await UserModel.findOne({email})
-
-if(!user){
-   return res.status(401).json({
-        success:false,
-        message:"User does not exits please signup first"
-    })
-}
-const checkPassword = await bcrypt.compare(password,user.password as string)
-    if (!checkPassword) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid Credentials"
-      })
     }
-const token = jwt.sign({userId:user?._id},JWT_SECRET,{expiresIn:"7d"})
 
-res.cookie("auth_token",token,{
-       httpOnly: true,
-      secure: ENV.NODE_ENV === "production" ,
-      sameSite: ENV.NODE_ENV === "production" ? "none" : "lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-})
-   return res.status(200).json({
-      success: true,
-      message: "Signin successful",
-      user: { id: user._id, username: user.username, email: user.email },
+    const { email, password } = parseddata.data
 
-    });
-}catch(err){
-       console.error("Signin error:", (err as Error).message);
-    return res.status(500).json({ success: false, message: "Server error" });
+    try {
+        const user = await UserModel.findOne({ email })
+
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid credentials"
+            })
+        }
+        const checkPassword = await bcrypt.compare(password, user.password as string)
+        if (!checkPassword) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid Credentials"
+            })
+        }
+        const token = jwt.sign({ userId: user?._id }, JWT_SECRET, { expiresIn: "7d" })
+
+        res.cookie("auth_token", token, {
+            httpOnly: true,
+            secure: ENV.NODE_ENV === "production",
+            sameSite: ENV.NODE_ENV === "production" ? "none" : "lax",
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        })
+        const expiresAt = new Date()
+
+        expiresAt.setHours(expiresAt.getHours() + 48);
+
+        const session = new SessionModel({
+
+            userId: user._id,
+            token,
+            expiresAt,
+            deviceInfo: req.headers["user-agent"]
+        })
+        await session.save()
+
+        return res.status(200).json({
+            success: true,
+            message: "Signin successful",
+            user: { id: user._id, username: user.username, email: user.email },
+
+        });
+    } catch (err) {
+        console.error("Signin error:", (err as Error).message);
+        return res.status(500).json({ success: false, message: "Server error" });
+    }
 }
-}
 
-export const UserLogOut = (req:Request , res: Response)=>{
+export const UserLogOut = (req: Request, res: Response) => {
 
-    try{
-res.clearCookie("auth_token",{
-     httpOnly: true,
-      secure: ENV.NODE_ENV === "production",
-      sameSite: ENV.NODE_ENV === "production" ? "none" : "lax",
-})
-return res.status(200).json({
-    success:true,
-    message:"Logout successful"
-})
-    }catch(err){
-        console.log((err as Error).message , "Error while logout")
+    try {
+        res.clearCookie("auth_token", {
+            httpOnly: true,
+            secure: ENV.NODE_ENV === "production",
+            sameSite: ENV.NODE_ENV === "production" ? "none" : "lax",
+        })
+        return res.status(200).json({
+            success: true,
+            message: "Logout successful"
+        })
+    } catch (err) {
+        console.log((err as Error).message, "Error while logout")
         return res.status(500).json({
             success: false,
-            message:"Internal server error "
+            message: "Internal server error "
         })
     }
 
+
+}
+
+export const checkUser = async (req: Request, res: Response) => {
+
+    try {
+
+        if (!req.user || !req.user._id) {
+
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+        const user = await UserModel.findById(req.user._id).select("-password")
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.status(200).json(user);
+    } catch (error) {
+        console.error("Error in /check route:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
 
 }
