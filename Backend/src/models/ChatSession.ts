@@ -56,3 +56,5 @@ sessionId: { type: String, required: true, unique: true },
 })
 
 const session = model<ChatSession>("chatsession",SessionSchema)
+
+export default session
