@@ -7,6 +7,8 @@ import UserRouter from "./routes/UserRoute.js";
 import cookieParser from "cookie-parser"
 import cors from "cors"
 import helmet from "helmet";
+import ActivityRouter from "./routes/ActivityRoute.js";
+
 
 const app = express()
 app.use(cors())
@@ -16,5 +18,6 @@ app.use(helmet())
 app.use("/api/inngest", serve({ client: inngest, functions:inngestFunctions }));
 
 app.use('/api/user', UserRouter)
+app.use('/api/activity', ActivityRouter)
 
 startServer(app)
