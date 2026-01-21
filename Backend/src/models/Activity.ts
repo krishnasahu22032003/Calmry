@@ -8,7 +8,9 @@ title:string,
 description?:string,
 duration?:number,
 name:string,
-timestamp:Date
+timestamp:Date,
+difficulty:number,
+feedback:string
 
 }
 
@@ -46,6 +48,12 @@ const ActivitySchema =  new mongoose.Schema<ActivityType>({
       type: Date,
       default: Date.now,
     },
+    difficulty:{
+      type:Number,default:0
+    },
+    feedback:{
+      type:String
+    }
   
 },{timestamps:true})
 
