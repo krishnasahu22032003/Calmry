@@ -1,7 +1,8 @@
-import { model, Schema } from "mongoose";
+import type { Document } from "mongoose";
+import {  Schema } from "mongoose";
 import mongoose  from "mongoose";
 
-interface ActivityType {
+interface ActivityType extends Document{
 type:string
 userId : mongoose.Types.ObjectId,
 title:string,

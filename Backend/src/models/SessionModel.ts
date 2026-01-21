@@ -1,6 +1,6 @@
-import mongoose, {model, Schema } from "mongoose"
+import mongoose, {Document, model, Schema } from "mongoose"
 
-export interface SessionType {
+export interface SessionType extends Document {
 
 userId : mongoose.Types.ObjectId ; 
 token : string,

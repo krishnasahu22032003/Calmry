@@ -4,7 +4,7 @@ import Activity from "../models/Activity.js";
 export const logActivity = async (req: Request, res: Response, next: NextFunction) => {
 
     try {
-        const { type, name, description, duration, difficulty, feedback, timestamp } = req.body
+        const { type, name, description, duration, difficulty, feedback } = req.body
         const userId = req.user._id
 
         if (!userId) {
@@ -15,6 +15,7 @@ export const logActivity = async (req: Request, res: Response, next: NextFunctio
         }
 
         const activity = await Activity.create({
+            userId,
             type,
             name,
             description,

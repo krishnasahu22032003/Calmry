@@ -1,7 +1,7 @@
-import mongoose, { model } from "mongoose"
+import mongoose, { Document, model } from "mongoose"
 import { Schema } from "mongoose"
 
-interface ChatMessage{
+interface ChatMessage extends Document{
 
 role: "user" | "assistant";
   content: string;
@@ -16,7 +16,7 @@ role: "user" | "assistant";
   };
 }
 
-interface ChatSession{
+interface ChatSession extends Document{
 
  _id: mongoose.Types.ObjectId,
   sessionId: string;
@@ -55,6 +55,6 @@ sessionId: { type: String, required: true, unique: true },
 
 })
 
-const session = model<ChatSession>("chatsession",SessionSchema)
+const session = model<ChatSession>("ChatSession",SessionSchema)
 
 export default session

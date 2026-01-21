@@ -1,8 +1,8 @@
-import mongoose from "mongoose";
+import mongoose, { Document } from "mongoose";
 import { Schema } from "mongoose";
 
 
-interface ChatMessageType {
+interface ChatMessageType extends Document {
 
     role: "assistant" | "user",
     content: string,
@@ -14,7 +14,7 @@ interface ChatMessageType {
     }
 }
 
-interface ChatSessionType {
+interface ChatSessionType extends Document {
 
     sessionId: string,
     messages: ChatMessageType[],
@@ -56,6 +56,6 @@ const ChatSessionSchema = new mongoose.Schema<ChatSessionType>({
         timestamps: true,
     })
 
-const ChatSession = mongoose.model<ChatSessionType>("ChatSession", ChatSessionSchema)
+const ChatSession = mongoose.model<ChatSessionType>("Chat", ChatSessionSchema)
 
 export default ChatSession; 

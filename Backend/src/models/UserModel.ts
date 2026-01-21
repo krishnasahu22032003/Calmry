@@ -1,6 +1,7 @@
-import mongoose from "mongoose";
-import { Schema , model} from "mongoose";
-export interface UserType {
+import mongoose, { Document } from "mongoose";
+import {   model} from "mongoose";
+
+export interface UserType extends Document {
 
 username:string,
 email:string,
