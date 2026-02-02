@@ -1,46 +1,47 @@
-import {inngest} from "./index.js"
+import { inngest } from "./index.js"
 import { ENV } from "../lib/ENV.js"
 import OpenAI from "openai"
 
-const client =  new OpenAI({
-    apiKey:ENV.OPEN_API_KEY
+const client = new OpenAI({
+    apiKey: ENV.OPEN_API_KEY
 })
 
 export const processChatMessage = inngest.createFunction(
-  {
-    id: "process-chat-message",
-  },
-  { event: "therapy/session.message" },
-  async ({ event, step }) => {
-    try {
-      const {
-        message,
-        history,
-        memory = {
-          userProfile: {
-            emotionalState: [],
-            riskLevel: 0,
-            preferences: {},
-          },
-          sessionContext: {
-            conversationThemes: [],
-            currentTechnique: null,
-          },
-        },
-        goals = [],
-        systemPrompt,
-      } = event.data;
-
-     console.log("Processing chat message:", {
-        message,
-        historyLength: history?.length,
-      });
-
- const analysis = await step.run("analyze-message", async () => {
+    {
+        id: "process-chat-message",
+    },
+    { event: "therapy/session.message" },
+    async ({ event, step }) => {
         try {
+            const {
+                message,
+                history,
+                memory = {
+                    userProfile: {
+                        emotionalState: [],
+                        riskLevel: 0,
+                        preferences: {},
+                    },
+                    sessionContext: {
+                        conversationThemes: [],
+                        currentTechnique: null,
+                    },
+                },
+                goals = [],
+                systemPrompt,
+            } = event.data;
 
-         const prompt = `Analyze this therapy message and provide insights. Return ONLY a valid JSON object with no markdown formatting or additional text.
-          Message: ${message}
+            console.log("Processing chat message:", {
+                message,
+                historyLength: history?.length,
+            });
+
+            const analysis = await step.run("analyze-message", async () => {
+                try {
+
+                    const prompt = `Analyze this therapy message and provide insights. Return ONLY a valid JSON object with no markdown formatting or additional text.
+          Message:
+"""${message}"""
           Context: ${JSON.stringify({ memory, goals })}
           
           Required JSON structure:
@@ -52,68 +53,75 @@ export const processChatMessage = inngest.createFunction(
             "progressIndicators": ["string"]
           }`;
 
-          const response =await  client.responses.create({ model: "gpt-4.1-nano", input:prompt,});
+                    const response = await client.responses.create({ model: "gpt-4.1-nano", input: prompt,temperature: 0.2 });
 
-          if(!response.output_text){
-             throw new Error("Empty response from OpenAI");
-          }
-          const text = response.output_text.trim();
+                    if (!response.output_text) {
+                        throw new Error("Empty response from OpenAI");
+                    }
+                    const text = response.output_text.trim();
 
-          console.log("Received analysis from OpenAI:", { text });
+                    console.log("Received analysis from OpenAI:", { text });
 
-          // Clean the response text to ensure it's valid JSON
-          const cleanText = text.replace(/```json\n|\n```/g, "").trim();
-          const parsedAnalysis = JSON.parse(cleanText);
+                    // Clean the response text to ensure it's valid JSON
+                    const cleanText = text.replace(/```json\n|\n```/g, "").trim();
+                    const parsedAnalysis = JSON.parse(cleanText);
 
-          console.log("Successfully parsed analysis:", parsedAnalysis);
-          return parsedAnalysis;
-        } catch (error) {
-          console.error("Error in message analysis:", { error, message });
-          // Return a default analysis instead of throwing
-          return {
-            emotionalState: "neutral",
-            themes: [],
-            riskLevel: 0,
-            recommendedApproach: "supportive",
-            progressIndicators: [],
-          };
-        }
-      });
+                    console.log("Successfully parsed analysis:", parsedAnalysis);
+                    return parsedAnalysis;
+                } catch (error) {
+                    console.error("Error in message analysis:", { error, message });
+                    // Return a default analysis instead of throwing
+                    return {
+                        emotionalState: "neutral",
+                        themes: [],
+                        riskLevel: 0,
+                        recommendedApproach: "supportive",
+                        progressIndicators: [],
+                    };
+                }
+            });
 
-      // Update memory based on analysis
-      const updatedMemory = await step.run("update-memory", async () => {
-        if (analysis.emotionalState) {
-          memory.userProfile.emotionalState.push(analysis.emotionalState);
-        }
-        if (analysis.themes) {
-          memory.sessionContext.conversationThemes.push(...analysis.themes);
-        }
-        if (analysis.riskLevel) {
-          memory.userProfile.riskLevel = analysis.riskLevel;
-        }
-        return memory;
-      });
+            // Update memory based on analysis
+            const updatedMemory = await step.run("update-memory", async () => {
+           return {
+    ...memory,
+    userProfile: {
+      ...memory.userProfile,
+      emotionalState: analysis.emotionalState
+        ? [...memory.userProfile.emotionalState, analysis.emotionalState]
+        : memory.userProfile.emotionalState,
+      riskLevel: analysis.riskLevel,
+    },
+    sessionContext: {
+      ...memory.sessionContext,
+      conversationThemes: analysis.themes
+        ? [...memory.sessionContext.conversationThemes, ...analysis.themes]
+        : memory.sessionContext.conversationThemes,
+    },
+  };
+});
 
-      // If high risk is detected, trigger an alert
-      if (analysis.riskLevel > 4) {
-        await step.run("trigger-risk-alert", async () => {
-          console.warn("High risk level detected in chat message", {
-            message,
-            riskLevel: analysis.riskLevel,
-          });
-        });
-      }
+            // If high risk is detected, trigger an alert
+            if (typeof analysis.riskLevel === "number" && analysis.riskLevel > 4) {
+                await step.run("trigger-risk-alert", async () => {
+                    console.warn("High risk level detected in chat message", {
+                        message,
+                        riskLevel: analysis.riskLevel,
+                    });
+                });
+            }
 
-      // Generate therapeutic response
-      const response = await step.run("generate-response", async () => {
-        try {
+            // Generate therapeutic response
+            const generatedReply = await step.run("generate-response", async () => {
+                try {
 
-               const prompt = `${systemPrompt}
+                    const prompt = `${systemPrompt ?? ""}
           
           Based on the following context, generate a therapeutic response:
-          Message: ${message}
+          Message:
+"""${message}"""
           Analysis: ${JSON.stringify(analysis)}
-          Memory: ${JSON.stringify(memory)}
+          Memory: ${JSON.stringify(updatedMemory)}
           Goals: ${JSON.stringify(goals)}
           
           Provide a response that:
@@ -123,62 +131,64 @@ export const processChatMessage = inngest.createFunction(
           4. Maintains professional boundaries
           5. Considers safety and well-being`;
 
-          const response = await client.responses.create({model:"gpt-4.1-nano" , input:prompt})
-       
-          const responseText = await response.output_text.trim()
+                    const response = await client.responses.create({ model: "gpt-4.1-nano", input: prompt ,temperature: 0.2})
+if (!response.output_text) {
+  throw new Error("Empty response from OpenAI");
+}
+                    const text =  response.output_text.trim()
 
-          console.log("Generated response:", { responseText });
-          return responseText;
+                    console.log("Generated response:", { text });
+                    return text;
+                } catch (error) {
+                    console.error("Error generating response:", { error, message });
+                    // Return a default response instead of throwing
+                    return "I'm here to support you. Could you tell me more about what's on your mind?";
+                }
+            });
+
+            // Return the response in the expected format
+            return {
+                generatedReply,
+                analysis,
+                updatedMemory,
+            };
         } catch (error) {
-          console.error("Error generating response:", { error, message });
-          // Return a default response instead of throwing
-          return "I'm here to support you. Could you tell me more about what's on your mind?";
+            console.error("Error in chat message processing:", {
+                error,
+                message: event.data.message,
+            });
+            // Return a default response instead of throwing
+            return {
+                response:
+                    "I'm here to support you. Could you tell me more about what's on your mind?",
+                analysis: {
+                    emotionalState: "neutral",
+                    themes: [],
+                    riskLevel: 0,
+                    recommendedApproach: "supportive",
+                    progressIndicators: [],
+                },
+                updatedMemory: event.data.memory,
+            };
         }
-      });
-
-      // Return the response in the expected format
-      return {
-        response,
-        analysis,
-        updatedMemory,
-      };
-    } catch (error) {
-      console.error("Error in chat message processing:", {
-        error,
-        message: event.data.message,
-      });
-      // Return a default response instead of throwing
-      return {
-        response:
-          "I'm here to support you. Could you tell me more about what's on your mind?",
-        analysis: {
-          emotionalState: "neutral",
-          themes: [],
-          riskLevel: 0,
-          recommendedApproach: "supportive",
-          progressIndicators: [],
-        },
-        updatedMemory: event.data.memory,
-      };
     }
-  }
 );
 
 // Function to analyze therapy session content
 export const analyzeTherapySession = inngest.createFunction(
-  { id: "analyze-therapy-session" },
-  { event: "therapy/session.created" },
-  async ({ event, step }) => {
-    try {
-      // Get the session content
-      const sessionContent = await step.run("get-session-content", async () => {
-        return event.data.notes || event.data.transcript;
-      });
+    { id: "analyze-therapy-session" },
+    { event: "therapy/session.created" },
+    async ({ event, step }) => {
+        try {
+            // Get the session content
+            const sessionContent = await step.run("get-session-content", async () => {
+                return event.data.notes || event.data.transcript;
+            });
 
-      // Analyze the session using Gemini
-      const analysis = await step.run("analyze-with-gemini", async () => {
+            // Analyze the session using OPENAI
+            const analysis = await step.run("analyze-with-OpenAI", async () => {
 
-         const prompt = `Analyze this therapy session and provide insights:
+                const prompt = `Analyze this therapy session and provide insights:
         Session Content: ${sessionContent}
         
         Please provide:
@@ -189,64 +199,72 @@ export const analyzeTherapySession = inngest.createFunction(
         5. Progress indicators
         
         Format the response as a JSON object.`;
-        const model = await client.responses.create({model:"gpt-4.1-nano",input:prompt})
+                const response = await client.responses.create({ model: "gpt-4.1-nano", input: prompt,temperature: 0.2 })
+if (!response.output_text) {
+  throw new Error("Empty response from OpenAI");
+}
+                const text =  response.output_text.trim();
 
-        const response = await model.output_text.trim();
+        let parsed;
+try {
+  parsed = JSON.parse(text);
+} catch {
+  throw new Error("Invalid JSON returned by OpenAI");
+}
+return parsed;
+            });
 
-        return JSON.parse(response);
-      });
+            // Store the analysis
+            await step.run("store-analysis", async () => {
+                // Here you would typically store the analysis in your database
+                console.log("Session analysis stored successfully");
+                return analysis;
+            });
 
-      // Store the analysis
-      await step.run("store-analysis", async () => {
-        // Here you would typically store the analysis in your database
-        console.log("Session analysis stored successfully");
-        return analysis;
-      });
+            // If there are concerning indicators, trigger an alert
+            if (analysis.areasOfConcern?.length > 0) {
+                await step.run("trigger-concern-alert", async () => {
+                    console.warn("Concerning indicators detected in session analysis", {
+                        sessionId: event.data.sessionId,
+                        concerns: analysis.areasOfConcern,
+                    });
+                    // Add your alert logic here
+                });
+            }
 
-      // If there are concerning indicators, trigger an alert
-      if (analysis.areasOfConcern?.length > 0) {
-        await step.run("trigger-concern-alert", async () => {
-          console.warn("Concerning indicators detected in session analysis", {
-            sessionId: event.data.sessionId,
-            concerns: analysis.areasOfConcern,
-          });
-          // Add your alert logic here
-        });
-      }
-
-      return {
-        message: "Session analysis completed",
-        analysis,
-      };
-    } catch (error) {
-      console.error("Error in therapy session analysis:", error);
-      throw error;
+            return {
+                message: "Session analysis completed",
+                analysis,
+            };
+        } catch (error) {
+            console.error("Error in therapy session analysis:", error);
+            throw error;
+        }
     }
-  }
 );
 
 // Function to generate personalized activity recommendations
 export const generateActivityRecommendations = inngest.createFunction(
-  { id: "generate-activity-recommendations" },
-  { event: "mood/updated" },
-  async ({ event, step }) => {
-    try {
-      // Get user's mood history and activity history
-      const userContext = await step.run("get-user-context", async () => {
-        // Here you would typically fetch user's history from your database
-        return {
-          recentMoods: event.data.recentMoods,
-          completedActivities: event.data.completedActivities,
-          preferences: event.data.preferences,
-        };
-      });
+    { id: "generate-activity-recommendations" },
+    { event: "mood/updated" },
+    async ({ event, step }) => {
+        try {
+            // Get user's mood history and activity history
+            const userContext = await step.run("get-user-context", async () => {
+                // Here you would typically fetch user's history from your database
+                return {
+                    recentMoods: event.data.recentMoods,
+                    completedActivities: event.data.completedActivities,
+                    preferences: event.data.preferences,
+                };
+            });
 
-      // Generate recommendations using Gemini
-      const recommendations = await step.run(
-        "generate-recommendations",
-        async () => {
-            
-          const prompt = `Based on the following user context, generate personalized activity recommendations:
+            // Generate recommendations using OPENAI
+            const recommendations = await step.run(
+                "generate-recommendations",
+                async () => {
+
+                    const prompt = `Based on the following user context, generate personalized activity recommendations:
         User Context: ${JSON.stringify(userContext)}
         
         Please provide:
@@ -258,35 +276,42 @@ export const generateActivityRecommendations = inngest.createFunction(
         
         Format the response as a JSON object.`;
 
-          const model = await client.responses.create({model:"gpt-4.1-nano",input:prompt})
-          const response = await model.output_text.trim();
+                    const response = await client.responses.create({ model: "gpt-4.1-nano", input: prompt ,  temperature: 0.2})
+                    if (!response.output_text) {
+                        throw new Error("Empty response from OpenAI");
+                    }
+                    const text = response.output_text.trim();
+                    let parsed;
+try {
+  parsed = JSON.parse(text);
+} catch {
+  throw new Error("Invalid JSON returned by OpenAI");
+}
+return parsed;
+                }
+            );
 
+            // Store the recommendations
+            await step.run("store-recommendations", async () => {
+                // Here you would typically store the recommendations in your database
+                console.log("Activity recommendations stored successfully");
+                return recommendations;
+            });
 
-          return JSON.parse(response);
+            return {
+                message: "Activity recommendations generated",
+                recommendations,
+            };
+        } catch (error) {
+            console.error("Error generating activity recommendations:", error);
+            throw error;
         }
-      );
-
-      // Store the recommendations
-      await step.run("store-recommendations", async () => {
-        // Here you would typically store the recommendations in your database
-        console.log("Activity recommendations stored successfully");
-        return recommendations;
-      });
-
-      return {
-        message: "Activity recommendations generated",
-        recommendations,
-      };
-    } catch (error) {
-      console.error("Error generating activity recommendations:", error);
-      throw error;
     }
-  }
 );
 
 // Add the functions to the exported array
 export const functions = [
-  processChatMessage,
-  analyzeTherapySession,
-  generateActivityRecommendations,
+    processChatMessage,
+    analyzeTherapySession,
+    generateActivityRecommendations,
 ];
