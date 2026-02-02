@@ -57,6 +57,37 @@ export const createChatSession = async (req: Request, res: Response) => {
 
 }
 
+export const sendMessage = async (req: Request, res: Response) => {
+
+    try {
+
+        const { sessionId } = req.params;
+        const { message } = req.body;
+        const userId = new Types.ObjectId(req.user.id);
+
+        console.info("Processing Message:", { sessionId, message })
+
+        if (typeof sessionId !== "string") {
+            throw new Error("Invalid or missing sessionId");
+        }
+
+        const session = await ChatSession.findOne({ sessionId })
+        if (!session) {
+            console.log("Session not found:", { sessionId });
+            return res.status(404).json({ success: false, message: "Session not found" });
+        }
+
+          if (session.userId.toString() !== userId.toString()) {
+      console.log("Unauthorized access attempt:", { sessionId, userId });
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
+    }
+
+
+
+
+}
 
 
 
