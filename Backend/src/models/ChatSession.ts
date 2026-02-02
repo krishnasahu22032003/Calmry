@@ -16,7 +16,7 @@ role: "user" | "assistant";
   };
 }
 
-interface ChatSession extends Document{
+export interface ChatSessionInterface extends Document{
 
  _id: mongoose.Types.ObjectId,
   sessionId: string;
@@ -41,7 +41,7 @@ const MessageSchema = new mongoose.Schema<ChatMessage>({
   },
 })
 
-const SessionSchema = new mongoose.Schema<ChatSession>({
+const SessionSchema = new mongoose.Schema<ChatSessionInterface>({
 
 sessionId: { type: String, required: true, unique: true },
   userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
@@ -55,6 +55,6 @@ sessionId: { type: String, required: true, unique: true },
 
 })
 
-const session = model<ChatSession>("ChatSession",SessionSchema)
+const session = model<ChatSessionInterface>("ChatSession",SessionSchema)
 
 export default session
