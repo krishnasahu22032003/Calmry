@@ -52,15 +52,14 @@ export const processChatMessage = inngest.createFunction(
             "progressIndicators": ["string"]
           }`;
 
-          const model =await  client.responses.create({ model: "gpt-4.1-nano ", input:prompt});
+          const response =await  client.responses.create({ model: "gpt-4.1-nano", input:prompt,});
 
-       
+          if(!response.output_text){
+             throw new Error("Empty response from OpenAI");
+          }
+          const text = response.output_text.trim();
 
-          const result = await model;
-          const response = await result.response;
-          const text = response.text().trim();
-
-          console.log("Received analysis from Gemini:", { text });
+          console.log("Received analysis from OpenAI:", { text });
 
           // Clean the response text to ensure it's valid JSON
           const cleanText = text.replace(/```json\n|\n```/g, "").trim();
@@ -98,7 +97,7 @@ export const processChatMessage = inngest.createFunction(
       // If high risk is detected, trigger an alert
       if (analysis.riskLevel > 4) {
         await step.run("trigger-risk-alert", async () => {
-          logger.warn("High risk level detected in chat message", {
+          console.warn("High risk level detected in chat message", {
             message,
             riskLevel: analysis.riskLevel,
           });
@@ -108,9 +107,8 @@ export const processChatMessage = inngest.createFunction(
       // Generate therapeutic response
       const response = await step.run("generate-response", async () => {
         try {
-          const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
-          const prompt = `${systemPrompt}
+               const prompt = `${systemPrompt}
           
           Based on the following context, generate a therapeutic response:
           Message: ${message}
@@ -125,13 +123,14 @@ export const processChatMessage = inngest.createFunction(
           4. Maintains professional boundaries
           5. Considers safety and well-being`;
 
-          const result = await model.generateContent(prompt);
-          const responseText = result.response.text().trim();
+          const response = await client.responses.create({model:"gpt-4.1-nano" , input:prompt})
+       
+          const responseText = await response.output_text.trim()
 
           console.log("Generated response:", { responseText });
           return responseText;
         } catch (error) {
-          logger.error("Error generating response:", { error, message });
+          console.error("Error generating response:", { error, message });
           // Return a default response instead of throwing
           return "I'm here to support you. Could you tell me more about what's on your mind?";
         }
@@ -144,7 +143,7 @@ export const processChatMessage = inngest.createFunction(
         updatedMemory,
       };
     } catch (error) {
-      logger.error("Error in chat message processing:", {
+      console.error("Error in chat message processing:", {
         error,
         message: event.data.message,
       });
@@ -178,9 +177,8 @@ export const analyzeTherapySession = inngest.createFunction(
 
       // Analyze the session using Gemini
       const analysis = await step.run("analyze-with-gemini", async () => {
-        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
-        const prompt = `Analyze this therapy session and provide insights:
+         const prompt = `Analyze this therapy session and provide insights:
         Session Content: ${sessionContent}
         
         Please provide:
@@ -191,12 +189,11 @@ export const analyzeTherapySession = inngest.createFunction(
         5. Progress indicators
         
         Format the response as a JSON object.`;
+        const model = await client.responses.create({model:"gpt-4.1-nano",input:prompt})
 
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        const text = response.text();
+        const response = await model.output_text.trim();
 
-        return JSON.parse(text);
+        return JSON.parse(response);
       });
 
       // Store the analysis
@@ -209,7 +206,7 @@ export const analyzeTherapySession = inngest.createFunction(
       // If there are concerning indicators, trigger an alert
       if (analysis.areasOfConcern?.length > 0) {
         await step.run("trigger-concern-alert", async () => {
-          logger.warn("Concerning indicators detected in session analysis", {
+          console.warn("Concerning indicators detected in session analysis", {
             sessionId: event.data.sessionId,
             concerns: analysis.areasOfConcern,
           });
@@ -222,7 +219,7 @@ export const analyzeTherapySession = inngest.createFunction(
         analysis,
       };
     } catch (error) {
-      logger.error("Error in therapy session analysis:", error);
+      console.error("Error in therapy session analysis:", error);
       throw error;
     }
   }
@@ -248,8 +245,7 @@ export const generateActivityRecommendations = inngest.createFunction(
       const recommendations = await step.run(
         "generate-recommendations",
         async () => {
-          const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-
+            
           const prompt = `Based on the following user context, generate personalized activity recommendations:
         User Context: ${JSON.stringify(userContext)}
         
@@ -262,11 +258,11 @@ export const generateActivityRecommendations = inngest.createFunction(
         
         Format the response as a JSON object.`;
 
-          const result = await model.generateContent(prompt);
-          const response = await result.response;
-          const text = response.text();
+          const model = await client.responses.create({model:"gpt-4.1-nano",input:prompt})
+          const response = await model.output_text.trim();
 
-          return JSON.parse(text);
+
+          return JSON.parse(response);
         }
       );
 
@@ -282,7 +278,7 @@ export const generateActivityRecommendations = inngest.createFunction(
         recommendations,
       };
     } catch (error) {
-      logger.error("Error generating activity recommendations:", error);
+      console.error("Error generating activity recommendations:", error);
       throw error;
     }
   }
