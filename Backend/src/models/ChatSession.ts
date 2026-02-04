@@ -1,7 +1,7 @@
 import mongoose, { Document, model } from "mongoose"
 import { Schema } from "mongoose"
 
-interface ChatMessage extends Document{
+interface ChatMessage{
 
 role: "user" | "assistant";
   content: string;
