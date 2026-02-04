@@ -249,8 +249,30 @@ export const getChatSession  = async (req: Request, res: Response) => {
   }
 };
 
+export const getChatHistory = async (req: Request, res: Response) => {
+  try {
+    const { sessionId } = req.params;
+    if(typeof sessionId !== "string"){
+return res.status(400).json({ message: "Invalid sessionId" });
+    }
+    const userId = new Types.ObjectId(req.user.id);
 
+    // Find session by sessionId instead of _id
+    const session = await ChatSession.findOne({ sessionId });
+    if (!session) {
+      return res.status(404).json({ message: "Session not found" });
+    }
 
+    if (session.userId.toString() !== userId.toString()) {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
+    res.json(session.messages);
+  } catch (error) {
+    console.error("Error fetching chat history:", error);
+    res.status(500).json({ message: "Error fetching chat history" });
+  }
+};
 
 
 
