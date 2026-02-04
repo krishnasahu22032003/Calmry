@@ -6,6 +6,7 @@ import { Types } from "mongoose";
 import OpenAI from "openai";
 import { ENV } from "../lib/ENV.js";
 import ChatSession from "../models/ChatSession.js";
+import type { ChatSessionInterface } from "../models/ChatSession.js";
 import type { InngestEvent } from "../types/inngest.js";
 
 const client = new OpenAI({
@@ -202,7 +203,31 @@ export const sendMessage = async (req: Request, res: Response) => {
     }
 }
 
+export const getSessionHistory =async (req:Request,res:Response)=>{
+    try{
 
+        const {sessionId} = req.params
+        const userId = new Types.ObjectId(req.user.id);
+
+            const session = (await ChatSession.findById(
+            sessionId
+           ).exec()) as ChatSessionInterface;
+   if (!session) {
+      return res.status(404).json({success:false, message: "Session not found" });
+    }
+ if (session.userId.toString() !== userId.toString()) {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+        res.json({
+      messages: session.messages,
+      startTime: session.startTime,
+      status: session.status,
+    });
+    }catch(err){
+         console.error("Error fetching session history:", err);
+    res.status(500).json({ message: "Error fetching session history" });
+  }
+    }
 
 
 
