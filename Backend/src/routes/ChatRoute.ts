@@ -2,13 +2,13 @@ import express from "express"
 import { getChatHistory,getChatSession,sendMessage,createChatSession } from "../controllers/ChatController.js"
 import { AuthMiddleware } from "../middlewares/AuthMiddleware.js"
 
-const chatrouter = express.Router()
+const ChatRouter = express.Router()
 
-chatrouter.use(AuthMiddleware)
+ChatRouter.use(AuthMiddleware)
 
-chatrouter.post("/sessions", createChatSession);
-chatrouter.get("/sessions/:sessionId", getChatSession);
-chatrouter.post("/sessions/:sessionId/messages", sendMessage);
-chatrouter.get("/sessions/:sessionId/history", getChatHistory);
+ChatRouter.post("/sessions", createChatSession);
+ChatRouter.get("/sessions/:sessionId", getChatSession);
+ChatRouter.post("/sessions/:sessionId/messages", sendMessage);
+ChatRouter.get("/sessions/:sessionId/history", getChatHistory);
 
-export default chatrouter ; 
+export default ChatRouter ; 
