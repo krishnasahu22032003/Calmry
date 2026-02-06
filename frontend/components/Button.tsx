@@ -14,8 +14,8 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         className={clsx(
-          "relative inline-flex items-center justify-center",
-          "h-14 px-8 sm:px-10",
+          "relative inline-flex items-center justify-center cursor-pointer",
+          "h-12 px-8 sm:px-10",
           "rounded-2xl text-sm font-medium",
           "transition-all duration-700",
           "focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent-core)]",
@@ -24,11 +24,14 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             "glass",
             "breathe",
             "text-foreground",
-            "hover:shadow-[0_0_120px_rgba(47,63,168,0.18)]",
+            "hover:-translate-y-[1px]",
+            "hover:bg-surface-soft/30",
+            "hover:shadow-[0_0_140px_rgba(47,63,168,0.22)]",
           ],
           variant === "secondary" && [
-            "border border-border",
-            "text-muted",
+            "border border-border/80",
+            "text-foreground/85",
+            "bg-surface-soft/40",
             "hover:text-foreground",
             "hover:bg-surface-soft",
           ],
