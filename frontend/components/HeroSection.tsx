@@ -1,0 +1,263 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import {
+  Brain,
+  Shield,
+  Waves,
+  ArrowRight,
+  Lock,
+  Sparkles,
+} from "lucide-react";
+
+import { Slider } from "./Slider";
+import Button from "./Button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/Dialog";
+import { Ripple } from "./ui/Ripple";
+
+export default function Hero() {
+  const emotions = [
+    { value: 0, label: "😔 Heavy", glow: "var(--glow-warm)" },
+    { value: 25, label: "😟 Anxious", glow: "var(--glow-core)" },
+    { value: 50, label: "😐 Steady", glow: "var(--glow-calm)" },
+    { value: 75, label: "🙂 Calm", glow: "var(--glow-calm)" },
+    { value: 100, label: "✨ Hopeful", glow: "var(--glow-core)" },
+  ];
+
+  const [emotion, setEmotion] = useState(50);
+  const [mounted, setMounted] = useState(false);
+  const [showDialog, setShowDialog] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
+
+  useEffect(() => setMounted(true), []);
+
+  const currentEmotion =
+    emotions.find((e) => Math.abs(emotion - e.value) < 15) || emotions[2];
+
+  const welcomeSteps = [
+    {
+      title: "Hi, I’m Calmry 👋",
+      description:
+        "This is a quiet space. You don’t need the right words here.",
+      icon: Waves,
+    },
+    {
+      title: "Emotion-Aware Support",
+      description:
+        "I adapt to how you feel — gently, thoughtfully, without pressure.",
+      icon: Brain,
+    },
+    {
+      title: "Privacy, by Design",
+      description:
+        "Your thoughts stay yours. Nothing is remembered unless you allow it.",
+      icon: Shield,
+    },
+  ];
+
+  return (
+    <section
+      className="
+        relative
+        min-h-[calc(100vh-80px)]
+        pt-24
+        flex
+        items-center
+        justify-center
+        px-6
+        overflow-hidden
+      "
+    >
+      {/* BACKGROUND */}
+      <div className="absolute inset-0 -z-10 overflow-hidden">
+        <motion.div
+          key={emotion}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1.4, ease: "easeOut" }}
+          className="absolute w-[640px] h-[640px] rounded-full blur-[120px] top-1/2 left-1/2"
+          style={{
+            background: currentEmotion.glow,
+            transform: "translate(-50%, -50%)",
+          }}
+        />
+
+        {/* Rings */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="w-[420px] h-[420px] rounded-full border border-border/30 animate-[spin_140s_linear_infinite]" />
+          <div className="absolute w-[300px] h-[300px] rounded-full border border-border/20 animate-[spin_200s_linear_infinite_reverse]" />
+        </div>
+
+        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,var(--background),var(--background-deep))]" />
+      </div>
+
+     <Ripple className="z-0 opacity-60" />
+
+      {/* CONTENT */}
+      <motion.div
+        initial={{ opacity: 0, y: 18 }}
+        animate={{ opacity: mounted ? 1 : 0, y: mounted ? 0 : 18 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="relative w-full max-w-[760px] text-center space-y-9"
+      >
+        {/* Badge */}
+        <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs border border-border bg-surface backdrop-blur">
+          <Waves className="w-4 h-4 text-[var(--accent-calm)]" />
+          <span className="text-foreground/85">
+            Calmry · AI Therapist
+          </span>
+        </div>
+
+        {/* Headline */}
+        <div className="">
+          <h1 className="font-accent text-[clamp(2.3rem,4.4vw,3.3rem)] leading-tight text-foreground">
+            Find a calmer place
+          </h1>
+          <h2 className="font-accent text-[clamp(1.8rem,3.4vw,2.5rem)] text-foreground/80">
+            inside your own mind.
+          </h2>
+        </div>
+
+        {/* Subheading */}
+        <p className="max-w-[560px] mx-auto text-sm md:text-base text-muted leading-relaxed">
+          Calmry is an AI therapist that listens deeply, senses emotional
+          shifts, and responds with care — not scripts.
+        </p>
+
+        {/* Emotion Box */}
+        <div className="glass px-8 py-8 space-y-6">
+          <div className="space-y-1">
+            <p className="text-sm text-muted">
+              Where does your mind feel right now?
+            </p>
+            <p className="text-xs text-muted/70">
+              There’s no right answer — just notice.
+            </p>
+          </div>
+
+          <div className="flex justify-between px-3">
+            {emotions.map((em) => (
+              <div
+                key={em.value}
+                onClick={() => setEmotion(em.value)}
+                className={`cursor-pointer transition-all duration-300 ${
+                  Math.abs(emotion - em.value) < 15
+                    ? "opacity-100 scale-105"
+                    : "opacity-40"
+                }`}
+              >
+                <div className="text-lg">{em.label.split(" ")[0]}</div>
+                <div className="text-[11px] mt-1 text-muted">
+                  {em.label.split(" ")[1]}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <Slider
+            value={[emotion]}
+            min={0}
+            max={100}
+            step={1}
+            onValueChange={(v) => setEmotion(v[0])}
+          />
+
+          <p className="text-xs text-muted">
+            Calmry is gently attuning to{" "}
+            <span className="text-foreground font-medium">
+              {currentEmotion.label.split(" ")[1].toLowerCase()}
+            </span>
+          </p>
+        </div>
+
+        {/* CTA */}
+        <div className="flex flex-col sm:flex-row gap-5 justify-center items-center">
+          <Button onClick={() => setShowDialog(true)}>
+            Begin your journey
+            <ArrowRight className="w-4 h-4 ml-2" />
+          </Button>
+
+          <div className="flex items-center gap-2 text-[11px] text-muted">
+            <Lock className="w-3 h-3" />
+            Private · Thoughtful · Secure
+          </div>
+        </div>
+      </motion.div>
+
+      {/* DIALOG (unchanged logic) */}
+      <Dialog open={showDialog} onOpenChange={setShowDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <motion.div
+              key={currentStep}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="space-y-3 text-center"
+            >
+              <div className="mx-auto w-12 h-12 rounded-full bg-surface-soft flex items-center justify-center">
+                {(() => {
+                  const Icon = welcomeSteps[currentStep].icon;
+                  return <Icon className="w-6 h-6 text-[var(--accent-core)]" />;
+                })()}
+              </div>
+
+              <DialogTitle className="font-accent text-xl">
+                {welcomeSteps[currentStep].title}
+              </DialogTitle>
+
+              <DialogDescription>
+                {welcomeSteps[currentStep].description}
+              </DialogDescription>
+            </motion.div>
+          </DialogHeader>
+
+          <div className="flex justify-between items-center mt-5">
+            <div className="flex gap-2">
+              {welcomeSteps.map((_, i) => (
+                <div
+                  key={i}
+                  className={`h-2 rounded-full transition-all ${
+                    i === currentStep
+                      ? "w-4 bg-[var(--accent-core)]"
+                      : "w-2 bg-border"
+                  }`}
+                />
+              ))}
+            </div>
+
+            <Button
+              onClick={() => {
+                if (currentStep < welcomeSteps.length - 1) {
+                  setCurrentStep((s) => s + 1);
+                } else {
+                  setShowDialog(false);
+                  setCurrentStep(0);
+                }
+              }}
+            >
+              {currentStep === welcomeSteps.length - 1 ? (
+                <>
+                  Let’s begin
+                  <Sparkles className="w-4 h-4 ml-2" />
+                </>
+              ) : (
+                <>
+                  Next
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </>
+              )}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </section>
+  );
+}

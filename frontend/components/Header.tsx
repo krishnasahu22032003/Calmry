@@ -19,10 +19,10 @@ export default function Header() {
   return (
     <header className="fixed top-0 inset-x-0 z-50">
       <div className="mx-auto max-w-6xl ">
-        <div className="flex h-24 items-center justify-between">
+        <div className="flex h-20 items-center justify-between">
           <Link
             href="/"
-            className="flex items-center gap-3 hover:opacity-90 transition-opacity"
+            className="flex items-center gap-2 hover:opacity-90 transition-opacity"
           >
             <Logo />
             <div className="flex flex-col leading-tight">

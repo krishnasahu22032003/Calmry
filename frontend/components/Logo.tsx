@@ -3,10 +3,10 @@ import Image from "next/image";
 export default function Logo() {
   return (
     <Image
-      src="/calmry-logo-1.png"
+      src="/logo-calmry.png"
       alt="Calmry logo"
-      width={120}
-      height={90}
+      width={80}
+      height={80}
       priority
     />
   );
