@@ -7,7 +7,7 @@ import Logo from "@/components/Logo";
 import Button from "@/components/Button";
 
 const navItems = [
-  { href: "/use-cases", label: "Use cases" },
+  { href: "/features", label: "Features" },
   { href: "/testimonials", label: "Stories" },
   { href: "/about", label: "About" },
   { href: "/faq", label: "FAQ" },
@@ -101,7 +101,23 @@ export default function Header() {
             </div>
           </div>
         </div>
+        
       )}
+      <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-px">
+  <div
+    className="
+      mx-auto
+      h-px
+      w-full
+      max-w-6xl
+      bg-gradient-to-r
+      from-transparent
+      via-[color:var(--accent-core)]
+      to-transparent
+      opacity-60
+    "
+  />
+  </div>
     </header>
   );
 }

@@ -51,6 +51,7 @@ const Slider = React.forwardRef<
         focus:outline-none
         focus-visible:ring-1
         focus-visible:ring-[var(--accent-calm)]
+        cursor-pointer
       "
     >
       {/* Inner soft highlight */}

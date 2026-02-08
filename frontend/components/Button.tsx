@@ -39,7 +39,9 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         )}
         {...props}
       >
-        <span className="relative z-10">{children}</span>
+     <span className="relative z-10 inline-flex items-center gap-2 whitespace-nowrap">
+  {children}
+</span>
 
         {variant === "primary" && (
           <span

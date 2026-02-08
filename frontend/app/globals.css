@@ -136,13 +136,16 @@ body {
 hr {
   border-color: var(--border-subtle);
 }
+
+/* ------------------ RIPPLE ------------------ */
+
 @keyframes ripple {
   0% {
     transform: translate(-50%, -50%) scale(0.85);
-    opacity: 0.25;
+    opacity: 0.28;
   }
   100% {
-    transform: translate(-50%, -50%) scale(1.2);
+    transform: translate(-50%, -50%) scale(1.25);
     opacity: 0;
   }
 }
@@ -151,3 +154,18 @@ hr {
   animation: ripple 14s ease-out infinite;
 }
 
+/* ------------------ RINGS ------------------ */
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin 140s linear infinite;
+}
+
+.animate-spin-reverse {
+  animation: spin 200s linear infinite reverse;
+}

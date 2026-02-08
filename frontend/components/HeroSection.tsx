@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/Dialog";
 import { Ripple } from "./ui/Ripple";
 
+
 export default function Hero() {
   const emotions = [
     { value: 0, label: "😔 Heavy", glow: "var(--glow-warm)" },
@@ -63,20 +64,13 @@ export default function Hero() {
   ];
 
   return (
-    <section
-      className="
-        relative
-        min-h-[calc(100vh-80px)]
-        pt-24
-        flex
-        items-center
-        justify-center
-        px-6
-        overflow-hidden
-      "
-    >
+    <section className="relative min-h-[calc(100vh-80px)] pt-24 flex items-center justify-center px-6 overflow-hidden">
       {/* BACKGROUND */}
-      <div className="absolute inset-0 -z-10 overflow-hidden">
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+        {/* Base gradient */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,var(--background),var(--background-deep))]" />
+
+        {/* Emotional glow */}
         <motion.div
           key={emotion}
           initial={{ opacity: 0 }}
@@ -89,23 +83,22 @@ export default function Hero() {
           }}
         />
 
-        {/* Rings */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="w-[420px] h-[420px] rounded-full border border-border/30 animate-[spin_140s_linear_infinite]" />
-          <div className="absolute w-[300px] h-[300px] rounded-full border border-border/20 animate-[spin_200s_linear_infinite_reverse]" />
+        {/* Rings (fixed animation) */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-[420px] h-[420px] rounded-full border border-border/30 animate-spin-slow" />
+          <div className="absolute w-[300px] h-[300px] rounded-full border border-border/20 animate-spin-reverse" />
         </div>
 
-        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,var(--background),var(--background-deep))]" />
+        {/* Ripple */}
+        <Ripple className="absolute inset-0 opacity-60" />
       </div>
-
-     <Ripple className="z-0 opacity-60" />
 
       {/* CONTENT */}
       <motion.div
         initial={{ opacity: 0, y: 18 }}
         animate={{ opacity: mounted ? 1 : 0, y: mounted ? 0 : 18 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="relative w-full max-w-[760px] text-center space-y-9"
+        className="relative z-10 w-full max-w-[760px] text-center space-y-4"
       >
         {/* Badge */}
         <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs border border-border bg-surface backdrop-blur">
@@ -116,8 +109,8 @@ export default function Hero() {
         </div>
 
         {/* Headline */}
-        <div className="">
-          <h1 className="font-accent text-[clamp(2.3rem,4.4vw,3.3rem)] leading-tight text-foreground">
+        <div>
+          <h1 className="font-accent text-[clamp(2.3rem,4.4vw,3.3rem)] leading-tight text-foreground -mb-2">
             Find a calmer place
           </h1>
           <h2 className="font-accent text-[clamp(1.8rem,3.4vw,2.5rem)] text-foreground/80">
@@ -132,7 +125,7 @@ export default function Hero() {
         </p>
 
         {/* Emotion Box */}
-        <div className="glass px-8 py-8 space-y-6">
+        <div className="glass px-8 py-6 space-y-4 mt-6">
           <div className="space-y-1">
             <p className="text-sm text-muted">
               Where does your mind feel right now?
@@ -178,20 +171,23 @@ export default function Hero() {
         </div>
 
         {/* CTA */}
-        <div className="flex flex-col sm:flex-row gap-5 justify-center items-center">
-          <Button onClick={() => setShowDialog(true)}>
+        <div className="mt-8">
+          <Button
+            className="flex items-center justify-center "
+            onClick={() => setShowDialog(true)}
+          >
             Begin your journey
-            <ArrowRight className="w-4 h-4 ml-2" />
+            <ArrowRight className="w-4 h-4 font-bold mt-1" />
           </Button>
 
-          <div className="flex items-center gap-2 text-[11px] text-muted">
+          <div className="flex justify-center items-center gap-2 text-[11px] text-muted pt-6">
             <Lock className="w-3 h-3" />
             Private · Thoughtful · Secure
           </div>
         </div>
       </motion.div>
 
-      {/* DIALOG (unchanged logic) */}
+      {/* DIALOG (unchanged) */}
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
         <DialogContent>
           <DialogHeader>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ComponentPropsWithoutRef, CSSProperties } from "react";
+import React, { ComponentPropsWithoutRef } from "react";
 import { cn } from "@/lib/utils";
 
 interface RippleProps extends ComponentPropsWithoutRef<"div"> {
@@ -14,50 +14,43 @@ export const Ripple = React.memo(function Ripple({
   mainCircleOpacity = 0.38,
   numCircles = 4,
   className,
-  ...props
 }: RippleProps) {
   return (
     <div
       className={cn(
         "pointer-events-none absolute inset-0 select-none",
-        // softer mask — don’t kill visibility
-        "[mask-image:linear-gradient(to_bottom,white_65%,transparent)]",
+        "z-[1]",               // 🔑 force visibility above background
         className
       )}
-      {...props}
     >
       {Array.from({ length: numCircles }, (_, i) => {
         const size = mainCircleSize + i * 90;
-        const opacity = Math.max(mainCircleOpacity - i * 0.08, 0.08);
-        const animationDelay = `${i * 0.8}s`;
+        const opacity = Math.max(mainCircleOpacity - i * 0.06, 0.14);
 
         return (
           <div
             key={i}
-            className={cn(
-              "absolute rounded-full animate-ripple",
-              "border",
-              // stronger, softer glow
-              "shadow-[0_0_220px_var(--glow-core)]"
-            )}
-            style={
-              {
-                width: `${size}px`,
-                height: `${size}px`,
-                opacity,
-                animationDelay,
-                borderWidth: "1px",
-                borderStyle: "solid",
-                borderColor: "rgba(255,255,255,0.16)",
-                background:
-                  i === 0
-                    ? "radial-gradient(circle, rgba(47,63,168,0.22), transparent 70%)"
-                    : "radial-gradient(circle, rgba(22,106,94,0.18), transparent 70%)",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-              } as CSSProperties
-            }
+            className="absolute rounded-full animate-ripple"
+            style={{
+              width: size,
+              height: size,
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              opacity,
+
+              // clearer edge
+              border: "1px solid rgba(255,255,255,0.22)",
+
+              // stronger inner glow
+              background:
+                "radial-gradient(circle, rgba(47,63,168,0.32), transparent 70%)",
+
+              // visible outer glow
+              boxShadow: "0 0 240px rgba(47,63,168,0.45)",
+
+              animationDelay: `${i * 0.9}s`,
+            }}
           />
         );
       })}
