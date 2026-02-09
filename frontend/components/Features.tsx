@@ -11,8 +11,6 @@ import {
 
 const easeOrganic = [0.22, 1, 0.36, 1] as const;
 
-/* ------------------ ANIMATION SYSTEM ------------------ */
-
 const container: Variants = {
   hidden: {},
   show: {
@@ -50,8 +48,6 @@ const cardFloat = {
     },
   },
 };
-
-/* ------------------ FEATURE DATA ------------------ */
 
 const primaryFeatures = [
   {
@@ -92,12 +88,9 @@ const secondaryFeatures = [
   },
 ];
 
-/* ------------------ COMPONENT ------------------ */
-
 export default function FeaturesSection() {
   return (
-    <section className="relative py-32 px-6">
-      {/* Ambient background wash */}
+    <section id="features" className="relative py-32 px-6">
       <div className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute inset-0 bg-[radial-gradient(600px_300px_at_50%_0%,rgba(47,63,168,0.12),transparent_70%)]" />
       </div>
@@ -109,7 +102,7 @@ export default function FeaturesSection() {
         viewport={{ once: true, margin: "-120px" }}
         className="mx-auto max-w-6xl"
       >
-        {/* Header */}
+   
         <motion.div
           variants={fadeUp}
           className="mx-auto max-w-2xl text-center mb-20"
@@ -123,7 +116,6 @@ export default function FeaturesSection() {
           </p>
         </motion.div>
 
-        {/* Primary features */}
         <div className="grid gap-8 md:grid-cols-3">
           {primaryFeatures.map((feature, i) => {
             const Icon = feature.icon;
@@ -147,7 +139,7 @@ export default function FeaturesSection() {
                     boxShadow: `0 0 0 1px rgba(255,255,255,0.03), 0 0 120px ${feature.glow}`,
                   }}
                 >
-                  {/* Glow hover */}
+              
                   <div
                     className="
                       pointer-events-none absolute inset-0 rounded-3xl
@@ -161,7 +153,7 @@ export default function FeaturesSection() {
 
                   <div className="relative z-10 space-y-5">
                     <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-surface-soft">
-                      <Icon className="h-6 w-6 text-[var(--accent-core)]" />
+                      <Icon className="h-6 w-6 text-accent" />
                     </div>
 
                     <h3 className="text-lg font-semibold text-foreground">
@@ -178,7 +170,6 @@ export default function FeaturesSection() {
           })}
         </div>
 
-        {/* Secondary features */}
         <motion.div
           variants={fadeUp}
           className="mt-18 grid gap-6 md:grid-cols-2"
@@ -198,7 +189,7 @@ export default function FeaturesSection() {
               >
                 <div className="flex items-start gap-4">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-surface">
-                    <Icon className="h-5 w-5 text-[var(--accent-calm)]" />
+                    <Icon className="h-5 w-5 text-(--accent-calm)" />
                   </div>
 
                   <div>

@@ -10,8 +10,6 @@ import {
 
 const easeOrganic = [0.22, 1, 0.36, 1] as const;
 
-/* ------------------ ANIMATION SYSTEM ------------------ */
-
 const container: Variants = {
   hidden: {},
   show: {
@@ -50,12 +48,10 @@ const floatIdle = {
   },
 };
 
-/* ------------------ COMPONENT ------------------ */
-
 export default function StorySection() {
   return (
-    <section className="relative py-32 px-6 overflow-hidden">
-      {/* Ambient emotional background */}
+    <section id="stories" className="relative py-32 px-6 overflow-hidden">
+
       <div className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute inset-0 bg-[radial-gradient(900px_420px_at_50%_12%,rgba(47,63,168,0.16),transparent_70%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(720px_380px_at_82%_78%,rgba(22,106,94,0.14),transparent_72%)]" />
@@ -68,7 +64,6 @@ export default function StorySection() {
         viewport={{ once: true, margin: "-140px" }}
         className="mx-auto max-w-6xl"
       >
-        {/* Section intro */}
         <motion.div
           variants={fadeUp}
           className="mx-auto max-w-2xl text-center mb-28"
@@ -88,9 +83,7 @@ export default function StorySection() {
           </p>
         </motion.div>
 
-        {/* STORY STEPS */}
         <div className="grid grid-cols-1 md:grid-cols-4 auto-rows-[220px] gap-6">
-          {/* The Noise */}
           <motion.div
             variants={fadeUp}
             {...floatIdle}
@@ -101,7 +94,7 @@ export default function StorySection() {
 
               <div className="relative z-10 space-y-6 max-w-md">
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-surface-soft">
-                  <Waves className="h-6 w-6 text-[var(--accent-warm)]" />
+                  <Waves className="h-6 w-6 text-(--accent-warm)" />
                 </div>
 
                 <h3 className="text-2xl font-semibold text-foreground">
@@ -116,12 +109,10 @@ export default function StorySection() {
               </div>
             </div>
           </motion.div>
-
-          {/* The Pause */}
           <motion.div variants={fadeUp} className="group">
             <div className="relative h-full rounded-3xl border border-border bg-surface-soft p-8 transition-all duration-500 group-hover:bg-surface group-hover:-translate-y-1">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-surface">
-                <Moon className="h-5 w-5 text-[var(--accent-core)]" />
+                <Moon className="h-5 w-5 text-accent" />
               </div>
 
               <h4 className="mt-2 text-lg font-semibold text-foreground">
@@ -134,12 +125,10 @@ export default function StorySection() {
               </p>
             </div>
           </motion.div>
-
-          {/* The Design */}
           <motion.div variants={fadeUp} className="group">
             <div className="relative h-full rounded-3xl border border-border bg-surface-soft p-8 transition-all duration-500 group-hover:bg-surface group-hover:-translate-y-1">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-surface">
-                <Feather className="h-5 w-5 text-[var(--accent-calm)]" />
+                <Feather className="h-5 w-5 text-(--accent-calm)" />
               </div>
 
               <h4 className="mt-2 text-lg font-semibold text-foreground">
@@ -153,14 +142,13 @@ export default function StorySection() {
             </div>
           </motion.div>
 
-          {/* Trust */}
           <motion.div variants={fadeUp} className="md:col-span-2 group">
             <div className="relative h-full rounded-3xl border border-border bg-surface backdrop-blur p-9 transition-all duration-700 group-hover:-translate-y-1 group-hover:shadow-[0_40px_140px_rgba(0,0,0,0.65)]">
               <div className="absolute inset-0 rounded-3xl bg-[radial-gradient(420px_200px_at_80%_0%,rgba(47,63,168,0.26),transparent_70%)] opacity-70 group-hover:opacity-100 transition-opacity duration-700" />
 
               <div className="relative z-10 space-y-4 max-w-sm">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-surface-soft">
-                  <Shield className="h-5 w-5 text-[var(--accent-core)]" />
+                  <Shield className="h-5 w-5 text-accent" />
                 </div>
 
                 <h4 className="text-lg font-semibold text-foreground">

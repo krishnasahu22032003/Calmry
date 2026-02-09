@@ -4,15 +4,12 @@ import { motion, Variants } from "framer-motion";
 import {
   Brain,
   HeartHandshake,
-  ShieldCheck,
   Sparkles,
   Compass,
   UserCheck,
 } from "lucide-react";
 
 const easeOrganic = [0.22, 1, 0.36, 1] as const;
-
-/* ------------------ ANIMATION SYSTEM ------------------ */
 
 const container: Variants = {
   hidden: {},
@@ -52,11 +49,9 @@ const cardIdle = {
   },
 };
 
-/* ------------------ COMPONENT ------------------ */
-
 export default function AboutSection() {
   return (
-    <section className="relative py-32 px-6">
+    <section id="about" className="relative py-32 px-6">
       {/* Ambient background */}
       <div className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute inset-0 bg-[radial-gradient(700px_360px_at_50%_0%,rgba(22,106,94,0.12),transparent_70%)]" />
@@ -83,9 +78,8 @@ export default function AboutSection() {
           </p>
         </motion.div>
 
-        {/* BENTO GRID */}
         <div className="grid grid-cols-1 md:grid-cols-4 auto-rows-[220px] gap-6">
-          {/* Core philosophy */}
+
           <motion.div
             variants={fadeUp}
             {...cardIdle}
@@ -96,7 +90,7 @@ export default function AboutSection() {
 
               <div className="relative z-10 space-y-6 max-w-md">
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-surface-soft">
-                  <Brain className="h-6 w-6 text-[var(--accent-core)]" />
+                  <Brain className="h-6 w-6 text-accent" />
                 </div>
 
                 <h3 className="text-2xl font-semibold text-foreground leading-snug">
@@ -112,11 +106,10 @@ export default function AboutSection() {
             </div>
           </motion.div>
 
-          {/* Mission */}
           <motion.div variants={fadeUp} className="md:col-span-2 group">
             <div className="relative h-full rounded-3xl border border-border bg-surface-soft p-8 transition-all duration-500 group-hover:bg-surface group-hover:-translate-y-1">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-surface">
-                <Compass className="h-5 w-5 text-[var(--accent-calm)]" />
+                <Compass className="h-5 w-5 text-(--accent-calm)" />
               </div>
 
               <h4 className="mt-2 text-lg font-semibold text-foreground">
@@ -130,11 +123,10 @@ export default function AboutSection() {
             </div>
           </motion.div>
 
-          {/* NEW — Human-in-the-loop (bottom-left fill) */}
           <motion.div variants={fadeUp} className="group">
             <div className="relative h-full rounded-3xl border border-border bg-surface-soft p-8 transition-all duration-500 group-hover:bg-surface group-hover:-translate-y-1 group-hover:shadow-[0_30px_100px_rgba(0,0,0,0.6)]">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-surface">
-                <UserCheck className="h-5 w-5 text-[var(--accent-core)]" />
+                <UserCheck className="h-5 w-5 text-accent" />
               </div>
 
               <h4 className="mt-2 text-lg font-semibold text-foreground">
@@ -152,7 +144,7 @@ export default function AboutSection() {
           <motion.div variants={fadeUp} className="group">
             <div className="relative h-full rounded-3xl border border-border bg-surface-soft p-8 transition-all duration-500 group-hover:bg-surface group-hover:-translate-y-1">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-surface">
-                <HeartHandshake className="h-5 w-5 text-[var(--accent-calm)]" />
+                <HeartHandshake className="h-5 w-5 text-(--accent-calm)" />
               </div>
 
               <h4 className="mt-2 text-lg font-semibold text-foreground">
@@ -174,7 +166,7 @@ export default function AboutSection() {
 
               <div className="relative z-10 space-y-4 max-w-sm">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-surface-soft">
-                  <Sparkles className="h-5 w-5 text-[var(--accent-calm)]" />
+                  <Sparkles className="h-5 w-5 text-(--accent-calm)" />
                 </div>
 
                 <h4 className="text-lg font-semibold text-foreground">

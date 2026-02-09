@@ -6,8 +6,6 @@ import Image from "next/image";
 
 const easeOrganic = [0.22, 1, 0.36, 1] as const;
 
-/* ------------------ ANIMATION SYSTEM ------------------ */
-
 const container: Variants = {
   hidden: {},
   show: {
@@ -45,8 +43,6 @@ const idleFloat = {
     },
   },
 };
-
-/* ------------------ DATA ------------------ */
 
 const testimonials = [
   {
@@ -99,13 +95,10 @@ const testimonials = [
   },
 ];
 
-/* ------------------ COMPONENT ------------------ */
-
 export default function TestimonialsSection() {
   return (
     <section className="relative py-32 px-6 overflow-hidden">
         
-      {/* Ambient emotional background */}
       <div className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute inset-0 bg-[radial-gradient(900px_420px_at_50%_18%,rgba(47,63,168,0.18),transparent_70%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(720px_360px_at_12%_82%,rgba(22,106,94,0.16),transparent_72%)]" />
@@ -118,7 +111,7 @@ export default function TestimonialsSection() {
         viewport={{ once: true, margin: "-140px" }}
         className="mx-auto max-w-6xl"
       >
-        {/* Section Header */}
+
         <motion.div
           variants={fadeUp}
           className="mx-auto max-w-2xl text-center mb-28"
@@ -137,7 +130,6 @@ export default function TestimonialsSection() {
           </p>
         </motion.div>
 
-        {/* Testimonials Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {testimonials.map((t, i) => (
             <motion.div
@@ -156,24 +148,17 @@ export default function TestimonialsSection() {
                 />
 
                 <div className="relative z-10 flex flex-col h-full">
-                  {/* Quote icon */}
+        
                   <div className="mb-6 flex h-10 w-10 items-center justify-center rounded-lg bg-surface-soft">
                     <Quote className="h-5 w-5" style={{ color: t.accent }} />
                   </div>
-
-                  {/* Quote */}
-                  <p className="text-sm leading-relaxed text-foreground/90 flex-grow">
+                  <p className="text-sm leading-relaxed text-foreground/90 grow">
                     “{t.quote}”
                   </p>
-
-                  {/* Divider */}
                   <div className="my-6 h-px w-full bg-border" />
-
-                  {/* Author */}
                   <div className="flex items-center gap-4">
-                    {/* Avatar */}
                     <div className="relative h-11 w-11 rounded-full overflow-hidden">
-                      {/* Soft glow ring */}
+                 
                       <div
                         className="absolute inset-0 rounded-full"
                         style={{
@@ -185,11 +170,10 @@ export default function TestimonialsSection() {
                         alt={t.name}
                         fill
                         sizes="44px"
-                        className="object-cover rounded-full grayscale-[20%] contrast-[0.95]"
+                        className="object-cover rounded-full grayscale-20 contrast-[0.95]"
                       />
                     </div>
 
-                    {/* Name + role */}
                     <div>
                       <p className="text-sm font-semibold text-foreground leading-tight">
                         {t.name}

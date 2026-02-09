@@ -25,7 +25,7 @@ export default function Home() {
   const [showDialog, setShowDialog] = useState(false);
   const router = useRouter()
 
-  const handleContinueWithEmail = ()=>{
+  const handleContinueWithEmail = () => {
     setShowDialog(false);
     router.push("/signup")
   }
@@ -39,10 +39,8 @@ export default function Home() {
       <TestimonialsSection />
       <FAQSection />
 
-      {/* CTA triggers dialog */}
       <CTASection setShowDialog={setShowDialog} />
 
-      {/* Auth / Entry Dialog */}
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
         <DialogContent>
           <DialogHeader>
@@ -56,9 +54,8 @@ export default function Home() {
             </DialogDescription>
           </DialogHeader>
 
-          {/* You can replace this with auth buttons / form */}
           <div className="mt-6 space-y-4">
-            <Button      onClick={handleContinueWithEmail} className="w-full rounded-xl bg-[var(--accent-core)] py-3 text-sm font-bold text-white transition hover:opacity-90">
+            <Button onClick={handleContinueWithEmail} className="w-full rounded-xl bg-accent py-3 text-sm font-bold text-white transition hover:opacity-90">
               Continue with Email
             </Button>
 

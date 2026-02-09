@@ -13,7 +13,7 @@ export default function CTASection({
 }) {
   return (
     <section className="relative py-32 px-6">
-      {/* Subtle ambient background */}
+
       <div className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute inset-0 bg-[radial-gradient(600px_240px_at_50%_100%,rgba(47,63,168,0.12),transparent_70%)]" />
       </div>
@@ -25,7 +25,7 @@ export default function CTASection({
         viewport={{ once: true, margin: "-120px" }}
         className="mx-auto max-w-4xl"
       >
-        {/* Box */}
+
         <div
           className="
             group
@@ -41,7 +41,6 @@ export default function CTASection({
             hover:shadow-[0_60px_160px_rgba(0,0,0,0.75)]
           "
         >
-          {/* Inner soft glow (reactive) */}
           <div
             className="
               pointer-events-none
@@ -53,7 +52,6 @@ export default function CTASection({
             "
           />
 
-          {/* Secondary calm glow (depth) */}
           <div
             className="
               pointer-events-none
@@ -66,29 +64,25 @@ export default function CTASection({
           />
 
           <div className="relative z-10 flex flex-col items-center text-center">
-            {/* Small eyebrow */}
+
             <span className="mb-3 text-xs tracking-[0.28em] uppercase text-muted">
               Begin gently
             </span>
 
-            {/* Headline */}
             <h2 className="font-accent text-[clamp(1.8rem,3.6vw,2.4rem)] leading-snug text-foreground">
               A quiet space for your mind
             </h2>
 
-            {/* Supporting text */}
             <p className="mt-4 max-w-xl text-sm text-muted leading-relaxed">
               Calmry offers a private place to reflect — with thoughtful AI
               conversations, grounding experiences, and gentle progress
               insights. Nothing rushed. Nothing forced.
             </p>
 
-            {/* Subtle extra reassurance */}
             <p className="mt-3 text-xs text-muted">
               No pressure. No judgment. You stay in control.
             </p>
 
-            {/* CTA */}
             <div className="mt-10">
               <Button
                 onClick={() => setShowDialog(true)}
@@ -99,15 +93,15 @@ export default function CTASection({
                   rounded-full
                   px-7 py-5
                   text-sm 
-                  bg-[var(--accent-core)]
+                 bg-accent
                   text-white
                   transition-all duration-500
-                  hover:-translate-y-[1px]
+                 `hover:-translate-y-px
                   hover:shadow-[0_16px_48px_rgba(47,63,168,0.45)]
                 "
               >
                 Begin your journey
-                <ArrowRight className="w-4 h-4 mt-[1px] transition-transform duration-300 group-hover:translate-x-1" />
+                <ArrowRight className="w-4 h-4 mt-px transition-transform duration-300 group-hover:translate-x-1" />
               </Button>
             </div>
           </div>

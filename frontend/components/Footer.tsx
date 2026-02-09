@@ -8,7 +8,6 @@ const easeOrganic = [0.22, 1, 0.36, 1] as const;
 export default function Footer() {
   return (
     <footer className="relative mt-32 border-t border-border">
-      {/* Subtle ambient tone */}
       <div className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute inset-0 bg-[radial-gradient(600px_200px_at_50%_0%,rgba(47,63,168,0.12),transparent_70%)]" />
       </div>
@@ -21,14 +20,14 @@ export default function Footer() {
         className="mx-auto max-w-6xl px-6 py-12"
       >
         <div className="flex items-center justify-center text-center">
-          <p className="text-xs text-muted flex flex-wrap items-center gap-2 leading-relaxed">
+          <p className="text-xs text-muted flex flex-wrap items-center justify-center gap-2 leading-relaxed">
             <span className="font-accent text-foreground">Calmry</span>
 
             <span className="opacity-50">·</span>
 
             <span className="flex items-center gap-1">
               Made with
-              <Heart className="w-3.5 h-3.5 text-[var(--accent-warm)] fill-[var(--accent-warm)]" />
+              <Heart className="w-3.5 h-3.5 text-(--accent-warm) fill-(--accent-warm)" />
               by Krishna
             </span>
 

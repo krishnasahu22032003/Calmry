@@ -6,8 +6,6 @@ import { useState } from "react";
 
 const easeOrganic = [0.22, 1, 0.36, 1] as const;
 
-/* ------------------ DATA ------------------ */
-
 const faqs = [
   {
     icon: Brain,
@@ -47,8 +45,6 @@ const faqs = [
   },
 ];
 
-/* ------------------ ANIMATION VARIANTS ------------------ */
-
 const container: Variants = {
   hidden: {},
   show: {
@@ -76,14 +72,12 @@ const fadeUp: Variants = {
   },
 };
 
-/* ------------------ COMPONENT ------------------ */
-
 export default function FAQSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <section className="relative py-32 px-6 overflow-hidden">
-      {/* Ambient background */}
+    <section id="faq" className="relative py-32 px-6 overflow-hidden">
+
       <div className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute inset-0 bg-[radial-gradient(820px_380px_at_50%_12%,rgba(47,63,168,0.18),transparent_70%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(720px_360px_at_88%_82%,rgba(22,106,94,0.16),transparent_72%)]" />
@@ -96,7 +90,6 @@ export default function FAQSection() {
         viewport={{ once: true, margin: "-140px" }}
         className="mx-auto max-w-4xl"
       >
-        {/* Header */}
         <motion.div
           variants={fadeUp}
           className="text-center mb-24 max-w-2xl mx-auto"
@@ -115,7 +108,6 @@ export default function FAQSection() {
           </p>
         </motion.div>
 
-        {/* FAQ List */}
         <div className="space-y-4">
           {faqs.map((faq, index) => {
             const Icon = faq.icon;
@@ -134,7 +126,7 @@ export default function FAQSection() {
                       : "hover:bg-surface-soft"
                   }`}
                 >
-                  {/* Question */}
+    
                   <button
                     onClick={() =>
                       setOpenIndex(isOpen ? null : index)
@@ -143,7 +135,7 @@ export default function FAQSection() {
                   >
                     <div className="flex items-center gap-4">
                       <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-surface-soft">
-                        <Icon className="h-5 w-5 text-[var(--accent-core)]" />
+                        <Icon className="h-5 w-5 text-accent" />
                       </div>
 
                       <h3 className="font-accent text-base sm:text-lg text-foreground">
@@ -157,8 +149,7 @@ export default function FAQSection() {
                       }`}
                     />
                   </button>
-
-                  {/* Answer */}
+                  
                   <AnimatePresence initial={false}>
                     {isOpen && (
                       <motion.div

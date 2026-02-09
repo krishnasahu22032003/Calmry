@@ -5,23 +5,43 @@ import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import Logo from "@/components/Logo";
 import Button from "@/components/Button";
-
+import { useRouter } from "next/navigation";
 const navItems = [
-  { href: "/features", label: "Features" },
-  { href: "/testimonials", label: "Stories" },
-  { href: "/about", label: "About" },
-  { href: "/faq", label: "FAQ" },
+  { href: "#features", label: "Features" },
+  { href: "#stories", label: "Stories" },
+  { href: "#about", label: "About" },
+  { href: "#faq", label: "FAQ" },
 ];
 
 export default function Header() {
-  const [open, setOpen] = useState(false);
+const scrollToTop = (e: React.MouseEvent) => {
+  e.preventDefault();
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth",
+  });
 
+  if (window.location.hash || window.location.pathname !== "/") {
+    router.push("/", { scroll: false });
+  }
+  setOpen(false);
+};
+  const [open, setOpen] = useState(false);
+  const router = useRouter()
+
+  const signinPage = ()=>{
+router.push("/signin")
+  }
+  const signupPage = ()=>{
+router.push("/signup")
+  }
   return (
     <header className="fixed top-0 inset-x-0 z-50">
       <div className="mx-auto max-w-6xl ">
         <div className="flex h-20 items-center justify-between">
           <Link
             href="/"
+  onClick={scrollToTop}
             className="flex items-center gap-2 hover:opacity-90 transition-opacity"
           >
             <Logo />
@@ -44,20 +64,24 @@ export default function Header() {
                   className="relative text-[15px] font-medium text-muted hover:text-foreground transition-colors group"
                 >
                   {item.label}
-                  <span className="absolute -bottom-2 left-0 h-[2px] w-full bg-[color:var(--accent-core)] opacity-80 scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100" />
+                  <span className="absolute -bottom-2 left-0 h-0.5 w-full bg-accent opacity-80 scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100" />
                 </Link>
               ))}
             </nav>
 
-            <div className="flex items-center gap-5">
+            <div className="flex items-center gap-4">
               <Button
+                onClick={signinPage}
                 variant="secondary"
                 className="border border-border/90 bg-surface-soft text-foreground hover:bg-surface"
               >
                 Sign in
               </Button>
 
-              <Button>
+              <Button 
+                variant="secondary"
+                className="border border-border/90 bg-surface-soft text-foreground hover:bg-surface"
+              onClick={signupPage}>
                 Sign up
               </Button>
             </div>
@@ -67,7 +91,7 @@ export default function Header() {
             className="md:hidden text-muted hover:text-foreground transition"
             onClick={() => setOpen(!open)}
           >
-            {open ? <X size={24} /> : <Menu size={24} />}
+            {open ? <X size={24} /> : <Menu size={24}  className="m-2"/>}
           </button>
         </div>
       </div>
@@ -90,12 +114,16 @@ export default function Header() {
 
             <div className="flex flex-col gap-2 pt-4">
               <Button
+              onClick={signinPage}
                 variant="secondary"
                 className="border border-border/90 bg-surface-soft text-foreground"
               >
                 Sign in
               </Button>
-              <Button>
+              <Button 
+              variant="secondary"
+                className="border border-border/90 bg-surface-soft text-foreground"
+                onClick={signupPage}>
                 Sign up
               </Button>
             </div>
@@ -110,9 +138,9 @@ export default function Header() {
       h-px
       w-full
       max-w-6xl
-      bg-gradient-to-r
+      `bg-linear-to-r
       from-transparent
-      via-[color:var(--accent-core)]
+      via-accent
       to-transparent
       opacity-60
     "

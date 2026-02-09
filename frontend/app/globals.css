@@ -169,3 +169,7 @@ hr {
 .animate-spin-reverse {
   animation: spin 200s linear infinite reverse;
 }
+
+html {
+  scroll-behavior: smooth;
+}

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 import {
   Brain,
   Shield,
@@ -24,6 +25,7 @@ import { Ripple } from "./ui/Ripple";
 
 
 export default function Hero() {
+  const router = useRouter()
   const emotions = [
     { value: 0, label: "😔 Heavy", glow: "var(--glow-warm)" },
     { value: 25, label: "😟 Anxious", glow: "var(--glow-core)" },
@@ -64,51 +66,40 @@ export default function Hero() {
   ];
 
   return (
-    <section className="relative min-h-[calc(100vh-80px)] pt-24 flex items-center justify-center px-6 overflow-hidden">
-      {/* BACKGROUND */}
+    <section id="hero" className="relative min-h-[calc(100vh-80px)] pt-28 flex items-center justify-center px-6 overflow-hidden">
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        {/* Base gradient */}
+      
         <div className="absolute inset-0 bg-[linear-gradient(to_bottom,var(--background),var(--background-deep))]" />
 
-        {/* Emotional glow */}
         <motion.div
           key={emotion}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1.4, ease: "easeOut" }}
-          className="absolute w-[640px] h-[640px] rounded-full blur-[120px] top-1/2 left-1/2"
+          className="absolute w-160 h-160 rounded-full blur-[120px] top-1/2 left-1/2"
           style={{
             background: currentEmotion.glow,
             transform: "translate(-50%, -50%)",
           }}
         />
-
-        {/* Rings (fixed animation) */}
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-[420px] h-[420px] rounded-full border border-border/30 animate-spin-slow" />
-          <div className="absolute w-[300px] h-[300px] rounded-full border border-border/20 animate-spin-reverse" />
+          <div className="w-105 h-105rounded-full border border-border/30 animate-spin-slow" />
+          <div className="absolute w-75 h-75 rounded-full border border-border/20 animate-spin-reverse" />
         </div>
-
-        {/* Ripple */}
         <Ripple className="absolute inset-0 opacity-60" />
       </div>
-
-      {/* CONTENT */}
       <motion.div
         initial={{ opacity: 0, y: 18 }}
         animate={{ opacity: mounted ? 1 : 0, y: mounted ? 0 : 18 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="relative z-10 w-full max-w-[760px] text-center space-y-4"
+        className="relative z-10 w-full max-w-190 text-center space-y-4"
       >
-        {/* Badge */}
         <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs border border-border bg-surface backdrop-blur">
-          <Waves className="w-4 h-4 text-[var(--accent-calm)]" />
+          <Waves className="w-4 h-4 text-(--accent-calm)" />
           <span className="text-foreground/85">
             Calmry · AI Therapist
           </span>
         </div>
-
-        {/* Headline */}
         <div>
           <h1 className="font-accent text-[clamp(2.3rem,4.4vw,3.3rem)] leading-tight text-foreground -mb-2">
             Find a calmer place
@@ -117,14 +108,10 @@ export default function Hero() {
             inside your own mind.
           </h2>
         </div>
-
-        {/* Subheading */}
-        <p className="max-w-[560px] mx-auto text-sm md:text-base text-muted leading-relaxed">
+        <p className="max-w-140 mx-auto text-sm md:text-base text-muted leading-relaxed">
           Calmry is an AI therapist that listens deeply, senses emotional
           shifts, and responds with care — not scripts.
         </p>
-
-        {/* Emotion Box */}
         <div className="glass px-8 py-6 space-y-4 mt-6">
           <div className="space-y-1">
             <p className="text-sm text-muted">
@@ -169,8 +156,6 @@ export default function Hero() {
             </span>
           </p>
         </div>
-
-        {/* CTA */}
         <div className="mt-8">
           <Button
             className="flex items-center justify-center "
@@ -186,8 +171,6 @@ export default function Hero() {
           </div>
         </div>
       </motion.div>
-
-      {/* DIALOG (unchanged) */}
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
         <DialogContent>
           <DialogHeader>
@@ -201,7 +184,7 @@ export default function Hero() {
               <div className="mx-auto w-12 h-12 rounded-full bg-surface-soft flex items-center justify-center">
                 {(() => {
                   const Icon = welcomeSteps[currentStep].icon;
-                  return <Icon className="w-6 h-6 text-[var(--accent-core)]" />;
+                  return <Icon className="w-6 h-6 text-accent" />;
                 })()}
               </div>
 
@@ -222,7 +205,7 @@ export default function Hero() {
                   key={i}
                   className={`h-2 rounded-full transition-all ${
                     i === currentStep
-                      ? "w-4 bg-[var(--accent-core)]"
+                      ? "w-4 bg-accent"
                       : "w-2 bg-border"
                   }`}
                 />
@@ -235,6 +218,7 @@ export default function Hero() {
                   setCurrentStep((s) => s + 1);
                 } else {
                   setShowDialog(false);
+                  router.push("/signup")
                   setCurrentStep(0);
                 }
               }}
