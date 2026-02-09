@@ -82,7 +82,7 @@ export default function FAQSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <section className="relative py-36 px-6 overflow-hidden">
+    <section className="relative py-32 px-6 overflow-hidden">
       {/* Ambient background */}
       <div className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute inset-0 bg-[radial-gradient(820px_380px_at_50%_12%,rgba(47,63,168,0.18),transparent_70%)]" />
