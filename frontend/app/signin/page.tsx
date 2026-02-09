@@ -82,17 +82,8 @@ export default function SignInPage() {
             </div>
           </motion.div>
 
-          <motion.div variants={fadeUp} className="flex justify-end">
-            <Link
-              href="/forgot-password"
-              className="text-xs text-muted hover:text-foreground transition"
-            >
-              Forgot password?
-            </Link>
-          </motion.div>
-
           <motion.div variants={fadeUp} className="pt-4">
-            <Button className="w-full">
+            <Button className="w-full ">
               Sign in
               <ArrowRight className="h-4 w-4" />
             </Button>
