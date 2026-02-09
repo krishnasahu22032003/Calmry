@@ -2,6 +2,7 @@ import Header from "@/components/Header";
 import Hero from "@/components/HeroSection";
 import FeaturesSection from "@/components/Features";
 import AboutSection from "@/components/About";
+import StorySection from "@/components/Stories";
 
 export default function Home() {
   return (
@@ -10,6 +11,7 @@ export default function Home() {
       <Hero />
       <FeaturesSection/>
       <AboutSection/>
-    </main>
+      <StorySection/>
+      </main>
   );
 }
