@@ -16,7 +16,6 @@ const Slider = React.forwardRef<
     )}
     {...props}
   >
-    {/* Track */}
     <SliderPrimitive.Track
       className="
         relative h-2 w-full overflow-hidden rounded-full
@@ -24,37 +23,35 @@ const Slider = React.forwardRef<
         backdrop-blur-sm
       "
     >
-      {/* Active Range */}
+
       <SliderPrimitive.Range
         className="
           absolute h-full rounded-full
-          bg-gradient-to-r
-          from-[var(--accent-core)]
-          via-[var(--accent-calm)]
-          to-[var(--accent-core)]
+          bg-linear-to-r
+          from-accent
+         via-(--accent-calm)
+          to-accent
           shadow-[0_0_28px_var(--glow-calm)]
           transition-all duration-500
         "
       />
     </SliderPrimitive.Track>
 
-    {/* Thumb */}
     <SliderPrimitive.Thumb
       className="
         relative block h-6 w-6 rounded-full
-        bg-[var(--surface)]
-        border border-[var(--border-subtle)]
+        bg-surface
+        border border-border
         shadow-[0_0_0_6px_rgba(47,63,168,0.22)]
         transition-all duration-500
         hover:shadow-[0_0_0_10px_rgba(22,106,94,0.32)]
         active:scale-110
         focus:outline-none
         focus-visible:ring-1
-        focus-visible:ring-[var(--accent-calm)]
+        focus-visible:ring-(--accent-calm)
         cursor-pointer
       "
     >
-      {/* Inner soft highlight */}
       <span
         className="
           absolute inset-1 rounded-full

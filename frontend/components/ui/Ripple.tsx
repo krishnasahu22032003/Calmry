@@ -19,7 +19,7 @@ export const Ripple = React.memo(function Ripple({
     <div
       className={cn(
         "pointer-events-none absolute inset-0 select-none",
-        "z-[1]",               // 🔑 force visibility above background
+        "z-1",    
         className
       )}
     >
@@ -38,15 +38,9 @@ export const Ripple = React.memo(function Ripple({
               left: "50%",
               transform: "translate(-50%, -50%)",
               opacity,
-
-              // clearer edge
               border: "1px solid rgba(255,255,255,0.22)",
-
-              // stronger inner glow
               background:
                 "radial-gradient(circle, rgba(47,63,168,0.32), transparent 70%)",
-
-              // visible outer glow
               boxShadow: "0 0 240px rgba(47,63,168,0.45)",
 
               animationDelay: `${i * 0.9}s`,

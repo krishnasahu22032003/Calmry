@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { Toaster } from "sonner";
 
 const satoshi = localFont({
   src: [
@@ -57,6 +58,7 @@ export default function RootLayout({
         `}
       >
         {children}
+        <Toaster richColors position="top-center" />
       </body>
     </html>
   );
