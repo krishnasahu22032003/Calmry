@@ -2,7 +2,7 @@ import { ENV } from "../env";
 import axios from "axios";
 
 interface Data {
-  name: string;
+  username: string;
   email: string;
   password: string;
 }

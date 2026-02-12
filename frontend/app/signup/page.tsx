@@ -54,7 +54,7 @@ export default function SignUpPage() {
 
         try {
             await signupUser({
-                name: name.trim(),
+                username: name.trim(),
                 email: email.trim(),
                 password,
             });

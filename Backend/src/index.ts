@@ -12,7 +12,7 @@ import ChatRouter from "./routes/ChatRoute.js";
 import helmet from "helmet";
 
 const app = express()
-app.use(cors())
+app.use(cors({origin:'http://http://localhost:3001'}))
 app.use(helmet())
 app.use(express.json())
 app.use(cookieParser())

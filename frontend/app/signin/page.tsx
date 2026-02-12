@@ -30,6 +30,7 @@ const fadeUp: Variants = {
 
 export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const []
 
   return (
     <main className="relative min-h-screen flex items-center justify-center px-6">
