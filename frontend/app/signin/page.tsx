@@ -30,7 +30,8 @@ const fadeUp: Variants = {
 
 export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const []
+  const [password, setPassword] = useState("")
+  const [email , setEmail]=useState("")
 
   return (
     <main className="relative min-h-screen flex items-center justify-center px-6">
@@ -55,6 +56,7 @@ export default function SignInPage() {
             <div className="relative">
               <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted" />
               <input
+               onChange={(e)=> setEmail(e.target.value)}
                 type="email"
                 required
                 placeholder="you@calmry.app"
@@ -68,6 +70,7 @@ export default function SignInPage() {
             <div className="relative">
               <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted" />
               <input
+              onChange={(e)=> setPassword(e.target.value)}
                 type={showPassword ? "text" : "password"}
                 required
                 placeholder="••••••••"
