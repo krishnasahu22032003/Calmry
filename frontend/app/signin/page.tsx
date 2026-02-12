@@ -5,6 +5,9 @@ import Link from "next/link";
 import { Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
 import { useState } from "react";
 import Button from "@/components/Button";
+import { Signin } from "@/lib/auth/signin";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const easeOrganic = [0.22, 1, 0.36, 1] as const;
 
@@ -29,10 +32,25 @@ const fadeUp: Variants = {
 };
 
 export default function SignInPage() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState("")
   const [email , setEmail]=useState("")
-
+   const [loading, setLoading] = useState(false);
+  const handlesignin = async (e: React.FormEvent)=>{
+  e.preventDefault();
+  setLoading(true)
+try{
+  await Signin({email:email.trim(),password})
+   toast.success("Signed in successfully");
+            router.push("/dashboard");
+}catch (err: any) {
+            toast.error(err.message || "Signup failed");
+        } finally {
+            setLoading(false);
+        }
+  }
+   
   return (
     <main className="relative min-h-screen flex items-center justify-center px-6">
       <motion.section
@@ -50,12 +68,13 @@ export default function SignInPage() {
           </p>
         </motion.div>
 
-        <motion.form variants={container} className="space-y-6">
+        <motion.form variants={container} className="space-y-6" onSubmit={handlesignin}>
           <motion.div variants={fadeUp} className="space-y-2">
-            <label className="text-xs tracking-wide text-muted">Email</label>
+            <label  className="text-xs tracking-wide text-muted">Email</label>
             <div className="relative">
               <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted" />
               <input
+              value={email}
                onChange={(e)=> setEmail(e.target.value)}
                 type="email"
                 required
@@ -70,6 +89,7 @@ export default function SignInPage() {
             <div className="relative">
               <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted" />
               <input
+              value={password}
               onChange={(e)=> setPassword(e.target.value)}
                 type={showPassword ? "text" : "password"}
                 required
@@ -87,9 +107,10 @@ export default function SignInPage() {
           </motion.div>
 
           <motion.div variants={fadeUp} className="pt-4">
-            <Button className="w-full ">
-              Sign in
-              <ArrowRight className="h-4 w-4" />
+            <Button   disabled={loading} type="submit"  className="w-full ">
+              {loading ? "Signing In" : "SignIn"}
+              {!loading && <ArrowRight className="h-4 w-4" />}
+          
             </Button>
           </motion.div>
         </motion.form>
