@@ -2,9 +2,11 @@ import { inngest } from "./index.js"
 import { ENV } from "../lib/ENV.js"
 import OpenAI from "openai"
 
+
 const client = new OpenAI({
-    apiKey: ENV.OPEN_API_KEY
+   apiKey:ENV.OPENAI_API_KEY
 })
+
 
 export const processChatMessage = inngest.createFunction(
     {

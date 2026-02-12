@@ -10,7 +10,7 @@ import type { ChatSessionInterface } from "../models/ChatSession.js";
 import type { InngestEvent } from "../types/inngest.js";
 
 const client = new OpenAI({
-    apiKey: ENV.OPEN_API_KEY
+    apiKey: ENV.OPENAI_API_KEY
 })
 
 
