@@ -16,7 +16,8 @@ export const Signin = async (data: SigninData) => {
             headers: {
                 "Content-Type": "application/json",
             },
-        });
+            withCredentials:true
+        },);
         return res.data;
     } catch (err: any) {
         const message =
