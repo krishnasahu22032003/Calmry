@@ -1,10 +1,12 @@
 
-const page = () => {
+const Dashboard = () => {
   return (
     <div>
-      Dashboard
+     <button className=" cursor-pointer border border-amber-50 p-2 rounded-2xl mt-10 right-0">
+        Logout
+     </button>
     </div>
   )
 }
 
-export default page
+export default Dashboard
