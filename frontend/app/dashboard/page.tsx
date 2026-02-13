@@ -4,7 +4,7 @@ import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 
-const Dashboard = () => {
+export const Dashboard = () => {
 const [loading , setLoading] = useState(false)
 
 const router = useRouter()
