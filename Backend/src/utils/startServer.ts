@@ -6,7 +6,7 @@ export const startServer = async (app :Express ) => {
     try {
         await connectDB()
 
-        const PORT = ENV.PORT || 3001;
+        const PORT = ENV.PORT || 3002;
         app.listen(PORT, () => {
             logger.info(`Server is running on port ${PORT}`);
             logger.info(

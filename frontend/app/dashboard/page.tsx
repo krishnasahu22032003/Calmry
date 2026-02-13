@@ -3,6 +3,7 @@ import { signout } from "@/lib/auth/signout"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import DashboardHeader from "@/components/dashboard/DashboardHeader"
 
 export const Dashboard = () => {
 const [loading , setLoading] = useState(false)
@@ -23,10 +24,10 @@ router.replace("/signin")
 }
 
   return (
+    
     <div>
-     <button disabled={loading} onClick={handlesignout} className=" cursor-pointer border border-amber-50 p-2 rounded-2xl mt-10 right-0">
-        {loading ? "Signing out" : "sign out"}
-     </button>
+      <DashboardHeader/>
+     
     </div>
   )
 }
