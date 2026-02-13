@@ -23,7 +23,7 @@ export async function updateUserDetails(data:UserDetails):Promise<UpdateResponse
 
 try{
 
-const res = await axios.post(ENV.BACKEND_UPDATE_URL as string ,data,{withCredentials:true})
+const res = await axios.patch(ENV.BACKEND_UPDATE_URL as string ,data,{withCredentials:true})
 
 return res.data
 }catch(err : any){

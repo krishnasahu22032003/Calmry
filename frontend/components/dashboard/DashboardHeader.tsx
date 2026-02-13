@@ -111,7 +111,7 @@ export default function DashboardHeader() {
               </button>
 
               {profileOpen && (
-                <div className="absolute right-0 top-full mt-4 w-64 z-40">
+                <div className="absolute right-0 top-full mt-6 w-64 z-40">
                   <div className="glass p-4 space-y-3 animate-in fade-in zoom-in-95 duration-200">
                     <div>
                       <p className="text-sm font-medium text-foreground">
@@ -155,8 +155,6 @@ export default function DashboardHeader() {
           </button>
         </div>
       </div>
-
-      {/* Mobile Drawer */}
       {open && (
         <div className="md:hidden">
           <div className="mx-auto max-w-6xl px-6 pb-8 pt-6 glass space-y-8">
