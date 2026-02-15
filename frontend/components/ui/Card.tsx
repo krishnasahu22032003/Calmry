@@ -21,8 +21,8 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
           `
           relative overflow-hidden
           rounded-2xl
-          bg-[var(--surface)]
-          border border-[var(--border-subtle)]
+          bg-surface
+          border border-border
           backdrop-blur-xl
           shadow-[0_30px_80px_rgba(0,0,0,0.65)]
           transition-all duration-500

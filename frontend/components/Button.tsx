@@ -40,7 +40,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         )}
         {...props}
       >
-     <span className="relative z-10 inline-flex items-center gap-2 whitespace-nowrap">
+<span className="relative z-10 flex w-full h-full">
   {children}
 </span>
 
