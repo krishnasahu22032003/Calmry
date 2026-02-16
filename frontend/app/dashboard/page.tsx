@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import { getUserDetails } from "@/lib/auth/me";
 import { Card, CardContent } from "@/components/ui/Card";
+import { format } from "date-fns";
 import {
   ArrowRight,
   BrainCircuit,
@@ -12,6 +13,7 @@ import {
   MessageSquare,
   Sparkles,
   BarChart3,
+  Loader2,
 } from "lucide-react";
 import Button from "@/components/Button";
 import { useRouter } from "next/navigation";
@@ -268,7 +270,130 @@ export const Dashboard = () => {
                 </div>
               </CardContent>
             </Card>
+             {/*Second card */}
+           <Card className="relative overflow-hidden group transition-all duration-500 hover:-translate-y-1">
 
+  {/* Subtle Emotional Glow Layer */}
+  <div
+    className="
+      pointer-events-none absolute inset-0
+      opacity-0 group-hover:opacity-100
+      transition-opacity duration-700
+    "
+    style={{
+      background:
+        "radial-gradient(900px 400px at 0% 0%, rgba(47,63,168,0.16), transparent 60%), radial-gradient(600px 300px at 100% 100%, rgba(22,106,94,0.14), transparent 60%)",
+    }}
+  />
+
+  <CardContent className="relative p-10 space-y-10">
+
+    {/* Header Section */}
+    <div className="flex items-start justify-between gap-6">
+
+      <div className="space-y-2">
+        <h3 className="font-accent text-[1.15rem] tracking-tight">
+          Today’s Overview
+        </h3>
+
+        <p className="text-[14px] text-muted leading-relaxed">
+          Your wellness metrics for{" "}
+          {format(new Date(), "MMMM d, yyyy")}
+        </p>
+      </div>
+
+      <Button
+        variant="secondary"
+        onClick={fetchDailyStats}
+        className="
+          h-10 w-10 rounded-xl
+          bg-(--accent-core)/10
+          hover:bg-(--accent-core)/20
+          transition-all duration-500
+        "
+      >
+        <Loader2 className="w-4 h-4 text-accent animate-spin" />
+      </Button>
+
+    </div>
+
+    {/* Metrics Grid */}
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+
+      {wellnessStats.map((stat) => (
+        <div
+          key={stat.title}
+          className="
+            relative group/stat
+            p-6 rounded-2xl
+            bg-(--surface-soft)
+            border border-(--border-subtle)
+            transition-all duration-500
+            hover:-translate-y-1
+            hover:shadow-[0_0_40px_rgba(47,63,168,0.15)]
+          "
+        >
+
+          {/* Soft Glow on Hover */}
+          <div
+            className="
+              absolute inset-0 rounded-2xl
+              opacity-0 group-hover/stat:opacity-100
+              transition-opacity duration-700
+            "
+            style={{
+              background:
+                "radial-gradient(500px 200px at 50% 0%, rgba(47,63,168,0.15), transparent 70%)",
+            }}
+          />
+
+          <div className="relative space-y-4">
+
+            {/* Icon + Title */}
+            <div className="flex items-center gap-3">
+
+              <div
+                className="
+                  w-10 h-10 rounded-xl
+                  flex items-center justify-center
+                  bg-(--accent-calm)/10
+                  transition-all duration-500
+                  group-hover/stat:bg-(--accent-calm)/20
+                "
+              >
+                <stat.icon className="w-5 h-5 text-(--accent-calm)" />
+              </div>
+
+              <p className="text-sm font-medium tracking-wide">
+                {stat.title}
+              </p>
+
+            </div>
+
+            {/* Main Value */}
+            <div className="text-3xl font-semibold tracking-tight">
+              {stat.value}
+            </div>
+
+            {/* Description */}
+            <p className="text-sm text-muted leading-relaxed">
+              {stat.description}
+            </p>
+
+          </div>
+
+        </div>
+      ))}
+
+    </div>
+
+    {/* Footer */}
+    <div className="pt-2 border-t border-(--border-subtle) text-xs text-muted text-right tracking-wide">
+      Last updated: {format(dailyStats.lastUpdated, "h:mm a")}
+    </div>
+
+  </CardContent>
+</Card>
 
           </div>
           
