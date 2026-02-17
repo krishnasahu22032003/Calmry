@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/Card";
 import Button from "@/components/Button";
-import { Dialog , DialogContent } from "./Dialog";
+import { Dialog , DialogContent } from "../ui/Dialog";
 
 const easeOrganic = [0.22, 1, 0.36, 1] as const;
 
