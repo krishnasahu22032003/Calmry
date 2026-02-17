@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import { getUserDetails } from "@/lib/auth/me";
 import { Card, CardContent } from "@/components/ui/Card";
-import { format } from "date-fns";
+import { addDays, format, isWithinInterval, startOfDay } from "date-fns";
 import {
   ArrowRight,
   BrainCircuit,
@@ -14,9 +14,84 @@ import {
   Sparkles,
   BarChart3,
   Loader2,
+  Brain,
+  Trophy,
+  Activity,
 } from "lucide-react";
 import Button from "@/components/Button";
 import { useRouter } from "next/navigation";
+import { getAllChatSessions } from "@/lib/api/chat";
+import axios from "axios";
+import { ENV } from "@/lib/env";
+
+type ActivityLevel = "none" | "low" | "medium" | "high";
+
+interface DayActivity {
+  date: Date;
+  level: ActivityLevel;
+  activities: {
+    type: string;
+    name: string;
+    completed: boolean;
+    time?: string;
+  }[];
+}
+
+interface Activity {
+  id: string;
+  userId: string | null;
+  type: string;
+  name: string;
+  description: string | null;
+  timestamp: Date;
+  duration: number | null;
+  completed: boolean;
+  moodScore: number | null;
+  moodNote: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+interface DailyStats {
+  moodScore: number | null;
+  completionRate: number;
+  mindfulnessCount: number;
+  totalActivities: number;
+  lastUpdated: Date;
+}
+
+const calculateDailyStats = (activities: Activity[]): DailyStats => {
+  const today = startOfDay(new Date());
+  const todaysActivities = activities.filter((activity) =>
+    isWithinInterval(new Date(activity.timestamp), {
+      start: today,
+      end: addDays(today, 1),
+    })
+  );
+
+  // Calculate mood score (average of today's mood entries)
+  const moodEntries = todaysActivities.filter(
+    (a) => a.type === "mood" && a.moodScore !== null
+  );
+  const averageMood =
+    moodEntries.length > 0
+      ? Math.round(
+          moodEntries.reduce((acc, curr) => acc + (curr.moodScore || 0), 0) /
+            moodEntries.length
+        )
+      : null;
+
+  // Count therapy sessions (all sessions ever)
+  const therapySessions = activities.filter((a) => a.type === "therapy").length;
+
+  return {
+    moodScore: averageMood,
+    completionRate: 100, // Always 100% as requested
+    mindfulnessCount: therapySessions, // Total number of therapy sessions
+    totalActivities: todaysActivities.length,
+    lastUpdated: new Date(),
+  };
+};
 
 const easeOrganic = [0.22, 1, 0.36, 1] as const;
 
@@ -35,6 +110,13 @@ export const Dashboard = () => {
   const [index, setIndex] = useState(0);
   const [showMoodModal, setShowMoodModal] = useState(false);
   const [showActivityLogger, setShowActivityLogger] = useState(false);
+    const [dailyStats, setDailyStats] = useState<DailyStats>({
+    moodScore: null,
+    completionRate: 100,
+    mindfulnessCount: 0,
+    totalActivities: 0,
+    lastUpdated: new Date(),
+  });
 
   const router = useRouter();
 
@@ -72,6 +154,88 @@ export const Dashboard = () => {
     setShowActivityLogger(true);
   };
 
+
+// assuming you already have this axios instance
+// import { api } from "@/services/api";
+
+const fetchDailyStats = useCallback(async () => {
+  try {
+    // 1️⃣ Fetch therapy sessions
+    const sessions = await getAllChatSessions();
+
+    // 2️⃣ Fetch today's activities using axios
+    const activitiesResponse = await axios.get(
+      ENV.BACKEND_ACTIVITY_URL as string,
+      { withCredentials: true } // needed for cookie auth
+    );
+
+    const activities = activitiesResponse.data;
+
+    // 3️⃣ Calculate mood score
+    const moodEntries = activities.filter(
+      (a: Activity) => a.type === "mood" && a.moodScore !== null
+    );
+
+    const averageMood =
+      moodEntries.length > 0
+        ? Math.round(
+            moodEntries.reduce(
+              (acc: number, curr: Activity) =>
+                acc + (curr.moodScore || 0),
+              0
+            ) / moodEntries.length
+          )
+        : null;
+
+    // 4️⃣ Set state
+    setDailyStats({
+      moodScore: averageMood,
+      completionRate: 100,
+      mindfulnessCount: sessions.length,
+      totalActivities: activities.length,
+      lastUpdated: new Date(),
+    });
+  } catch (error: any) {
+    console.error(
+      "Error fetching daily stats:",
+      error.response?.data || error.message
+    );
+  }
+}, []);
+  const wellnessStats = [
+    {
+      title: "Mood Score",
+      value: dailyStats.moodScore ? `${dailyStats.moodScore}%` : "No data",
+      icon: Brain,
+      color: "text-purple-500",
+      bgColor: "bg-purple-500/10",
+      description: "Today's average mood",
+    },
+    {
+      title: "Completion Rate",
+      value: "100%",
+      icon: Trophy,
+      color: "text-yellow-500",
+      bgColor: "bg-yellow-500/10",
+      description: "Perfect completion rate",
+    },
+    {
+      title: "Therapy Sessions",
+      value: `${dailyStats.mindfulnessCount} sessions`,
+      icon: Heart,
+      color: "text-rose-500",
+      bgColor: "bg-rose-500/10",
+      description: "Total sessions completed",
+    },
+    {
+      title: "Total Activities",
+      value: dailyStats.totalActivities.toString(),
+      icon: Activity,
+      color: "text-blue-500",
+      bgColor: "bg-blue-500/10",
+      description: "Planned for today",
+    },
+  ];
   return (
     <div className="relative min-h-screen">
       <DashboardHeader />
@@ -326,8 +490,8 @@ export const Dashboard = () => {
           className="
             relative group/stat
             p-6 rounded-2xl
-            bg-(--surface-soft)
-            border border-(--border-subtle)
+           bg-surface-soft
+            border border-border
             transition-all duration-500
             hover:-translate-y-1
             hover:shadow-[0_0_40px_rgba(47,63,168,0.15)]
@@ -388,12 +552,139 @@ export const Dashboard = () => {
     </div>
 
     {/* Footer */}
-    <div className="pt-2 border-t border-(--border-subtle) text-xs text-muted text-right tracking-wide">
+    <div className="pt-2 border-t border-border text-xs text-muted text-right tracking-wide">
       Last updated: {format(dailyStats.lastUpdated, "h:mm a")}
     </div>
 
   </CardContent>
 </Card>
+
+
+{/* Third Card – Insights */}
+<Card className="relative overflow-hidden group transition-all duration-500 hover:-translate-y-1">
+
+  {/* Emotional Glow Layer */}
+  <div
+    className="
+      pointer-events-none absolute inset-0
+      opacity-0 group-hover:opacity-100
+      transition-opacity duration-700
+    "
+    style={{
+      background:
+        "radial-gradient(900px 400px at 10% 0%, rgba(47,63,168,0.18), transparent 60%), radial-gradient(600px 300px at 100% 100%, rgba(22,106,94,0.14), transparent 60%)",
+    }}
+  />
+
+  <CardContent className="relative p-10 space-y-10">
+
+    {/* Header */}
+    <div className="space-y-2">
+      <div className="flex items-center gap-3">
+
+        <div
+          className="
+            w-10 h-10 rounded-xl
+            bg-(--accent-core)/10
+            flex items-center justify-center
+            transition-all duration-500
+            group-hover:bg-(--accent-core)/20
+          "
+        >
+          <BrainCircuit className="w-5 h-5 text-accent" />
+        </div>
+
+        <h3 className="font-accent text-[1.15rem] tracking-tight">
+          Insights
+        </h3>
+
+      </div>
+
+      <p className="text-[14px] text-muted leading-relaxed">
+        Personalized recommendations based on your activity patterns.
+      </p>
+    </div>
+
+    {/* Insights Content */}
+    <div className="space-y-5">
+
+      {insights.length > 0 ? (
+        insights.map((insight, index) => {
+
+          const priorityStyles =
+            insight.priority === "high"
+              ? "bg-(--accent-core)/10 border border-(--accent-core)/20"
+              : insight.priority === "medium"
+              ? "bg-(--accent-calm)/10 border border-(--accent-calm)/20"
+              : "bg-surface-soft border border-border";
+
+          return (
+            <div
+              key={index}
+              className={`
+                relative group/insight
+                p-6 rounded-2xl
+                transition-all duration-500
+                hover:-translate-y-1
+                hover:shadow-[0_0_40px_rgba(47,63,168,0.12)]
+                ${priorityStyles}
+              `}
+            >
+
+              <div className="space-y-3">
+
+                <div className="flex items-center gap-3">
+
+                  <div
+                    className="
+                      w-9 h-9 rounded-xl
+                      bg-white/5
+                      flex items-center justify-center
+                    "
+                  >
+                    <insight.icon className="w-4 h-4 text-foreground" />
+                  </div>
+
+                  <p className="font-medium tracking-wide">
+                    {insight.title}
+                  </p>
+
+                </div>
+
+                <p className="text-sm text-muted leading-relaxed">
+                  {insight.description}
+                </p>
+
+              </div>
+
+            </div>
+          );
+        })
+      ) : (
+        <div className="text-center py-10 space-y-4">
+
+          <div
+            className="
+              w-14 h-14 mx-auto rounded-2xl
+              bg-(--accent-calm)/10
+              flex items-center justify-center
+            "
+          >
+            <Activity className="w-6 h-6 text-(--accent-calm)" />
+          </div>
+
+          <p className="text-muted text-sm leading-relaxed max-w-xs mx-auto">
+            Complete more activities to receive personalized insights tailored to your emotional rhythm.
+          </p>
+
+        </div>
+      )}
+
+    </div>
+
+  </CardContent>
+</Card>
+
 
           </div>
           

@@ -14,25 +14,21 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         className={clsx(
-          "relative inline-flex items-center justify-center cursor-pointer",
-          "h-12 px-8 sm:px-10",
+          "relative inline-flex items-center justify-center",
+          "h-14 px-8 sm:px-10",
           "rounded-2xl text-sm font-medium",
           "transition-all duration-700",
-          "focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+          "focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent-core)]",
           "active:scale-[0.98]",
           variant === "primary" && [
-            "border border-border/80",
             "glass",
             "breathe",
             "text-foreground",
-            "hover:-translate-y-px",
-            "hover:bg-surface-soft/30",
-            "hover:shadow-[0_0_140px_rgba(47,63,168,0.22)]",
+            "hover:shadow-[0_0_120px_rgba(47,63,168,0.18)]",
           ],
           variant === "secondary" && [
-            "border border-border/80",
-            "text-foreground/85",
-            "bg-surface-soft/40",
+            "border border-border",
+            "text-muted",
             "hover:text-foreground",
             "hover:bg-surface-soft",
           ],
@@ -40,9 +36,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         )}
         {...props}
       >
-<span className="relative z-10 flex w-full h-full">
-  {children}
-</span>
+        <span className="relative z-10">{children}</span>
 
         {variant === "primary" && (
           <span
