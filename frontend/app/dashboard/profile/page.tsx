@@ -6,7 +6,7 @@ import { useState } from "react";
 import { updateUserDetails } from "@/lib/update/updateuserdetails";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import Button from "@/components/Button";
+import Button from "@/components/ui/Button";
 
 const easeOrganic = [0.22, 1, 0.36, 1] as const;
 

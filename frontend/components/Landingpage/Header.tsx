@@ -3,8 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
-import Logo from "@/components/Logo";
-import Button from "@/components/Button";
+import Logo from "@/components/Landingpage/Logo";
+import Button from "@/components/ui/Button";
 import { useRouter } from "next/navigation";
 const navItems = [
   { href: "#features", label: "Features" },

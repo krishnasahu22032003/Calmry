@@ -4,7 +4,7 @@ import { motion, Variants } from "framer-motion";
 import Link from "next/link";
 import { Mail, Lock, User, Eye, EyeOff, ArrowRight } from "lucide-react";
 import { useState } from "react";
-import Button from "@/components/Button";
+import Button from "@/components/ui/Button";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { signupUser } from "@/lib/auth/signup";

@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import Button from "./Button";
+import Button from "../ui/Button";
 
 const easeOrganic = [0.22, 1, 0.36, 1] as const;
 

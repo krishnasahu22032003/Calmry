@@ -11,7 +11,7 @@ import {
   LogOut,
   Settings,
 } from "lucide-react";
-import Logo from "@/components/Logo";
+import Logo from "@/components/Landingpage/Logo";
 import { useRouter } from "next/navigation";
 import { signout } from "@/lib/auth/signout";
 import { toast } from "sonner";

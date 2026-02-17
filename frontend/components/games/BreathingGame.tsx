@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Wind, Check } from "lucide-react";
-import Button from "@/components/Button";
+import Button from "@/components/ui/Button";
 
 const TOTAL_ROUNDS = 5;
 const easeOrganic = [0.22, 1, 0.36, 1] as const;

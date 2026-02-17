@@ -2,15 +2,15 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Header from "@/components/Header";
-import Hero from "@/components/HeroSection";
-import FeaturesSection from "@/components/Features";
-import AboutSection from "@/components/About";
-import StorySection from "@/components/Stories";
-import TestimonialsSection from "@/components/Testimonials";
-import FAQSection from "@/components/FAQ";
-import CTASection from "@/components/CTASection";
-import Footer from "@/components/Footer";
+import Header from "@/components/Landingpage/Header";
+import Hero from "@/components/Landingpage/HeroSection";
+import FeaturesSection from "@/components/Landingpage/Features";
+import AboutSection from "@/components/Landingpage/About";
+import StorySection from "@/components/Landingpage/Stories";
+import TestimonialsSection from "@/components/Landingpage/Testimonials";
+import FAQSection from "@/components/Landingpage/FAQ";
+import CTASection from "@/components/Landingpage/CTASection";
+import Footer from "@/components/Landingpage/Footer";
 
 import {
   Dialog,
@@ -19,7 +19,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/Dialog";
-import Button from "@/components/Button";
+import Button from "@/components/ui/Button";
 
 export default function Home() {
   const [showDialog, setShowDialog] = useState(false);

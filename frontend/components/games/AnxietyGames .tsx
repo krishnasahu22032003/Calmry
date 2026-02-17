@@ -11,7 +11,7 @@ import {
   Music2,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/Card";
-import Button from "@/components/Button";
+import Button from "@/components/ui/Button";
 import { Dialog , DialogContent } from "../ui/Dialog";
 
 const easeOrganic = [0.22, 1, 0.36, 1] as const;

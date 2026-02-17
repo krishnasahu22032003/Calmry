@@ -22,14 +22,16 @@ import {
   Calendar,
   Sun,
   Moon,
+  X,
 } from "lucide-react";
-import Button from "@/components/Button";
+import Button from "@/components/ui/Button";
 import { useRouter } from "next/navigation";
 import { getAllChatSessions } from "@/lib/api/chat";
 import axios from "axios";
 import { ENV } from "@/lib/env";
 import { getUserActivities,saveMoodData,logActivity } from "@/lib/static-dashboard-data";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/Dialog";
+import { CalmryMoodForm } from "@/components/mood/mood-form";
 type ActivityLevel = "none" | "low" | "medium" | "high";
 
 interface DayActivity {
@@ -955,16 +957,40 @@ const fetchDailyStats = useCallback(async () => {
    
           </Container>
           <Dialog open={showMoodModal} onOpenChange={setShowMoodModal}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-106.25">
           <DialogHeader>
             <DialogTitle>How are you feeling?</DialogTitle>
             <DialogDescription>
               Move the slider to track your current mood
             </DialogDescription>
           </DialogHeader>
-          <MoodForm onSuccess={() => setShowMoodModal(false)} />
+          <CalmryMoodForm onSuccess={() => setShowMoodModal(false)} />
         </DialogContent>
       </Dialog>
+
+       {showCheckInChat && (
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50">
+          <div className="fixed inset-y-0 right-0 w-full max-w-sm bg-background border-l shadow-lg">
+            <div className="flex h-full flex-col">
+              <div className="flex items-center justify-between px-4 py-3 border-b">
+                <h3 className="font-semibold">AI Check-in</h3>
+                <Button
+                  variant="primary"
+                  onClick={() => setShowCheckInChat(false)}
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+              <div className="flex-1 overflow-y-auto p-4"></div>
+            </div>
+          </div>
+        </div>
+      )}
+      <ActivityLogger
+        open={showActivityLogger}
+        onOpenChange={setShowActivityLogger}
+        onActivityLogged={loadActivities}
+      />
       </main>
     </div>
   );

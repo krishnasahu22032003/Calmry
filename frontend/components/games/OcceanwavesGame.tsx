@@ -9,7 +9,7 @@ import {
   Play,
   Pause,
 } from "lucide-react";
-import Button from "@/components/Button";
+import Button from "@/components/ui/Button";
 
 const BREATH_DURATION = 8;
 const SESSION_DURATION = 5 * 60;

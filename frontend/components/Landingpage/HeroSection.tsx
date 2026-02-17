@@ -12,8 +12,8 @@ import {
   Sparkles,
 } from "lucide-react";
 
-import { Slider } from "./Slider";
-import Button from "./Button";
+import { Slider } from "../ui/Slider";
+import Button from "../ui/Button";
 import {
   Dialog,
   DialogContent,
@@ -21,7 +21,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/Dialog";
-import { Ripple } from "./ui/Ripple";
+import { Ripple } from "../ui/Ripple";
 
 
 export default function Hero() {

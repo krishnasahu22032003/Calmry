@@ -9,7 +9,7 @@ import {
   Play,
   Pause,
 } from "lucide-react";
-import Button from "@/components/Button";
+import Button from "@/components/ui/Button";
 
 const MEDITATION_DURATION = 5 * 60;
 const easeOrganic = [0.22, 1, 0.36, 1] as const;

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
-import Button from "@/components/Button";
+import Button from "@/components/ui/Button";
 import { useToast } from "@/components/ui/use-toast";
 import { useSession } from "@/lib/contexts/session-context";
 import { useRouter } from "next/navigation";
