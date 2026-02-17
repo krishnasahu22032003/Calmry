@@ -17,6 +17,9 @@ import {
   Brain,
   Trophy,
   Activity,
+  Calendar,
+  Sun,
+  Moon,
 } from "lucide-react";
 import Button from "@/components/Button";
 import { useRouter } from "next/navigation";
@@ -159,7 +162,66 @@ const generateInsights = (activities: Activity[]) => {
     }
   }
 
+  const completedActivities = recentActivities.filter((a) => a.completed);
+  const completionRate =
+    recentActivities.length > 0
+      ? (completedActivities.length / recentActivities.length) * 100
+      : 0;
+
+  if (completionRate >= 80) {
+    insights.push({
+      title: "High Achievement",
+      description: `You've completed ${Math.round(
+        completionRate
+      )}% of your activities this week. Excellent commitment!`,
+      icon: Trophy,
+      priority: "high",
+    });
+  } else if (completionRate < 50) {
+    insights.push({
+      title: "Activity Reminder",
+      description:
+        "You might benefit from setting smaller, more achievable daily goals.",
+      icon: Calendar,
+      priority: "medium",
+    });
+  }
   
+  // Time pattern analysis
+  const morningActivities = recentActivities.filter(
+    (a) => new Date(a.timestamp).getHours() < 12
+  );
+  const eveningActivities = recentActivities.filter(
+    (a) => new Date(a.timestamp).getHours() >= 18
+  );
+
+  if (morningActivities.length > eveningActivities.length) {
+    insights.push({
+      title: "Morning Person",
+      description:
+        "You're most active in the mornings. Consider scheduling important tasks during your peak hours.",
+      icon: Sun,
+      priority: "medium",
+    });
+  } else if (eveningActivities.length > morningActivities.length) {
+    insights.push({
+      title: "Evening Routine",
+      description:
+        "You tend to be more active in the evenings. Make sure to wind down before bedtime.",
+      icon: Moon,
+      priority: "medium",
+    });
+  }
+
+  // Sort insights by priority and return top 3
+  return insights
+    .sort((a, b) => {
+      const priorityOrder = { high: 0, medium: 1, low: 2 };
+      return priorityOrder[a.priority] - priorityOrder[b.priority];
+    })
+    .slice(0, 3);
+};
+
 const easeOrganic = [0.22, 1, 0.36, 1] as const;
 
 const lines = [
@@ -184,7 +246,14 @@ export const Dashboard = () => {
     totalActivities: 0,
     lastUpdated: new Date(),
   });
-
+  const [insights, setInsights] = useState<
+    {
+      title: string;
+      description: string;
+      icon: any;
+      priority: "low" | "medium" | "high";
+    }[]
+  >([]);
   const router = useRouter();
 
   useEffect(() => {
