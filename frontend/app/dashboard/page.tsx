@@ -303,10 +303,29 @@ export const Dashboard = () => {
     return days;
   };
 
-  useEffect(() => {
+    const loadActivities = useCallback(async () => {
+    try {
+      const userActivities = await getUserActivities("default-user");
+      setActivities(userActivities);
+      setActivityHistory(transformActivitiesToDayActivity(userActivities));
+    } catch (error) {
+      console.error("Error loading activities:", error);
+    }
+  }, []);
+
+   useEffect(() => {
+    setMounted(true);
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
+
+  
+
+  useEffect(() => {
+    if (activities.length > 0) {
+      setInsights(generateInsights(activities));
+    }
+  }, [activities]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -332,11 +351,6 @@ export const Dashboard = () => {
   const handleStartTherapy = () => {
     router.push("/therapy/new");
   };
-
-  const handleAICheckIn = () => {
-    setShowActivityLogger(true);
-  };
-
 
 // assuming you already have this axios instance
 // import { api } from "@/services/api";
@@ -385,6 +399,57 @@ const fetchDailyStats = useCallback(async () => {
     );
   }
 }, []);
+
+  useEffect(() => {
+    fetchDailyStats();
+    const interval = setInterval(fetchDailyStats, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [fetchDailyStats]);
+
+    useEffect(() => {
+    loadActivities();
+  }, [loadActivities]);
+
+ const handleMoodSubmit = async (data: { moodScore: number }) => {
+    setIsSavingMood(true);
+    try {
+      await saveMoodData({
+        userId: "default-user",
+        mood: data.moodScore,
+        note: "",
+      });
+      setShowMoodModal(false);
+    } catch (error) {
+      console.error("Error saving mood:", error);
+    } finally {
+      setIsSavingMood(false);
+    }
+  };
+
+  const handleAICheckIn = () => {
+    setShowActivityLogger(true);
+  };
+
+  const handleGamePlayed = useCallback(
+    async (gameName: string, description: string) => {
+      try {
+        await logActivity({
+          userId: "default-user",
+          type: "game",
+          name: gameName,
+          description: description,
+          duration: 0,
+        });
+
+        // Refresh activities after logging
+        loadActivities();
+      } catch (error) {
+        console.error("Error logging game activity:", error);
+      }
+    },
+    [loadActivities]
+  );
+
   const wellnessStats = [
     {
       title: "Mood Score",
@@ -419,6 +484,14 @@ const fetchDailyStats = useCallback(async () => {
       description: "Planned for today",
     },
   ];
+   if (!mounted) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      </div>
+    );
+  }
+  
   return (
     <div className="relative min-h-screen">
       
