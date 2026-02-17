@@ -18,7 +18,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           "h-14 px-8 sm:px-10",
           "rounded-2xl text-sm font-medium",
           "transition-all duration-700",
-          "focus:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--accent-core)]",
+          "focus:outline-none focus-visible:ring-2 focus-visible:ring-accent",
           "active:scale-[0.98]",
           variant === "primary" && [
             "glass",

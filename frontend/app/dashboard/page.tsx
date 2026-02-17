@@ -6,6 +6,7 @@ import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import { getUserDetails } from "@/lib/auth/me";
 import { Card, CardContent } from "@/components/ui/Card";
 import { addDays, format, isWithinInterval, startOfDay, subDays } from "date-fns";
+import { Container } from "@/components/ui/Container";
 import {
   ArrowRight,
   BrainCircuit,
@@ -374,6 +375,7 @@ const fetchDailyStats = useCallback(async () => {
   ];
   return (
     <div className="relative min-h-screen">
+      
       <DashboardHeader />
 
       <main className="pt-22 pb-24">
