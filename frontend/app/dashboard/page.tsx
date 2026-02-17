@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import { getUserDetails } from "@/lib/auth/me";
 import { Card, CardContent } from "@/components/ui/Card";
-import { addDays, format, isWithinInterval, startOfDay } from "date-fns";
+import { addDays, format, isWithinInterval, startOfDay, subDays } from "date-fns";
 import {
   ArrowRight,
   BrainCircuit,
@@ -93,6 +93,73 @@ const calculateDailyStats = (activities: Activity[]): DailyStats => {
   };
 };
 
+const generateInsights = (activities: Activity[]) => {
+  const insights: {
+    title: string;
+    description: string;
+    icon: any;
+    priority: "low" | "medium" | "high";
+  }[] = [];
+
+  // Get activities from last 7 days
+  const lastWeek = subDays(new Date(), 7);
+  const recentActivities = activities.filter(
+    (a) => new Date(a.timestamp) >= lastWeek
+  );
+
+  // Analyze mood patterns
+  const moodEntries = recentActivities.filter(
+    (a) => a.type === "mood" && a.moodScore !== null
+  );
+  if (moodEntries.length >= 2) {
+    const averageMood =
+      moodEntries.reduce((acc, curr) => acc + (curr.moodScore || 0), 0) /
+      moodEntries.length;
+    const latestMood = moodEntries[moodEntries.length - 1].moodScore || 0;
+
+    if (latestMood > averageMood) {
+      insights.push({
+        title: "Mood Improvement",
+        description:
+          "Your recent mood scores are above your weekly average. Keep up the good work!",
+        icon: Brain,
+        priority: "high",
+      });
+    } else if (latestMood < averageMood - 20) {
+      insights.push({
+        title: "Mood Change Detected",
+        description:
+          "I've noticed a dip in your mood. Would you like to try some mood-lifting activities?",
+        icon: Heart,
+        priority: "high",
+      });
+    }
+  }
+
+  const mindfulnessActivities = recentActivities.filter((a) =>
+    ["game", "meditation", "breathing"].includes(a.type)
+  );
+  if (mindfulnessActivities.length > 0) {
+    const dailyAverage = mindfulnessActivities.length / 7;
+    if (dailyAverage >= 1) {
+      insights.push({
+        title: "Consistent Practice",
+        description: `You've been regularly engaging in mindfulness activities. This can help reduce stress and improve focus.`,
+        icon: Trophy,
+        priority: "medium",
+      });
+    } else {
+      insights.push({
+        title: "Mindfulness Opportunity",
+        description:
+          "Try incorporating more mindfulness activities into your daily routine.",
+        icon: Sparkles,
+        priority: "low",
+      });
+    }
+  }
+
+  
 const easeOrganic = [0.22, 1, 0.36, 1] as const;
 
 const lines = [
