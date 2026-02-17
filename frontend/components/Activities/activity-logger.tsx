@@ -114,7 +114,7 @@ export function ActivityLogger({
       <DialogContent
         className="
           glass
-          max-w-[520px]
+          max-w-130
           p-8
         "
       >

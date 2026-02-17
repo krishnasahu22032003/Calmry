@@ -34,28 +34,43 @@ DialogOverlay.displayName = "DialogOverlay";
 const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
->(({ className, ...props }, ref) => (
-  <DialogPrimitive.Portal>
-    <DialogOverlay />
-    <DialogPrimitive.Content
-      ref={ref}
-      className={cn(
-        "fixed z-50 left-1/2 top-1/2",
-        "-translate-x-1/2 -translate-y-1/2",
-        "w-[92vw] max-w-md",
-        "rounded-3xl border border-border",
-        "bg-surface backdrop-blur-2xl",
-        "shadow-[0_40px_140px_rgba(0,0,0,0.85)]",
-        "data-[state=open]:animate-in data-[state=closed]:animate-out",
-        "data-[state=open]:zoom-in-95 data-[state=closed]:zoom-out-95",
-        "data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0",
-        "p-6",
-        className
-      )}
-      {...props}
-    />
-  </DialogPrimitive.Portal>
-));
+>(({ className, children, ...props }, ref) => {
+  const hasTitle =
+    React.Children.toArray(children).some(
+      (child: any) =>
+        child?.type?.displayName === "DialogTitle"
+    );
+
+  return (
+    <DialogPrimitive.Portal>
+      <DialogOverlay />
+      <DialogPrimitive.Content
+        ref={ref}
+        className={cn(
+          "fixed z-50 left-1/2 top-1/2",
+          "-translate-x-1/2 -translate-y-1/2",
+          "w-[92vw] max-w-md",
+          "rounded-3xl border border-border",
+          "bg-surface backdrop-blur-2xl",
+          "shadow-[0_40px_140px_rgba(0,0,0,0.85)]",
+          "data-[state=open]:animate-in data-[state=closed]:animate-out",
+          "data-[state=open]:zoom-in-95 data-[state=closed]:zoom-out-95",
+          "data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0",
+          "p-6",
+          className
+        )}
+        {...props}
+      >
+        {!hasTitle && (
+          <DialogPrimitive.Title className="sr-only">
+            Dialog
+          </DialogPrimitive.Title>
+        )}
+        {children}
+      </DialogPrimitive.Content>
+    </DialogPrimitive.Portal>
+  );
+});
 DialogContent.displayName = "DialogContent";
 
 /* ---------------- Header ---------------- */

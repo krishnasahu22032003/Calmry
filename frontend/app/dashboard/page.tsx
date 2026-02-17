@@ -32,6 +32,7 @@ import { ENV } from "@/lib/env";
 import { getUserActivities,saveMoodData,logActivity } from "@/lib/static-dashboard-data";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/Dialog";
 import { CalmryMoodForm } from "@/components/mood/mood-form";
+import { ActivityLogger } from "@/components/Activities/activity-logger";
 type ActivityLevel = "none" | "low" | "medium" | "high";
 
 interface DayActivity {
@@ -266,6 +267,7 @@ export const Dashboard = () => {
     }[]
   >([]);
   const router = useRouter();
+
 
   const transformActivitiesToDayActivity = (
     activities: Activity[]

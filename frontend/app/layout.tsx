@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "sonner";
-
+import { SessionProvider } from "@/lib/contexts/session-context";
 const satoshi = localFont({
   src: [
     {
@@ -56,8 +56,9 @@ export default function RootLayout({
           ${fraunces.variable}
           antialiased
         `}
-      >
-        {children}
+      ><SessionProvider>
+          {children}
+        </SessionProvider>
         <Toaster richColors position="top-center" />
       </body>
     </html>
