@@ -7,6 +7,7 @@ import { getUserDetails } from "@/lib/auth/me";
 import { Card, CardContent } from "@/components/ui/Card";
 import { addDays, format, isWithinInterval, startOfDay, subDays } from "date-fns";
 import { Container } from "@/components/ui/Container";
+import { CalmryMindActivities } from "@/components/games/AnxietyGames ";
 import {
   ArrowRight,
   BrainCircuit,
@@ -235,9 +236,15 @@ const lines = [
 
 export const Dashboard = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [mounted, setMounted] = useState(false);
   const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(true);
   const [index, setIndex] = useState(0);
+  const [activities, setActivities] = useState<Activity[]>([]);
+  const [showCheckInChat, setShowCheckInChat] = useState(false);
+  const [activityHistory, setActivityHistory] = useState<DayActivity[]>([]);
+  const [isSavingActivity, setIsSavingActivity] = useState(false);
+  const [isSavingMood, setIsSavingMood] = useState(false);
   const [showMoodModal, setShowMoodModal] = useState(false);
   const [showActivityLogger, setShowActivityLogger] = useState(false);
     const [dailyStats, setDailyStats] = useState<DailyStats>({
@@ -256,6 +263,45 @@ export const Dashboard = () => {
     }[]
   >([]);
   const router = useRouter();
+
+  const transformActivitiesToDayActivity = (
+    activities: Activity[]
+  ): DayActivity[] => {
+    const days: DayActivity[] = [];
+    const today = new Date();
+
+    // Create array for last 28 days
+    for (let i = 27; i >= 0; i--) {
+      const date = startOfDay(subDays(today, i));
+      const dayActivities = activities.filter((activity) =>
+        isWithinInterval(new Date(activity.timestamp), {
+          start: date,
+          end: addDays(date, 1),
+        })
+      );
+
+      // Determine activity level based on number of activities
+      let level: ActivityLevel = "none";
+      if (dayActivities.length > 0) {
+        if (dayActivities.length <= 2) level = "low";
+        else if (dayActivities.length <= 4) level = "medium";
+        else level = "high";
+      }
+
+      days.push({
+        date,
+        level,
+        activities: dayActivities.map((activity) => ({
+          type: activity.type,
+          name: activity.name,
+          completed: activity.completed,
+          time: format(new Date(activity.timestamp), "h:mm a"),
+        })),
+      });
+    }
+
+    return days;
+  };
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -379,6 +425,7 @@ const fetchDailyStats = useCallback(async () => {
       <DashboardHeader />
 
       <main className="pt-22 pb-24">
+        <Container>
         <div className="ml-10 md:ml-24 max-w-350 px-6 space-y-4">
 
           <motion.h1
@@ -819,14 +866,21 @@ const fetchDailyStats = useCallback(async () => {
       )}
 
     </div>
-
   </CardContent>
 </Card>
+    </div>
 
-
+           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Left side - Spans 2 columns */}
+            <div className="lg:col-span-3 space-y-6">
+              {/* Anxiety Games - Now directly below Fitbit */}
+              <CalmryMindActivities onGamePlayed={handleGamePlayed} />
+            </div>
           </div>
-          
         </div>
+   
+          </Container>
+        
       </main>
     </div>
   );
