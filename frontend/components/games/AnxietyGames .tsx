@@ -54,8 +54,16 @@ const activities = [
     duration: "8 mins",
   },
 ];
+interface CalmryMindActivitiesProps {
+  onGamePlayed?: (
+    gameName: string,
+    description: string
+  ) => Promise<void>;
+}
 
-export const CalmryMindActivities = () => {
+export const CalmryMindActivities = ({
+  onGamePlayed,
+}: CalmryMindActivitiesProps) => {
   const [selected, setSelected] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
 

@@ -28,7 +28,8 @@ import { useRouter } from "next/navigation";
 import { getAllChatSessions } from "@/lib/api/chat";
 import axios from "axios";
 import { ENV } from "@/lib/env";
-
+import { getUserActivities,saveMoodData,logActivity } from "@/lib/static-dashboard-data";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/Dialog";
 type ActivityLevel = "none" | "low" | "medium" | "high";
 
 interface DayActivity {
@@ -491,7 +492,7 @@ const fetchDailyStats = useCallback(async () => {
       </div>
     );
   }
-  
+
   return (
     <div className="relative min-h-screen">
       
@@ -953,7 +954,17 @@ const fetchDailyStats = useCallback(async () => {
         </div>
    
           </Container>
-        
+          <Dialog open={showMoodModal} onOpenChange={setShowMoodModal}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>How are you feeling?</DialogTitle>
+            <DialogDescription>
+              Move the slider to track your current mood
+            </DialogDescription>
+          </DialogHeader>
+          <MoodForm onSuccess={() => setShowMoodModal(false)} />
+        </DialogContent>
+      </Dialog>
       </main>
     </div>
   );
