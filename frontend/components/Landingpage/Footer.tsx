@@ -17,7 +17,7 @@ export default function Footer() {
         whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
         transition={{ duration: 0.9, ease: easeOrganic }}
         viewport={{ once: true }}
-        className="mx-auto max-w-6xl px-6 py-12"
+        className="mx-auto max-w-6xl px-6 py-8"
       >
         <div className="flex items-center justify-center text-center">
           <p className="text-xs text-muted flex flex-wrap items-center justify-center gap-2 leading-relaxed">

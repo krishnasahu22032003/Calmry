@@ -486,7 +486,7 @@ const fetchDailyStats = useCallback(async () => {
       icon: Activity,
       color: "text-blue-500",
       bgColor: "bg-blue-500/10",
-      description: "Planned for today",
+      description: "Planned for the day ",
     },
   ];
    if (!mounted) {
@@ -545,8 +545,8 @@ const fetchDailyStats = useCallback(async () => {
             })}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 ">
-            <Card className="relative overflow-hidden group transition-all duration-500 hover:-translate-y-1">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 items-stretch">
+            <Card className="relative h-full flex flex-col overflow-hidden group transition-all duration-500 hover:-translate-y-1">
               <div
                 className="
       pointer-events-none absolute inset-0
@@ -559,7 +559,7 @@ const fetchDailyStats = useCallback(async () => {
                 }}
               />
 
-              <CardContent className="relative p-10 space-y-8">
+              <CardContent className="relative p-6 flex flex-col gap-6 ">
                 <div className="flex items-center gap-4">
 
                   <div
@@ -588,7 +588,7 @@ const fetchDailyStats = useCallback(async () => {
                 <Button
                   variant="primary"
                   className="
-        w-full justify-between px-8 py-6 text-base
+        w-full justify-between px-6 py-7 text-base
         group/button
       "
                   onClick={handleStartTherapy}
@@ -624,11 +624,11 @@ const fetchDailyStats = useCallback(async () => {
         "
                   />
                 </Button>
-                <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-4 ">
                   <Button
                     variant="secondary"
                     className="
-      h-35 p-2
+      py-6 p-4
       flex flex-col items-center justify-center
       text-center
       transition-all duration-500
@@ -645,14 +645,14 @@ const fetchDailyStats = useCallback(async () => {
         transition-all duration-500
        hover:bg-(--accent-warm)/20
       ">
-                        <Heart className="w-5 h-5  text-(--accent-warm)" />
+                        <Heart className="w-5 h-5 text-(--accent-warm)" />
                       </div>
 
                       <div className="font-medium text-sm">
                         Track Mood
                       </div>
 
-                      <div className="text-xs text-muted">
+                      <div className="text-xs text-muted ">
                         How are you feeling?
                       </div>
 
@@ -663,7 +663,7 @@ const fetchDailyStats = useCallback(async () => {
                   <Button
                     variant="secondary"
                     className="
-      h-35 p-2
+     py-6 p-4
       flex flex-col items-center justify-center
       text-center
       transition-all duration-500
@@ -687,7 +687,7 @@ const fetchDailyStats = useCallback(async () => {
                         Check-In
                       </div>
 
-                      <div className="text-xs text-muted ">
+                      <div className="text-xs text-muted  ">
                         Quick wellness reset
                       </div>
 
@@ -698,7 +698,7 @@ const fetchDailyStats = useCallback(async () => {
               </CardContent>
             </Card>
              {/*Second card */}
-           <Card className="relative overflow-hidden group transition-all duration-500 hover:-translate-y-1">
+           <Card className="relative h-full flex flex-col overflow-hidden group transition-all duration-500 hover:-translate-y-1">
 
   {/* Subtle Emotional Glow Layer */}
   <div
@@ -712,11 +712,10 @@ const fetchDailyStats = useCallback(async () => {
         "radial-gradient(900px 400px at 0% 0%, rgba(47,63,168,0.16), transparent 60%), radial-gradient(600px 300px at 100% 100%, rgba(22,106,94,0.14), transparent 60%)",
     }}
   />
-
-  <CardContent className="relative p-10 space-y-10">
+<CardContent className="relative p-6 flex flex-col gap-6 flex-1">
 
     {/* Header Section */}
-    <div className="flex items-start justify-between gap-6">
+    <div className="flex items-stretch justify-between gap-6">
 
       <div className="space-y-2">
         <h3 className="font-accent text-[1.15rem] tracking-tight">
@@ -745,14 +744,14 @@ const fetchDailyStats = useCallback(async () => {
     </div>
 
     {/* Metrics Grid */}
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-stretch">
 
       {wellnessStats.map((stat) => (
         <div
           key={stat.title}
           className="
             relative group/stat
-            p-6 rounded-2xl
+          p-4 rounded-2xl
            bg-surface-soft
             border border-border
             transition-all duration-500
@@ -781,7 +780,7 @@ const fetchDailyStats = useCallback(async () => {
 
               <div
                 className="
-                  w-10 h-10 rounded-xl
+                  w-14 h-10 rounded-xl
                   flex items-center justify-center
                   bg-(--accent-calm)/10
                   transition-all duration-500
@@ -791,19 +790,19 @@ const fetchDailyStats = useCallback(async () => {
                 <stat.icon className="w-5 h-5 text-(--accent-calm)" />
               </div>
 
-              <p className="text-sm font-medium tracking-wide">
+              <p className="text-sm font-medium tracking-tight">
                 {stat.title}
               </p>
 
             </div>
 
             {/* Main Value */}
-            <div className="text-3xl font-semibold tracking-tight">
+            <div className="text-2xl font-semibold tracking-tight -mt-2">
               {stat.value}
             </div>
 
             {/* Description */}
-            <p className="text-sm text-muted leading-relaxed">
+            <p className="text-sm text-muted leading-tight -mt-2" >
               {stat.description}
             </p>
 
@@ -815,7 +814,7 @@ const fetchDailyStats = useCallback(async () => {
     </div>
 
     {/* Footer */}
-    <div className="pt-2 border-t border-border text-xs text-muted text-right tracking-wide">
+    <div className="pt-4 mt-auto border-t border-border text-xs text-muted text-right tracking-wide">
       Last updated: {format(dailyStats.lastUpdated, "h:mm a")}
     </div>
 
@@ -824,7 +823,7 @@ const fetchDailyStats = useCallback(async () => {
 
 
 {/* Third Card – Insights */}
-<Card className="relative overflow-hidden group transition-all duration-500 hover:-translate-y-1">
+<Card className="relative h-full flex flex-col overflow-hidden group transition-all duration-500 hover:-translate-y-1">
 
   {/* Emotional Glow Layer */}
   <div
@@ -839,7 +838,7 @@ const fetchDailyStats = useCallback(async () => {
     }}
   />
 
-  <CardContent className="relative p-10 space-y-10">
+<CardContent className="relative p-6 flex flex-col gap-6 flex-1">
 
     {/* Header */}
     <div className="space-y-2">
@@ -863,13 +862,13 @@ const fetchDailyStats = useCallback(async () => {
 
       </div>
 
-      <p className="text-[14px] text-muted leading-relaxed">
+      <p className="text-[14px] text-muted leading-tight">
         Personalized recommendations based on your activity patterns.
       </p>
     </div>
 
     {/* Insights Content */}
-    <div className="space-y-5">
+   <div className="space-y-3 flex-1 overflow-auto">
 
       {insights.length > 0 ? (
         insights.map((insight, index) => {
@@ -886,7 +885,7 @@ const fetchDailyStats = useCallback(async () => {
               key={index}
               className={`
                 relative group/insight
-                p-6 rounded-2xl
+                p-4 rounded-2xl
                 transition-all duration-500
                 hover:-translate-y-1
                 hover:shadow-[0_0_40px_rgba(47,63,168,0.12)]
@@ -894,7 +893,7 @@ const fetchDailyStats = useCallback(async () => {
               `}
             >
 
-              <div className="space-y-3">
+              <div className="space-y-2">
 
                 <div className="flex items-center gap-3">
 
@@ -908,13 +907,13 @@ const fetchDailyStats = useCallback(async () => {
                     <insight.icon className="w-4 h-4 text-foreground" />
                   </div>
 
-                  <p className="font-medium tracking-wide">
+                  <p className="font-medium tracking-tight">
                     {insight.title}
                   </p>
 
                 </div>
 
-                <p className="text-sm text-muted leading-relaxed">
+                <p className="text-sm text-muted leading-tight">
                   {insight.description}
                 </p>
 
@@ -948,9 +947,9 @@ const fetchDailyStats = useCallback(async () => {
 </Card>
     </div>
 
-           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-stretch mt-24">
             {/* Left side - Spans 2 columns */}
-            <div className="lg:col-span-3 space-y-6">
+            <div className="lg:col-span-3 space-y-10">
               {/* Anxiety Games - Now directly below Fitbit */}
               <CalmryMindActivities onGamePlayed={handleGamePlayed} />
             </div>

@@ -156,7 +156,7 @@ export default function Hero() {
             </span>
           </p>
         </div>
-        <div className="mt-8">
+        <div className="mt-8 ">
           <Button
             className="flex items-center justify-center "
             onClick={() => setShowDialog(true)}
