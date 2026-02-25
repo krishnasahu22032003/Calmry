@@ -54,8 +54,7 @@ export function SessionProvider({
         ENV.BACKEND_ME_URL as string,
         { withCredentials: true }
       );
-
-      const userData = response.data?.user;
+      const userData = response.data
 
       if (userData) {
         const { password, ...safeUser } =

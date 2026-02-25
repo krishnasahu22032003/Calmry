@@ -51,7 +51,7 @@ const DialogContent = React.forwardRef<
           "-translate-x-1/2 -translate-y-1/2",
           "w-[92vw] max-w-md",
           "rounded-3xl border border-border",
-          "bg-surface backdrop-blur-2xl",
+          "bg-surface",
           "shadow-[0_40px_140px_rgba(0,0,0,0.85)]",
           "data-[state=open]:animate-in data-[state=closed]:animate-out",
           "data-[state=open]:zoom-in-95 data-[state=closed]:zoom-out-95",

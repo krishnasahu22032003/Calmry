@@ -251,6 +251,7 @@ export const Dashboard = () => {
   const [isSavingMood, setIsSavingMood] = useState(false);
   const [showMoodModal, setShowMoodModal] = useState(false);
   const [showActivityLogger, setShowActivityLogger] = useState(false);
+  const [thoughtIndex, setThoughtIndex] = useState(0);
     const [dailyStats, setDailyStats] = useState<DailyStats>({
     moodScore: null,
     completionRate: 100,
@@ -489,6 +490,22 @@ const fetchDailyStats = useCallback(async () => {
       description: "Planned for the day ",
     },
   ];
+  const quickThoughts = [
+  "Clarity begins with a single breath.",
+  "Small reflections create lasting change.",
+  "You are allowed to pause.",
+  "Progress is quiet, but powerful.",
+  "Consistency compounds silently.",
+];
+
+useEffect(() => {
+  const interval = setInterval(() => {
+    setThoughtIndex((prev) => (prev + 1) % quickThoughts.length);
+  }, 4000);
+
+  return () => clearInterval(interval);
+}, []);
+
    if (!mounted) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -624,11 +641,12 @@ const fetchDailyStats = useCallback(async () => {
         "
                   />
                 </Button>
+
               <div className="grid grid-cols-2 gap-4 ">
                   <Button
                     variant="secondary"
                     className="
-      py-6 p-4
+      py-20 p-4
       flex flex-col items-center justify-center
       text-center
       transition-all duration-500
@@ -663,7 +681,7 @@ const fetchDailyStats = useCallback(async () => {
                   <Button
                     variant="secondary"
                     className="
-     py-6 p-4
+     py-20 p-4
       flex flex-col items-center justify-center
       text-center
       transition-all duration-500
@@ -695,6 +713,26 @@ const fetchDailyStats = useCallback(async () => {
                   </Button>
 
                 </div>
+                <div className="mt-auto pt-6 border-t border-border/50">
+
+  <div className="relative overflow-hidden h-6">
+
+    <AnimatePresence mode="wait">
+      <motion.p
+        key={thoughtIndex}
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -8 }}
+        transition={{ duration: 0.6, ease: easeOrganic }}
+        className="absolute text-md text-muted tracking-wide"
+      >
+        {quickThoughts[thoughtIndex]}
+      </motion.p>
+    </AnimatePresence>
+
+  </div>
+
+</div>
               </CardContent>
             </Card>
              {/*Second card */}
@@ -987,11 +1025,11 @@ const fetchDailyStats = useCallback(async () => {
           </div>
         </div>
       )}
-      <ActivityLogger
-        open={showActivityLogger}
-        onOpenChange={setShowActivityLogger}
-        onActivityLogged={loadActivities}
-      />
+<ActivityLogger
+  open={showActivityLogger}
+  onOpenChange={setShowActivityLogger}
+  onActivityLogged={loadActivities}
+/>
       </main>
     </div>
   );

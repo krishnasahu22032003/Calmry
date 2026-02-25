@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from "../ui/Dialog"
+} from "../ui/Dialog";
 import Button from "../ui/Button";
 import { Input } from "../ui/Input";
 import { Label } from "../ui/Label";
@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/Select";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner"; // ✅ CHANGED
 import { useSession } from "@/lib/contexts/session-context";
 import { logActivity } from "@/lib/api/activity";
 
@@ -48,28 +48,18 @@ export function ActivityLogger({
   const [name, setName] = useState("");
   const [duration, setDuration] = useState("");
   const [description, setDescription] = useState("");
-
-  const { toast } = useToast();
-  const { isAuthenticated, loading } = useSession();
+const { isAuthenticated, loading } = useSession();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!isAuthenticated) {
-      toast({
-        title: "Authentication required",
-        description: "Please log in to log activities",
-        variant: "destructive",
-      });
+      toast.error("Please log in to log activities");
       return;
     }
 
     if (!type || !name) {
-      toast({
-        title: "Missing information",
-        description: "Please fill in all required fields",
-        variant: "destructive",
-      });
+      toast.error("Please fill in all required fields"); 
       return;
     }
 
@@ -88,22 +78,16 @@ export function ActivityLogger({
       setDuration("");
       setDescription("");
 
-      toast({
-        title: "Activity logged",
-        description: "Your wellness activity has been recorded.",
-      });
+      toast.success("Your wellness activity has been recorded."); // ✅ Sonner
 
       onActivityLogged();
       onOpenChange(false);
     } catch (error) {
-      toast({
-        title: "Error",
-        description:
-          error instanceof Error
-            ? error.message
-            : "Failed to log activity",
-        variant: "destructive",
-      });
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to log activity"
+      ); // ✅ Sonner
     } finally {
       setIsLoading(false);
     }
@@ -113,9 +97,13 @@ export function ActivityLogger({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         className="
-          glass
-          max-w-130
+          max-w-md
           p-8
+          rounded-2xl
+          bg-[#0f172a]
+          text-white
+          border border-white/10
+          shadow-[0_40px_120px_rgba(0,0,0,0.7)]
         "
       >
         <DialogHeader className="space-y-2">
@@ -128,7 +116,6 @@ export function ActivityLogger({
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-
           {/* Activity Type */}
           <div className="space-y-2">
             <Label className="text-sm text-muted">
@@ -141,10 +128,7 @@ export function ActivityLogger({
               </SelectTrigger>
               <SelectContent className="bg-surface border-border">
                 {activityTypes.map((type) => (
-                  <SelectItem
-                    key={type.id}
-                    value={type.id}
-                  >
+                  <SelectItem key={type.id} value={type.id}>
                     {type.name}
                   </SelectItem>
                 ))}
@@ -159,9 +143,7 @@ export function ActivityLogger({
             </Label>
             <Input
               value={name}
-              onChange={(e) =>
-                setName(e.target.value)
-              }
+              onChange={(e) => setName(e.target.value)}
               placeholder="Morning Meditation, Evening Walk..."
               className="bg-surface-soft border-border"
             />
@@ -175,9 +157,7 @@ export function ActivityLogger({
             <Input
               type="number"
               value={duration}
-              onChange={(e) =>
-                setDuration(e.target.value)
-              }
+              onChange={(e) => setDuration(e.target.value)}
               placeholder="15"
               className="bg-surface-soft border-border"
             />
@@ -190,24 +170,14 @@ export function ActivityLogger({
             </Label>
             <Input
               value={description}
-              onChange={(e) =>
-                setDescription(e.target.value)
-              }
+              onChange={(e) => setDescription(e.target.value)}
               placeholder="How did it go?"
               className="bg-surface-soft border-border"
             />
           </div>
 
-          {/* Buttons */}
-          <div className="flex justify-end gap-3 pt-4">
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => onOpenChange(false)}
-            >
-              Cancel
-            </Button>
-
+          {/* Submit */}
+          <div className="flex justify-center gap-3 pt-4">
             <Button
               type="submit"
               variant="primary"
