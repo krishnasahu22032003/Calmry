@@ -7,7 +7,7 @@ import { getUserDetails } from "@/lib/auth/me";
 import { Card, CardContent } from "@/components/ui/Card";
 import { addDays, format, isWithinInterval, startOfDay, subDays } from "date-fns";
 import { Container } from "@/components/ui/Container";
-import { CalmryMindActivities } from "@/components/games/AnxietyGames ";
+import { CalmryMindActivities } from "@/components/games/AnxietyGames " 
 import {
   ArrowRight,
   BrainCircuit,

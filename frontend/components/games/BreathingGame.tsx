@@ -73,7 +73,7 @@ export function CalmryBreathingGame() {
 
   if (isComplete) {
     return (
-      <div className="flex flex-col items-center justify-center h-105 space-y-8 text-center">
+      <div className="flex flex-col items-center justify-center min-h-[420px] space-y-8 text-center">
 
         <motion.div
           initial={{ scale: 0 }}
@@ -114,7 +114,7 @@ export function CalmryBreathingGame() {
   /* ================= ACTIVE SESSION ================= */
 
   return (
-    <div className="flex flex-col items-center justify-center h-105 space-y-10">
+    <div className="flex flex-col items-center justify-center min-h-[420px] space-y-10">
 
       <AnimatePresence mode="wait">
         <motion.div

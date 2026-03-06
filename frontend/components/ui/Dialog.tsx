@@ -35,39 +35,31 @@ const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
 >(({ className, children, ...props }, ref) => {
-  const hasTitle =
-    React.Children.toArray(children).some(
-      (child: any) =>
-        child?.type?.displayName === "DialogTitle"
-    );
-
   return (
     <DialogPrimitive.Portal>
+
+      {/* Overlay */}
       <DialogOverlay />
-      <DialogPrimitive.Content
-        ref={ref}
-        className={cn(
-          "fixed z-50 left-1/2 top-1/2",
-          "-translate-x-1/2 -translate-y-1/2",
-          "w-[92vw] max-w-md",
-          "rounded-3xl border border-border",
-          "bg-surface",
-          "shadow-[0_40px_140px_rgba(0,0,0,0.85)]",
-          "data-[state=open]:animate-in data-[state=closed]:animate-out",
-          "data-[state=open]:zoom-in-95 data-[state=closed]:zoom-out-95",
-          "data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0",
-          "p-6",
-          className
-        )}
-        {...props}
-      >
-        {!hasTitle && (
-          <DialogPrimitive.Title className="sr-only">
-            Dialog
-          </DialogPrimitive.Title>
-        )}
-        {children}
-      </DialogPrimitive.Content>
+
+      {/* Centering wrapper */}
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+
+        <DialogPrimitive.Content
+          ref={ref}
+          className={cn(
+            "glass w-full max-w-3xl min-h-[420px]",
+            "rounded-3xl border border-border",
+            "bg-surface shadow-[0_40px_140px_rgba(0,0,0,0.85)]",
+            "flex items-center justify-center p-6",
+            className
+          )}
+          {...props}
+        >
+          {children}
+        </DialogPrimitive.Content>
+
+      </div>
+
     </DialogPrimitive.Portal>
   );
 });

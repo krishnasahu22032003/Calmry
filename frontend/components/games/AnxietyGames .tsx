@@ -13,6 +13,10 @@ import {
 import { Card, CardContent } from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import { Dialog, DialogContent } from "../ui/Dialog";
+import { CalmryBreathingGame } from "./BreathingGame";
+import { CalmryForestExperience } from "./ForestGame";
+import { CalmryOceanWaves } from "./OcceanwavesGame";
+import { CalmryZenGarden } from "./ZenGardenGame";
 
 const easeOrganic = [0.22, 1, 0.36, 1] as const;
 
@@ -236,19 +240,19 @@ export const CalmryMindActivities = ({
       </Card>
 
       {/* Dialog */}
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="glass max-w-160 p-8">
-          <div className="space-y-6">
-            <h3 className="font-accent text-lg tracking-tight">
-              {selectedActivity?.title}
-            </h3>
+    <Dialog open={open} onOpenChange={setOpen}>
+<DialogContent>
 
-            <div className="text-sm text-muted">
-              Your immersive experience will appear here.
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+    {selected === "breathing" && <CalmryBreathingGame />}
+
+    {selected === "garden" && <CalmryForestExperience/>}
+
+    {selected === "forest" && <CalmryOceanWaves/>}
+
+    {selected === "waves" && <CalmryZenGarden/>}
+
+  </DialogContent>
+</Dialog>
     </>
   );
 };
