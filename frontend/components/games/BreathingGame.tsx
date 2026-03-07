@@ -1,11 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Wind, Check } from "lucide-react";
 import Button from "@/components/ui/Button";
 
-const TOTAL_ROUNDS = 5;
 const easeOrganic = [0.22, 1, 0.36, 1] as const;
 
 export function CalmryBreathingGame() {
@@ -16,50 +15,55 @@ export function CalmryBreathingGame() {
   const [isComplete, setIsComplete] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
 
+  const TOTAL_ROUNDS = 5;
+
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const phaseRef = useRef(phase);
+
+  useEffect(() => {
+    phaseRef.current = phase;
+  }, [phase]);
+
   useEffect(() => {
     if (isComplete || isPaused) return;
 
-    let timer: NodeJS.Timeout;
+    if (timerRef.current) clearInterval(timerRef.current);
 
-    if (phase === "inhale") {
-      timer = setInterval(() => {
-        setProgress((p) => {
-          if (p >= 100) {
+    timerRef.current = setInterval(() => {
+      setProgress((p) => {
+        if (p >= 100) {
+          if (phaseRef.current === "inhale") {
             setPhase("hold");
             return 0;
           }
-          return p + 2;
-        });
-      }, 100);
-    } else if (phase === "hold") {
-      timer = setInterval(() => {
-        setProgress((p) => {
-          if (p >= 100) {
+
+          if (phaseRef.current === "hold") {
             setPhase("exhale");
             return 0;
           }
-          return p + 4;
-        });
-      }, 100);
-    } else {
-      timer = setInterval(() => {
-        setProgress((p) => {
-          if (p >= 100) {
-            if (round >= TOTAL_ROUNDS) {
-              setIsComplete(true);
-              return p;
-            }
+
+          if (phaseRef.current === "exhale") {
+            setRound((r) => {
+              if (r >= TOTAL_ROUNDS) {
+                setIsComplete(true);
+                return r;
+              }
+              return r + 1;
+            });
             setPhase("inhale");
-            setRound((r) => r + 1);
             return 0;
           }
-          return p + 2;
-        });
-      }, 100);
-    }
+        }
 
-    return () => clearInterval(timer);
-  }, [phase, round, isComplete, isPaused]);
+        if (phaseRef.current === "hold") return p + 4;
+        return p + 2;
+      });
+    }, 100);
+
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [isPaused, isComplete]);
 
   const handleReset = () => {
     setPhase("inhale");
@@ -68,8 +72,6 @@ export function CalmryBreathingGame() {
     setIsComplete(false);
     setIsPaused(false);
   };
-
-  /* ================= COMPLETION SCREEN ================= */
 
   if (isComplete) {
     return (
@@ -111,8 +113,6 @@ export function CalmryBreathingGame() {
     );
   }
 
-  /* ================= ACTIVE SESSION ================= */
-
   return (
     <div className="flex flex-col items-center justify-center min-h-[420px] space-y-10">
 
@@ -126,7 +126,6 @@ export function CalmryBreathingGame() {
           className="text-center space-y-6"
         >
 
-          {/* Breathing Orb */}
           <div className="relative w-40 h-40 mx-auto">
 
             <motion.div
@@ -175,7 +174,6 @@ export function CalmryBreathingGame() {
         </motion.div>
       </AnimatePresence>
 
-      {/* Progress Bar (Custom Calmry Style) */}
       <div className="w-72">
 
         <div className="h-2 w-full rounded-full bg-surface-soft border border-border overflow-hidden">
@@ -190,7 +188,6 @@ export function CalmryBreathingGame() {
 
       </div>
 
-      {/* Footer Controls */}
       <div className="space-y-3 text-center">
 
         <div className="text-sm text-muted tracking-wide">
@@ -199,7 +196,6 @@ export function CalmryBreathingGame() {
 
         <Button
           variant="secondary"
-        
           onClick={() => setIsPaused(!isPaused)}
         >
           {isPaused ? "Resume" : "Pause"}

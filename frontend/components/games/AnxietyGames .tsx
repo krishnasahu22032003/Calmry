@@ -17,6 +17,8 @@ import { CalmryBreathingGame } from "./BreathingGame";
 import { CalmryForestExperience } from "./ForestGame";
 import { CalmryOceanWaves } from "./OcceanwavesGame";
 import { CalmryZenGarden } from "./ZenGardenGame";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { DialogTitle } from "@/components/ui/Dialog";
 
 const easeOrganic = [0.22, 1, 0.36, 1] as const;
 
@@ -240,16 +242,22 @@ export const CalmryMindActivities = ({
       </Card>
 
       {/* Dialog */}
-    <Dialog open={open} onOpenChange={setOpen}>
-<DialogContent>
+
+
+<Dialog open={open} onOpenChange={setOpen}>
+  <DialogContent>
+
+    <VisuallyHidden>
+      <DialogTitle>Calmry Activity</DialogTitle>
+    </VisuallyHidden>
 
     {selected === "breathing" && <CalmryBreathingGame />}
 
-    {selected === "garden" && <CalmryForestExperience/>}
+    {selected === "garden" &&<CalmryZenGarden/>  }
 
-    {selected === "forest" && <CalmryOceanWaves/>}
+    {selected === "forest" &&<CalmryForestExperience/>}
 
-    {selected === "waves" && <CalmryZenGarden/>}
+    {selected === "waves" &&  <CalmryOceanWaves />}
 
   </DialogContent>
 </Dialog>

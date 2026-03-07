@@ -172,71 +172,75 @@ export default function Hero() {
         </div>
       </motion.div>
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <motion.div
-              key={currentStep}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className="space-y-3 text-center"
-            >
-              <div className="mx-auto w-12 h-12 rounded-full bg-surface-soft flex items-center justify-center">
-                {(() => {
-                  const Icon = welcomeSteps[currentStep].icon;
-                  return <Icon className="w-6 h-6 text-accent" />;
-                })()}
-              </div>
+     <DialogContent className="flex flex-col gap-6">
 
-              <DialogTitle className="font-accent text-xl">
-                {welcomeSteps[currentStep].title}
-              </DialogTitle>
+  <DialogHeader className="text-center">
+    <motion.div
+      key={currentStep}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="space-y-3"
+    >
+      <div className="mx-auto w-12 h-12 rounded-full bg-surface-soft flex items-center justify-center">
+        {(() => {
+          const Icon = welcomeSteps[currentStep].icon;
+          return <Icon className="w-6 h-6 text-accent" />;
+        })()}
+      </div>
 
-              <DialogDescription>
-                {welcomeSteps[currentStep].description}
-              </DialogDescription>
-            </motion.div>
-          </DialogHeader>
+      <DialogTitle className="font-accent text-xl">
+        {welcomeSteps[currentStep].title}
+      </DialogTitle>
 
-          <div className="flex justify-between items-center mt-5">
-            <div className="flex gap-2">
-              {welcomeSteps.map((_, i) => (
-                <div
-                  key={i}
-                  className={`h-2 rounded-full transition-all ${
-                    i === currentStep
-                      ? "w-4 bg-accent"
-                      : "w-2 bg-border"
-                  }`}
-                />
-              ))}
-            </div>
+      <DialogDescription>
+        {welcomeSteps[currentStep].description}
+      </DialogDescription>
+    </motion.div>
+  </DialogHeader>
 
-            <Button
-              onClick={() => {
-                if (currentStep < welcomeSteps.length - 1) {
-                  setCurrentStep((s) => s + 1);
-                } else {
-                  setShowDialog(false);
-                  router.push("/signup")
-                  setCurrentStep(0);
-                }
-              }}
-            >
-              {currentStep === welcomeSteps.length - 1 ? (
-                <>
-                  Let’s begin
-                  <Sparkles className="w-4 h-4 ml-2" />
-                </>
-              ) : (
-                <>
-                  Next
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </>
-              )}
-            </Button>
-          </div>
-        </DialogContent>
+<div className="flex flex-col items-center gap-4 mt-5">
+
+  <div className="flex gap-2">
+    {welcomeSteps.map((_, i) => (
+      <div
+        key={i}
+        className={`h-2 rounded-full transition-all ${
+          i === currentStep
+            ? "w-4 bg-accent"
+            : "w-2 bg-border"
+        }`}
+      />
+    ))}
+  </div>
+
+  <Button
+    onClick={() => {
+      if (currentStep < welcomeSteps.length - 1) {
+        setCurrentStep((s) => s + 1);
+      } else {
+        setShowDialog(false);
+        router.push("/signup");
+        setCurrentStep(0);
+      }
+    }}
+  >
+    {currentStep === welcomeSteps.length - 1 ? (
+      <>
+        Let’s begin
+        <Sparkles className="w-4 h-4 ml-2" />
+      </>
+    ) : (
+      <>
+        Next
+        <ArrowRight className="w-4 h-4 ml-2" />
+      </>
+    )}
+  </Button>
+
+</div>
+
+</DialogContent>
       </Dialog>
     </section>
   );
