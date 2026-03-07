@@ -96,16 +96,17 @@ const { isAuthenticated, loading } = useSession();
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="
-          max-w-md
-          p-8
-          rounded-2xl
-          bg-[#0f172a]
-          text-white
-          border border-white/10
-          shadow-[0_40px_120px_rgba(0,0,0,0.7)]
-        "
-      >
+  className="
+    max-w-md
+    flex flex-col gap-6
+    p-8
+    rounded-2xl
+    bg-[#0f172a]
+    text-white
+    border border-white/10
+    shadow-[0_40px_120px_rgba(0,0,0,0.7)]
+  "
+>
         <DialogHeader className="space-y-2">
           <DialogTitle className="font-accent tracking-tight text-lg">
             Log Activity

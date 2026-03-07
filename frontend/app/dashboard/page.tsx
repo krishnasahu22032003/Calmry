@@ -996,7 +996,7 @@ useEffect(() => {
    
           </Container>
           <Dialog open={showMoodModal} onOpenChange={setShowMoodModal}>
-        <DialogContent className="sm:max-w-106.25">
+        <DialogContent className="sm:max-w-106.25 flex flex-col gap-6">
           <DialogHeader>
             <DialogTitle>How are you feeling?</DialogTitle>
             <DialogDescription>
@@ -1020,7 +1020,9 @@ useEffect(() => {
                   <X className="w-4 h-4" />
                 </Button>
               </div>
-              <div className="flex-1 overflow-y-auto p-4"></div>
+              <div className="flex-1 overflow-y-auto p-4">
+                
+              </div>
             </div>
           </div>
         </div>
