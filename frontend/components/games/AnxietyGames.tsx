@@ -68,7 +68,7 @@ interface CalmryMindActivitiesProps {
   ) => Promise<void>;
 }
 
-export const CalmryMindActivities = ({
+export const CalmryMindActivities=({
   onGamePlayed,
 }: CalmryMindActivitiesProps) => {
   const [selected, setSelected] = useState<string | null>(null);

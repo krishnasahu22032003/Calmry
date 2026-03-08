@@ -7,11 +7,11 @@ import { getUserDetails } from "@/lib/auth/me";
 import { Card, CardContent } from "@/components/ui/Card";
 import { addDays, format, isWithinInterval, startOfDay, subDays } from "date-fns";
 import { Container } from "@/components/ui/Container";
-import { CalmryMindActivities } from "@/components/games/AnxietyGames " 
+import { CalmryMindActivities } from "@/components/games/AnxietyGames";
 import {
   ArrowRight,
   BrainCircuit,
-  Heart,
+  Heart,  
   MessageSquare,
   Sparkles,
   BarChart3,
@@ -29,7 +29,6 @@ import { useRouter } from "next/navigation";
 import { getAllChatSessions } from "@/lib/api/chat";
 import axios from "axios";
 import { ENV } from "@/lib/env";
-import { getUserActivities,saveMoodData,logActivity } from "@/lib/static-dashboard-data";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/Dialog";
 import { CalmryMoodForm } from "@/components/mood/mood-form";
 import { ActivityLogger } from "@/components/Activities/activity-logger";
@@ -47,7 +46,7 @@ interface DayActivity {
 }
 
 interface Activity {
-  id: string;
+  _id: string;
   userId: string | null;
   type: string;
   name: string;
@@ -55,14 +54,14 @@ interface Activity {
   timestamp: Date;
   duration: number | null;
   completed: boolean;
-  moodScore: number | null;
+  score: number | null;
   moodNote: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
 
 interface DailyStats {
-  moodScore: number | null;
+  score: number | null;
   completionRate: number;
   mindfulnessCount: number;
   totalActivities: number;
@@ -80,12 +79,12 @@ const calculateDailyStats = (activities: Activity[]): DailyStats => {
 
   // Calculate mood score (average of today's mood entries)
   const moodEntries = todaysActivities.filter(
-    (a) => a.type === "mood" && a.moodScore !== null
+    (a) => a.type === "mood" && a.score !== null
   );
   const averageMood =
     moodEntries.length > 0
       ? Math.round(
-          moodEntries.reduce((acc, curr) => acc + (curr.moodScore || 0), 0) /
+          moodEntries.reduce((acc, curr) => acc + (curr.score || 0), 0) /
             moodEntries.length
         )
       : null;
@@ -94,7 +93,7 @@ const calculateDailyStats = (activities: Activity[]): DailyStats => {
   const therapySessions = activities.filter((a) => a.type === "therapy").length;
 
   return {
-    moodScore: averageMood,
+    score: averageMood,
     completionRate: 100, // Always 100% as requested
     mindfulnessCount: therapySessions, // Total number of therapy sessions
     totalActivities: todaysActivities.length,
@@ -118,13 +117,13 @@ const generateInsights = (activities: Activity[]) => {
 
   // Analyze mood patterns
   const moodEntries = recentActivities.filter(
-    (a) => a.type === "mood" && a.moodScore !== null
+    (a) => a.type === "mood" && a.score !== null
   );
   if (moodEntries.length >= 2) {
     const averageMood =
-      moodEntries.reduce((acc, curr) => acc + (curr.moodScore || 0), 0) /
+      moodEntries.reduce((acc, curr) => acc + (curr.score || 0), 0) /
       moodEntries.length;
-    const latestMood = moodEntries[moodEntries.length - 1].moodScore || 0;
+    const latestMood = moodEntries[moodEntries.length - 1].score || 0;
 
     if (latestMood > averageMood) {
       insights.push({
@@ -146,7 +145,7 @@ const generateInsights = (activities: Activity[]) => {
   }
 
   const mindfulnessActivities = recentActivities.filter((a) =>
-    ["game", "meditation", "breathing"].includes(a.type)
+   ["meditation", "exercise", "walking", "journaling"].includes(a.type)
   );
   if (mindfulnessActivities.length > 0) {
     const dailyAverage = mindfulnessActivities.length / 7;
@@ -168,7 +167,7 @@ const generateInsights = (activities: Activity[]) => {
     }
   }
 
-  const completedActivities = recentActivities.filter((a) => a.completed);
+  const completedActivities = recentActivities.filter((a) => a.completed === true)
   const completionRate =
     recentActivities.length > 0
       ? (completedActivities.length / recentActivities.length) * 100
@@ -247,13 +246,11 @@ export const Dashboard = () => {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [showCheckInChat, setShowCheckInChat] = useState(false);
   const [activityHistory, setActivityHistory] = useState<DayActivity[]>([]);
-  const [isSavingActivity, setIsSavingActivity] = useState(false);
-  const [isSavingMood, setIsSavingMood] = useState(false);
   const [showMoodModal, setShowMoodModal] = useState(false);
   const [showActivityLogger, setShowActivityLogger] = useState(false);
   const [thoughtIndex, setThoughtIndex] = useState(0);
     const [dailyStats, setDailyStats] = useState<DailyStats>({
-    moodScore: null,
+    score: null,
     completionRate: 100,
     mindfulnessCount: 0,
     totalActivities: 0,
@@ -267,6 +264,7 @@ export const Dashboard = () => {
       priority: "low" | "medium" | "high";
     }[]
   >([]);
+  const [statsLoading, setStatsLoading] = useState(false);
   const router = useRouter();
 
 
@@ -309,15 +307,21 @@ export const Dashboard = () => {
     return days;
   };
 
-    const loadActivities = useCallback(async () => {
-    try {
-      const userActivities = await getUserActivities("default-user");
-      setActivities(userActivities);
-      setActivityHistory(transformActivitiesToDayActivity(userActivities));
-    } catch (error) {
-      console.error("Error loading activities:", error);
-    }
-  }, []);
+ const loadActivities = useCallback(async () => {
+  try {
+    const response = await axios.get(
+      ENV.BACKEND_ACTIVITY_URL as string,
+      { withCredentials: true }
+    );
+
+    const userActivities = response.data.data;
+
+    setActivities(userActivities);
+    setActivityHistory(transformActivitiesToDayActivity(userActivities));
+  } catch (error) {
+    console.error("Error loading activities:", error);
+  }
+}, []);
 
    useEffect(() => {
     setMounted(true);
@@ -325,7 +329,11 @@ export const Dashboard = () => {
     return () => clearInterval(timer);
   }, []);
 
-  
+    useEffect(() => {
+    if (activities.length > 0) {
+      setDailyStats(calculateDailyStats(activities));
+    }
+  }, [activities]);
 
   useEffect(() => {
     if (activities.length > 0) {
@@ -363,6 +371,8 @@ export const Dashboard = () => {
 
 const fetchDailyStats = useCallback(async () => {
   try {
+setStatsLoading(true);
+
     // 1️⃣ Fetch therapy sessions
     const sessions = await getAllChatSessions();
 
@@ -372,11 +382,11 @@ const fetchDailyStats = useCallback(async () => {
       { withCredentials: true } // needed for cookie auth
     );
 
-    const activities = activitiesResponse.data;
+    const activities = activitiesResponse.data.data;
 
     // 3️⃣ Calculate mood score
     const moodEntries = activities.filter(
-      (a: Activity) => a.type === "mood" && a.moodScore !== null
+      (a: Activity) => a.type === "mood" && a.score !== null
     );
 
     const averageMood =
@@ -384,7 +394,7 @@ const fetchDailyStats = useCallback(async () => {
         ? Math.round(
             moodEntries.reduce(
               (acc: number, curr: Activity) =>
-                acc + (curr.moodScore || 0),
+                acc + (curr.score || 0),
               0
             ) / moodEntries.length
           )
@@ -392,7 +402,7 @@ const fetchDailyStats = useCallback(async () => {
 
     // 4️⃣ Set state
     setDailyStats({
-      moodScore: averageMood,
+      score: averageMood,
       completionRate: 100,
       mindfulnessCount: sessions.length,
       totalActivities: activities.length,
@@ -402,8 +412,10 @@ const fetchDailyStats = useCallback(async () => {
     console.error(
       "Error fetching daily stats:",
       error.response?.data || error.message
-    );
-  }
+    ) 
+  }finally {
+    setStatsLoading(false);
+  };
 }, []);
 
   useEffect(() => {
@@ -416,50 +428,39 @@ const fetchDailyStats = useCallback(async () => {
     loadActivities();
   }, [loadActivities]);
 
- const handleMoodSubmit = async (data: { moodScore: number }) => {
-    setIsSavingMood(true);
-    try {
-      await saveMoodData({
-        userId: "default-user",
-        mood: data.moodScore,
-        note: "",
-      });
-      setShowMoodModal(false);
-    } catch (error) {
-      console.error("Error saving mood:", error);
-    } finally {
-      setIsSavingMood(false);
-    }
-  };
-
   const handleAICheckIn = () => {
     setShowActivityLogger(true);
   };
-
-  const handleGamePlayed = useCallback(
-    async (gameName: string, description: string) => {
-      try {
-        await logActivity({
-          userId: "default-user",
+  
+ const handleGamePlayed = useCallback(
+  async (gameName: string, description: string) => {
+    try {
+      await axios.post(
+        ENV.BACKEND_ACTIVITY_URL as string,
+        {
           type: "game",
           name: gameName,
-          description: description,
+          description,
           duration: 0,
-        });
+        },
+        { withCredentials: true }
+      );
 
-        // Refresh activities after logging
-        loadActivities();
-      } catch (error) {
-        console.error("Error logging game activity:", error);
-      }
-    },
-    [loadActivities]
-  );
+      // refresh dashboard data
+      await loadActivities();
+      await fetchDailyStats();
+
+    } catch (error) {
+      console.error("Error logging game activity:", error);
+    }
+  },
+  [loadActivities, fetchDailyStats]
+);
 
   const wellnessStats = [
     {
       title: "Mood Score",
-      value: dailyStats.moodScore ? `${dailyStats.moodScore}%` : "No data",
+      value: dailyStats.score ? `${dailyStats.score}%` : "No data",
       icon: Brain,
       color: "text-purple-500",
       bgColor: "bg-purple-500/10",
@@ -779,7 +780,11 @@ useEffect(() => {
           transition-all duration-500
         "
       >
-        <Loader2 className="w-4 h-4 text-accent animate-spin" />
+       {statsLoading ? (
+    <Loader2 className="w-4 h-4 animate-spin" />
+  ) : (
+    <BarChart3 className="w-4 h-4" />
+  )}
       </Button>
 
     </div>
