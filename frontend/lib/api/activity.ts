@@ -8,9 +8,21 @@ interface ActivityEntry {
   duration?: number;
 }
 
+interface ActivityResponse {
+  success: boolean
+  data: {
+    _id: string
+    type: string
+    name: string
+    description?: string
+    duration?: number
+    timestamp: string
+  }
+}
+
 export async function logActivity(
   data: ActivityEntry
-): Promise<{ success: boolean; data: any }> {
+): Promise<ActivityResponse> {
   try {
     const response = await axios.post(
       ENV.BACKEND_ACTIVITY_URL as string,

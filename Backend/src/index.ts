@@ -19,8 +19,8 @@ app.use(cookieParser())
 app.use("/api/inngest", serve({ client: inngest, functions: inngestFunctions }));
 
 app.use('/api/user', UserRouter)
-app.use('/api/activity', ActivityRouter)
-app.use('/api/mood', MoodRouter)
-app.use('/api/chat', ChatRouter)
+app.use('/api/activity',ActivityRouter)
+app.use('/api/mood',MoodRouter)
+app.use('/api/chat',ChatRouter)
 
 startServer(app)

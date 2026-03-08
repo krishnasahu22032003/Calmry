@@ -654,9 +654,10 @@ useEffect(() => {
     "
                     onClick={() => setShowMoodModal(true)}
                   >
-                    <div className="flex flex-col items-center gap-3 ">
+                    <div className="flex flex-col items-center gap-3  ">
 
                       <div className="
+                     
         w-12 h-12 rounded-2xl
         bg-(--accent-warm)/10
         flex items-center justify-center
@@ -681,6 +682,7 @@ useEffect(() => {
                   <Button
                     variant="secondary"
                     className="
+                    
      py-20 p-4
       flex flex-col items-center justify-center
       text-center
@@ -692,6 +694,7 @@ useEffect(() => {
                     <div className="flex flex-col items-center gap-3">
 
                       <div className="
+                 
         w-12 h-12 rounded-2xl
         bg-(--accent-calm)/10
         flex items-center justify-center
@@ -705,7 +708,7 @@ useEffect(() => {
                         Check-In
                       </div>
 
-                      <div className="text-xs text-muted  ">
+                      <div className="text-xs text-muted">
                         Quick wellness reset
                       </div>
 
@@ -987,7 +990,7 @@ useEffect(() => {
 
            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-stretch mt-24">
             {/* Left side - Spans 2 columns */}
-            <div className="lg:col-span-3 space-y-10">
+            <div  id="activity" className="lg:col-span-3 space-y-10">
               {/* Anxiety Games - Now directly below Fitbit */}
               <CalmryMindActivities onGamePlayed={handleGamePlayed} />
             </div>

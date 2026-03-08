@@ -5,7 +5,6 @@ import mongoose  from "mongoose";
 interface ActivityType extends Document{
 type:string
 userId : mongoose.Types.ObjectId,
-title:string,
 description?:string,
 duration?:number,
 name:string,
