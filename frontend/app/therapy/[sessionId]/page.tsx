@@ -255,5 +255,130 @@ useEffect(() => {
     return null;
   };
 
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  console.log("Form submitted");
+
+  const currentMessage = message.trim();
+
+  console.log("Current message:", currentMessage);
+  console.log("Session ID:", sessionId);
+  console.log("Is typing:", isTyping);
+  console.log("Is chat paused:", isChatPaused);
+
+  // Prevent invalid submissions
+  if (!currentMessage || isTyping || isChatPaused || !sessionId) {
+    console.log("Submission blocked:", {
+      noMessage: !currentMessage,
+      isTyping,
+      isChatPaused,
+      noSessionId: !sessionId,
+    });
+    return;
+  }
+
+  // Clear input immediately
+  setMessage("");
+
+  // Add user message immediately (optimistic UI)
+  const userMessage: ChatMessage = {
+    role: "user",
+    content: currentMessage,
+    timestamp: new Date(),
+  };
+
+  setMessages((prev) => [...prev, userMessage]);
+
+  // Show typing indicator
+  setIsTyping(true);
+
+  try {
+    // Detect stress signals first
+    const stressCheck = detectStressSignals(currentMessage);
+
+    if (stressCheck) {
+      setStressPrompt(stressCheck);
+      setIsTyping(false);
+      return;
+    }
+
+    console.log("Sending message to API...");
+
+    // Send message to backend
+    const response = await sendChatMessage(sessionId, currentMessage);
+
+    console.log("API response:", response);
+
+    // Build assistant message
+    const assistantMessage: ChatMessage = {
+      role: "assistant",
+      content:
+        response.response ||
+        response.message ||
+        "I'm here to support you. Could you tell me more about what's on your mind?",
+      timestamp: new Date(),
+      metadata: {
+        analysis: response.analysis || {
+          emotionalState: "neutral",
+          riskLevel: 0,
+          themes: [],
+          recommendedApproach: "supportive",
+          progressIndicators: [],
+        },
+        technique: response.metadata?.technique || "supportive",
+        goal: response.metadata?.goal || "Provide support",
+        progress: response.metadata?.progress || [],
+      },
+    };
+
+    console.log("Assistant message:", assistantMessage);
+
+    // Add assistant message
+    setMessages((prev) => [...prev, assistantMessage]);
+
+  } catch (error) {
+    console.error("Error in chat:", error);
+
+    // Fallback assistant response
+    setMessages((prev) => [
+      ...prev,
+      {
+        role: "assistant",
+        content:
+          "I apologize, but I'm having trouble connecting right now. Please try again in a moment.",
+        timestamp: new Date(),
+      },
+    ]);
+  } finally {
+    // Always stop typing indicator
+    setIsTyping(false);
+
+    // Scroll chat to bottom
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }
+};
+
+useEffect(() => {
+  setMounted(true);
+}, []);
+
+if (!mounted || isLoading) {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+
+      <div className="glass px-10 py-8 rounded-2xl flex flex-col items-center gap-4">
+
+        <div className="w-10 h-10 rounded-full border-2 border-border border-t-(--accent-core) animate-spin" />
+
+        <p className="text-sm text-muted tracking-wide">
+          Preparing your therapy space...
+        </p>
+
+      </div>
+
+    </div>
+  );
+}
 
 }
