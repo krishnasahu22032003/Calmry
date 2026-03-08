@@ -1,3 +1,5 @@
+"use client";
+
 import { ChatMessage, ChatSession, createChatSession, getAllChatSessions, getChatHistory, sendChatMessage } from "@/lib/api/chat";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -80,9 +82,8 @@ const calmryGlowPulse = {
   },
 };
 
-export default function ThreapyPage () {
+export default function TherapyPage () {
 
-  const params = useParams();
   const router = useRouter();
   const [message, setMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -95,9 +96,11 @@ export default function ThreapyPage () {
   const [isChatPaused, setIsChatPaused] = useState(false);
   const [showNFTCelebration, setShowNFTCelebration] = useState(false);
   const [isCompletingSession, setIsCompletingSession] = useState(false);
-  const [sessionId, setSessionId] = useState<string | null>(
-    params.sessionId as string
-  );
+  const params = useParams<{ sessionId?: string }>();
+
+const [sessionId, setSessionId] = useState<string | null>(
+  params?.sessionId ?? null
+);
   const [sessions, setSessions] = useState<ChatSession[]>([]);
 
  const handleNewSession = async () => {
@@ -202,58 +205,64 @@ useEffect(() => {
   }
 }, [isTyping]);
 
- const detectStressSignals = (message: string): StressPrompt | null => {
-    const stressKeywords = [
-      "stress",
-      "anxiety",
-      "worried",
-      "panic",
-      "overwhelmed",
-      "nervous",
-      "tense",
-      "pressure",
-      "can't cope",
-      "exhausted",
-    ];
+const STRESS_KEYWORDS = [
+  "stress",
+  "anxiety",
+  "worried",
+  "panic",
+  "overwhelmed",
+  "nervous",
+  "tense",
+  "pressure",
+  "cant cope",
+  "can't cope",
+  "exhausted",
+];
 
-    const lowercaseMsg = message.toLowerCase();
-    const foundKeyword = stressKeywords.find((keyword) =>
-      lowercaseMsg.includes(keyword)
-    );
+const STRESS_ACTIVITIES: StressPrompt["activity"][] = [
+  {
+    type: "breathing",
+    title: "Guided Breathing",
+    description:
+      "Slow your breathing with a calming visual rhythm designed to reduce anxiety.",
+  },
+  {
+    type: "garden",
+    title: "Zen Garden",
+    description:
+      "Create a peaceful digital garden and let your thoughts settle naturally.",
+  },
+  {
+    type: "forest",
+    title: "Mindful Forest Walk",
+    description:
+      "Take a slow, grounding walk through a calming virtual forest.",
+  },
+  {
+    type: "waves",
+    title: "Ocean Waves",
+    description:
+      "Sync your breath with gentle ocean waves to release tension.",
+  },
+];
 
-    if (foundKeyword) {
-      const activities = [
-        {
-          type: "breathing" as const,
-          title: "Breathing Exercise",
-          description:
-            "Follow calming breathing exercises with visual guidance",
-        },
-        {
-          type: "garden" as const,
-          title: "Zen Garden",
-          description: "Create and maintain your digital peaceful space",
-        },
-        {
-          type: "forest" as const,
-          title: "Mindful Forest",
-          description: "Take a peaceful walk through a virtual forest",
-        },
-        {
-          type: "waves" as const,
-          title: "Ocean Waves",
-          description: "Match your breath with gentle ocean waves",
-        },
-      ];
+const detectStressSignals = (message: string): StressPrompt | null => {
+  const lowercaseMsg = message.toLowerCase();
 
-      return {
-        trigger: foundKeyword,
-        activity: activities[Math.floor(Math.random() * activities.length)],
-      };
-    }
+  const foundKeyword = STRESS_KEYWORDS.find((keyword) =>
+    lowercaseMsg.includes(keyword)
+  );
 
-    return null;
+  if (!foundKeyword) return null;
+
+  const randomActivity =
+    STRESS_ACTIVITIES[Math.floor(Math.random() * STRESS_ACTIVITIES.length)];
+
+  return {
+    trigger: foundKeyword,
+    activity: randomActivity,
   };
+};
 
   const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
@@ -297,11 +306,13 @@ useEffect(() => {
     // Detect stress signals first
     const stressCheck = detectStressSignals(currentMessage);
 
-    if (stressCheck) {
-      setStressPrompt(stressCheck);
-      setIsTyping(false);
-      return;
-    }
+if (stressCheck) {
+  setStressPrompt(stressCheck);
+  setShowActivity(true);
+  setIsChatPaused(true);
+  setIsTyping(false);
+  return;
+}
 
     console.log("Sending message to API...");
 
@@ -318,18 +329,14 @@ useEffect(() => {
         response.message ||
         "I'm here to support you. Could you tell me more about what's on your mind?",
       timestamp: new Date(),
-      metadata: {
-        analysis: response.analysis || {
-          emotionalState: "neutral",
-          riskLevel: 0,
-          themes: [],
-          recommendedApproach: "supportive",
-          progressIndicators: [],
-        },
-        technique: response.metadata?.technique || "supportive",
-        goal: response.metadata?.goal || "Provide support",
-        progress: response.metadata?.progress || [],
-      },
+    metadata: response.metadata
+  ? {
+      technique: response.metadata.technique,
+      goal: response.metadata.goal,
+      progress: response.metadata.progress,
+      analysis: response.analysis,
+    }
+  : undefined
     };
 
     console.log("Assistant message:", assistantMessage);
@@ -380,5 +387,120 @@ if (!mounted || isLoading) {
     </div>
   );
 }
+
+const handleSuggestedQuestion = async (text: string) => {
+  try {
+    let activeSessionId = sessionId;
+
+    // Create session if none exists
+    if (!activeSessionId) {
+      const newSessionId = await createChatSession();
+      setSessionId(newSessionId);
+      router.push(`/therapy/${newSessionId}`);
+      activeSessionId = newSessionId;
+    }
+
+    // Immediately send message
+    const userMessage: ChatMessage = {
+      role: "user",
+      content: text,
+      timestamp: new Date(),
+    };
+
+    setMessages((prev) => [...prev, userMessage]);
+
+    setIsTyping(true);
+
+    const response = await sendChatMessage(activeSessionId, text);
+
+    const assistantMessage: ChatMessage = {
+      role: "assistant",
+      content:
+        response.response ||
+        response.message ||
+        "I'm here to support you.",
+      timestamp: new Date(),
+      metadata: response.metadata
+        ? {
+            technique: response.metadata.technique,
+            goal: response.metadata.goal,
+            progress: response.metadata.progress,
+            analysis: response.analysis,
+          }
+        : undefined,
+    };
+
+    setMessages((prev) => [...prev, assistantMessage]);
+
+  } catch (error) {
+    console.error("Error sending suggested question:", error);
+
+    setMessages((prev) => [
+      ...prev,
+      {
+        role: "assistant",
+        content:
+          "I couldn't send that message right now. Please try again.",
+        timestamp: new Date(),
+      },
+    ]);
+  } finally {
+    setIsTyping(false);
+  }
+};
+
+const handleCompleteSession = async () => {
+  if (isCompletingSession) return;
+
+  try {
+    setIsCompletingSession(true);
+
+    // Trigger completion celebration
+    setShowNFTCelebration(true);
+
+  } catch (error) {
+    console.error("Error completing session:", error);
+  } finally {
+    setIsCompletingSession(false);
+  }
+};
+
+const handleSessionSelect = async (selectedSessionId: string) => {
+  if (!selectedSessionId || selectedSessionId === sessionId) return;
+
+  try {
+    setIsLoading(true);
+
+    const history = await getChatHistory(selectedSessionId);
+
+    if (!Array.isArray(history)) {
+      throw new Error("Invalid chat history format");
+    }
+
+    const formattedHistory: ChatMessage[] = history.map((msg) => ({
+      ...msg,
+      timestamp: new Date(msg.timestamp),
+    }));
+
+    setMessages(formattedHistory);
+    setSessionId(selectedSessionId);
+
+    window.history.pushState({}, "", `/therapy/${selectedSessionId}`);
+
+  } catch (error) {
+    console.error("Failed to load session:", error);
+
+    setMessages([
+      {
+        role: "assistant",
+        content:
+          "I couldn't load that conversation. Please try again.",
+        timestamp: new Date(),
+      },
+    ]);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
 }
