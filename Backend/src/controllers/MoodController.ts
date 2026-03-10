@@ -3,7 +3,7 @@ import Mood from "../models/Mood.js";
 
 export const logMood = async (req: Request, res: Response) => {
   try {
-    const { score, note, context, activities } = req.body;
+    const { score, note, context } = req.body;
 
     const userId = req.user._id;
 
@@ -25,8 +25,7 @@ export const logMood = async (req: Request, res: Response) => {
       userId,
       score,
       note,
-      context,
-      activities,
+      context
     });
 
     return res.status(201).json({
@@ -40,6 +39,36 @@ export const logMood = async (req: Request, res: Response) => {
     return res.status(500).json({
       success: false,
       message: "Internal server Error",
+    });
+  }
+};
+
+export const getUserMoods = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user._id;
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "User not authenticated",
+      });
+    }
+
+    const moods = await Mood.find({ userId })
+      .sort({ timestamp: -1 }); // latest first
+
+    return res.status(200).json({
+      success: true,
+      message: "User moods fetched successfully",
+      data: moods,
+    });
+
+  } catch (error) {
+    console.error("Error fetching moods:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
     });
   }
 };

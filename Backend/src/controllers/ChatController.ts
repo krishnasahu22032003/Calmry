@@ -132,7 +132,7 @@ export const sendMessage = async (req: Request, res: Response) => {
 
         const response = await client.responses.create({ model: "gpt-4.1-nano", input: analysisPrompt })
 
-        const analysisText = (await response).output_text.trim()
+        const analysisText = response.output_text.trim()
         const cleanAnalysisText = analysisText
             .replace(/```json\n|\n```/g, "")
             .trim();
@@ -183,17 +183,17 @@ export const sendMessage = async (req: Request, res: Response) => {
         await session.save()
         console.info("Session updated successfully:", { sessionId })
 
-        res.json({
-            response,
-            message: response,
-            analysis,
-            metadata: {
-                progress: {
-                    emotionalState: analysis.emotionalState,
-                    riskLevel: analysis.riskLevel,
-                },
-            },
-        });
+     res.json({
+  response: result,
+  message: result,
+  analysis,
+  metadata: {
+    progress: {
+      emotionalState: analysis.emotionalState,
+      riskLevel: analysis.riskLevel,
+    },
+  },
+});
     } catch (err) {
         console.error("Error in sendMessage:", err);
         res.status(500).json({
@@ -207,11 +207,13 @@ export const getSessionHistory =async (req:Request,res:Response)=>{
     try{
 
         const {sessionId} = req.params
+
+if (!sessionId || typeof sessionId !== "string") {
+  return res.status(400).json({ message: "Invalid sessionId" });
+}
         const userId = new Types.ObjectId(req.user.id);
 
-            const session = (await ChatSession.findById(
-            sessionId
-           ).exec()) as ChatSessionInterface;
+            const session = (await ChatSession.findOne({ sessionId }).exec()) as ChatSessionInterface;
    if (!session) {
       return res.status(404).json({success:false, message: "Session not found" });
     }
@@ -278,9 +280,9 @@ export const getAllChatSessions = async (req: Request, res: Response) => {
   try {
     const userId = new Types.ObjectId(req.user.id);
 
-    const sessions = await ChatSession.find({ userId })
-      .sort({ updatedAt: -1 });
-
+      const sessions = await ChatSession.find({ userId })
+  .sort({ updatedAt: -1 })
+  .lean();
     res.json(sessions);
 
   } catch (error) {

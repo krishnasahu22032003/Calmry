@@ -16,15 +16,17 @@ role: "user" | "assistant";
   };
 }
 
-export interface ChatSessionInterface extends Document{
+export interface ChatSessionInterface extends Document {
 
- _id: mongoose.Types.ObjectId,
+  _id: mongoose.Types.ObjectId;
   sessionId: string;
-  userId: mongoose.Types.ObjectId,
+  userId: mongoose.Types.ObjectId;
   startTime: Date;
   status: "active" | "completed" | "archived";
   messages: ChatMessage[];
 
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const MessageSchema = new mongoose.Schema<ChatMessage>({
@@ -41,9 +43,9 @@ const MessageSchema = new mongoose.Schema<ChatMessage>({
   },
 })
 
-const SessionSchema = new mongoose.Schema<ChatSessionInterface>({
-
-sessionId: { type: String, required: true, unique: true },
+const SessionSchema = new mongoose.Schema<ChatSessionInterface>(
+{
+  sessionId: { type: String, required: true, unique: true },
   userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
   startTime: { type: Date, required: true },
   status: {
@@ -52,8 +54,11 @@ sessionId: { type: String, required: true, unique: true },
     enum: ["active", "completed", "archived"],
   },
   messages: [MessageSchema],
-
-})
+},
+{
+  timestamps: true
+}
+)
 
 const session = model<ChatSessionInterface>("ChatSession",SessionSchema)
 

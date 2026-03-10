@@ -98,7 +98,7 @@ const [sessionId, setSessionId] = useState<string | null>(
   typeof params?.sessionId === "string" ? params.sessionId : null
 );;
   const [sessions, setSessions] = useState<ChatSession[]>([]);
-
+  const chatContainerRef = useRef<HTMLDivElement>(null);
  const handleNewSession = async () => {
   try {
     setIsLoading(true);
@@ -187,9 +187,10 @@ useEffect(() => {
 }, []);
 
 useEffect(() => {
-  messagesEndRef.current?.scrollIntoView({
-    behavior: "smooth",
-  });
+  if (chatContainerRef.current) {
+  chatContainerRef.current.scrollTop =
+    chatContainerRef.current.scrollHeight;
+}
 }, [messages, isTyping]);
 
 const STRESS_KEYWORDS = [
@@ -352,7 +353,10 @@ if (stressCheck) {
     setIsTyping(false);
 
     // Scroll chat to bottom
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+   if (chatContainerRef.current) {
+  chatContainerRef.current.scrollTop =
+    chatContainerRef.current.scrollHeight;
+}
   }
 };
 
@@ -444,12 +448,8 @@ const handleCompleteSession = async () => {
 
   try {
     setIsCompletingSession(true);
-
-    // Trigger completion celebration
+    setIsChatPaused(true);
     setShowNFTCelebration(true);
-
-  } catch (error) {
-    console.error("Error completing session:", error);
   } finally {
     setIsCompletingSession(false);
   }
@@ -586,9 +586,9 @@ session.sessionId===sessionId
 </span>
 
 <span>
-{formatDistanceToNow(new Date(session.updatedAt),{
-addSuffix:true
-})}
+{session.updatedAt && !isNaN(new Date(session.updatedAt).getTime())
+  ? formatDistanceToNow(new Date(session.updatedAt), { addSuffix: true })
+  : "just now"}
 </span>
 
 </div>
@@ -605,6 +605,38 @@ addSuffix:true
 
 
 {/* CHAT AREA */}
+{showNFTCelebration && (
+  <motion.div
+    initial={{ opacity: 0, scale: 0.9 }}
+    animate={{ opacity: 1, scale: 1 }}
+    className="absolute inset-0 z-40 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+  >
+    <div className="bg-background border border-border rounded-2xl p-8 text-center space-y-4 shadow-xl">
+
+      <Sparkles className="w-8 h-8 text-accent mx-auto" />
+
+      <h3 className="text-lg font-semibold">
+        Session Completed
+      </h3>
+
+      <p className="text-sm text-muted">
+        Great job taking time for reflection today.
+      </p>
+
+    <Button
+onClick={() => {
+  setShowNFTCelebration(false)
+  setIsChatPaused(false)
+  handleNewSession()
+}}
+        className="mt-2 bg-(--accent-core)"
+      >
+        Start New Session
+      </Button>
+
+    </div>
+  </motion.div>
+)}
 <div className="
 flex-1
 flex flex-col
@@ -647,7 +679,13 @@ AI Therapist
 </p>
 
 </div>
-
+<Button
+onClick={handleCompleteSession}
+disabled={isCompletingSession}
+className="ml-auto rounded-xl bg-(--accent-calm)/10"
+>
+{isCompletingSession ? "Ending..." : "End Session"}
+</Button>
 </div>
 
 
@@ -717,7 +755,7 @@ onClick={()=>handleSuggestedQuestion(q.text)}
 
 ) : (
 
-<div className="flex-1 overflow-y-auto scroll-smooth pb-32">
+<div ref={chatContainerRef} className="flex-1 overflow-y-auto scroll-smooth pb-32">
 
 <div className="max-w-3xl mx-auto py-6 px-4">
 
@@ -855,7 +893,7 @@ className="max-w-3xl mx-auto flex gap-3"
 >
 
 <textarea
-disabled={isTyping || isChatPaused}
+disabled={isChatPaused}
 value={message}
 onChange={(e)=>{
   setMessage(e.target.value)
@@ -871,8 +909,8 @@ border border-border
 bg-surface-soft
 p-3
 min-h-[48px]
-max-h-[200px]
-overflow-y-auto
+max-h-[160px]
+overflow-hidden
 focus:outline-none
 focus:ring-2
 focus:ring-(--accent-core)/30

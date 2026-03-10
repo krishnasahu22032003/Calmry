@@ -6,7 +6,6 @@ interface Mood extends Document{
   score: number;
   note?: string;
   context?: "work" | "personal" | "health" | "social" | "other";
-  activities:string[]
   timestamp: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -37,10 +36,6 @@ const MoodSchema = new mongoose.Schema<Mood>({
         trim:true,
             enum: ["work", "personal", "health", "social", "other"],
     },
-    activities:{
-        type:[String],
-        default:[]
-    }
   },{timestamps:true}
 )
 
