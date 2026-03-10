@@ -274,6 +274,21 @@ return res.status(400).json({ message: "Invalid sessionId" });
   }
 };
 
+export const getAllChatSessions = async (req: Request, res: Response) => {
+  try {
+    const userId = new Types.ObjectId(req.user.id);
 
+    const sessions = await ChatSession.find({ userId })
+      .sort({ updatedAt: -1 });
+
+    res.json(sessions);
+
+  } catch (error) {
+    console.error("Error fetching chat sessions:", error);
+    res.status(500).json({
+      message: "Failed to fetch chat sessions"
+    });
+  }
+};
 
 
