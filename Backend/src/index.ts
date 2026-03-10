@@ -1,6 +1,6 @@
 import express from "express"
 import { serve } from "inngest/express";
-import { inngest } from "./inngest/index.js"
+import { inngest } from "./inngest/client.js";
 import { functions as inngestFunctions } from "./inngest/function.js";
 import { startServer } from "./utils/startServer.js";
 import UserRouter from "./routes/UserRoute.js";

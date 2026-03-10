@@ -1,8 +1,11 @@
-import { Inngest } from "inngest";
-import {functions as aiFunction} from "./aiFunction.js"
-
-export const inngest = new Inngest({ id: "Calmry" });
+import {
+  processChatMessage,
+  analyzeTherapySession,
+  generateActivityRecommendations,
+} from "./aiFunction.js";
 
 export const functions = [
-...aiFunction
+  processChatMessage,
+  analyzeTherapySession,
+  generateActivityRecommendations,
 ];

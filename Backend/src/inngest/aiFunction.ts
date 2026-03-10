@@ -1,4 +1,4 @@
-import { inngest } from "./index.js"
+import { inngest } from "./client.js";
 import { ENV } from "../lib/ENV.js"
 import OpenAI from "openai"
 

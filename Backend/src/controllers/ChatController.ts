@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
-import { inngest } from "../inngest/index.js"
+import { inngest } from "../inngest/client.js";
 import { UserModel } from "../models/UserModel.js";
 import { Types } from "mongoose";
 import OpenAI from "openai";
