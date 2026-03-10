@@ -75,16 +75,6 @@ const SUGGESTED_QUESTIONS: SuggestedQuestion[] = [
     text: "I'm having trouble staying focused and balanced lately.",
     category: "growth",
   },
-  {
-    id: "stress-pattern",
-    text: "Why do I feel anxious even when nothing seems wrong?",
-    category: "reflection",
-  },
-  {
-    id: "mental-reset",
-    text: "Can you guide me through a quick mental reset exercise?",
-    category: "stress",
-  },
 ];
 
 
@@ -623,8 +613,8 @@ border border-border
 bg-background
 overflow-hidden
 relative
+min-h-0
 ">
-
 {/* Emotional Glow Layer */}
 <div
 className="pointer-events-none absolute inset-0 opacity-30"
@@ -667,9 +657,9 @@ AI Therapist
 
 <div className="flex-1 flex items-center justify-center px-6">
 
-<div className="max-w-xl text-center space-y-10">
+<div className="max-w-xl text-center space-y-4">
 
-<div className="space-y-3">
+<div className="space-y-2">
 
 <div className="
 w-14 h-14 mx-auto rounded-2xl
@@ -727,9 +717,9 @@ onClick={()=>handleSuggestedQuestion(q.text)}
 
 ) : (
 
-<div className="flex-1 overflow-y-auto scroll-smooth pb-20">
+<div className="flex-1 overflow-y-auto scroll-smooth pb-32">
 
-<div className="max-w-3xl mx-auto py-6">
+<div className="max-w-3xl mx-auto py-6 px-4">
 
 <AnimatePresence mode="popLayout">
 
@@ -857,7 +847,7 @@ AI Therapist is thinking...
 
 
 {/* INPUT */}
-<div className="border-t border-border p-5">
+<div className="border-t border-border p-4 bg-background sticky bottom-0 z-20">
 
 <form
 onSubmit={handleSubmit}
@@ -882,6 +872,7 @@ bg-surface-soft
 p-3
 min-h-[48px]
 max-h-[200px]
+overflow-y-auto
 focus:outline-none
 focus:ring-2
 focus:ring-(--accent-core)/30
