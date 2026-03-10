@@ -33,7 +33,11 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { CalmryMoodForm } from "@/components/mood/mood-form";
 import { ActivityLogger } from "@/components/Activities/activity-logger";
 type ActivityLevel = "none" | "low" | "medium" | "high";
-
+interface Mood {
+  _id: string
+  score: number
+  timestamp: Date
+}
 interface DayActivity {
   date: Date;
   level: ActivityLevel;
@@ -101,54 +105,85 @@ const calculateDailyStats = (activities: Activity[]): DailyStats => {
   };
 };
 
-const generateInsights = (activities: Activity[]) => {
+const generateInsights = (activities: Activity[], moods: Mood[]=[]) => {
+  activities = Array.isArray(activities) ? activities : []
+moods = Array.isArray(moods) ? moods : []
   const insights: {
-    title: string;
-    description: string;
-    icon: any;
-    priority: "low" | "medium" | "high";
-  }[] = [];
+    title: string
+    description: string
+    icon: any
+    priority: "low" | "medium" | "high"
+  }[] = []
 
-  // Get activities from last 7 days
-  const lastWeek = subDays(new Date(), 7);
+  const lastWeek = subDays(new Date(), 7)
+
   const recentActivities = activities.filter(
     (a) => new Date(a.timestamp) >= lastWeek
-  );
+  )
 
-  // Analyze mood patterns
-  const moodEntries = recentActivities.filter(
-    (a) => a.type === "mood" && a.score !== null
-  );
-  if (moodEntries.length >= 2) {
+  const recentMoods = moods.filter(
+    (m) => new Date(m.timestamp) >= lastWeek
+  )
+
+  if (recentMoods.length >= 2) {
+
     const averageMood =
-      moodEntries.reduce((acc, curr) => acc + (curr.score || 0), 0) /
-      moodEntries.length;
-    const latestMood = moodEntries[moodEntries.length - 1].score || 0;
+      recentMoods.reduce((acc, m) => acc + m.score, 0) /
+      recentMoods.length
 
-    if (latestMood > averageMood) {
+   const sortedMoods = [...recentMoods].sort(
+  (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+)
+
+const latestMood = sortedMoods[sortedMoods.length - 1].score
+
+    // Mood Improvement
+    if (latestMood > averageMood + 5) {
       insights.push({
         title: "Mood Improvement",
         description:
-          "Your recent mood scores are above your weekly average. Keep up the good work!",
+          "Your recent mood score is higher than your weekly average. Your recent habits seem to be helping.",
         icon: Brain,
         priority: "high",
-      });
-    } else if (latestMood < averageMood - 20) {
+      })
+    }
+
+    // Mood Dip
+    else if (latestMood < averageMood - 20) {
       insights.push({
-        title: "Mood Change Detected",
+        title: "Mood Dip Detected",
         description:
-          "I've noticed a dip in your mood. Would you like to try some mood-lifting activities?",
+          "Your latest mood score is lower than your weekly average. A short mindfulness activity might help rebalance your energy.",
         icon: Heart,
         priority: "high",
-      });
+      })
+    }
+
+    // Mood Stability
+    const maxMood = Math.max(...recentMoods.map((m) => m.score))
+    const minMood = Math.min(...recentMoods.map((m) => m.score))
+
+    if (maxMood - minMood <= 10 && recentMoods.length >= 4) {
+      insights.push({
+        title: "Emotional Stability",
+        description:
+          "Your mood has remained steady over the past few days. Consistency like this reflects a balanced routine.",
+        icon: Sparkles,
+        priority: "medium",
+      })
     }
   }
-
   const mindfulnessActivities = recentActivities.filter((a) =>
-   ["meditation", "exercise", "walking", "journaling"].includes(a.type)
+   ["meditation","exercise","walking","journaling","reading","therapy"].includes(a.type)
   );
   if (mindfulnessActivities.length > 0) {
-    const dailyAverage = mindfulnessActivities.length / 7;
+    const activeDays = new Set(
+  mindfulnessActivities.map(a =>
+    new Date(a.timestamp).toDateString()
+  )
+).size
+
+const dailyAverage = mindfulnessActivities.length / activeDays
     if (dailyAverage >= 1) {
       insights.push({
         title: "Consistent Practice",
@@ -371,36 +406,48 @@ export const Dashboard = () => {
 
 const fetchDailyStats = useCallback(async () => {
   try {
-setStatsLoading(true);
+    setStatsLoading(true);
 
-    // 1️⃣ Fetch therapy sessions
+    // 1️⃣ Therapy sessions
     const sessions = await getAllChatSessions();
 
-    // 2️⃣ Fetch today's activities using axios
+    // 2️⃣ Activities
     const activitiesResponse = await axios.get(
       ENV.BACKEND_ACTIVITY_URL as string,
-      { withCredentials: true } // needed for cookie auth
+      { withCredentials: true }
     );
 
     const activities = activitiesResponse.data.data;
 
-    // 3️⃣ Calculate mood score
-    const moodEntries = activities.filter(
-      (a: Activity) => a.type === "mood" && a.score !== null
+    // 3️⃣ Moods
+    const moodsResponse = await axios.get(
+      ENV.BACKEND_MOOD_URL as string,
+      { withCredentials: true }
+    );
+
+    const moods = moodsResponse.data.data;
+
+    // 4️⃣ Calculate today's mood score
+    const today = startOfDay(new Date());
+
+    const todaysMoods = moods.filter((m: any) =>
+      isWithinInterval(new Date(m.timestamp), {
+        start: today,
+        end: addDays(today, 1),
+      })
     );
 
     const averageMood =
-      moodEntries.length > 0
+      todaysMoods.length > 0
         ? Math.round(
-            moodEntries.reduce(
-              (acc: number, curr: Activity) =>
-                acc + (curr.score || 0),
+            todaysMoods.reduce(
+              (acc: number, curr: any) => acc + curr.score,
               0
-            ) / moodEntries.length
+            ) / todaysMoods.length
           )
         : null;
 
-    // 4️⃣ Set state
+    // 5️⃣ Update dashboard
     setDailyStats({
       score: averageMood,
       completionRate: 100,
@@ -408,14 +455,15 @@ setStatsLoading(true);
       totalActivities: activities.length,
       lastUpdated: new Date(),
     });
+
   } catch (error: any) {
     console.error(
       "Error fetching daily stats:",
       error.response?.data || error.message
-    ) 
-  }finally {
+    );
+  } finally {
     setStatsLoading(false);
-  };
+  }
 }, []);
 
   useEffect(() => {
@@ -460,7 +508,7 @@ setStatsLoading(true);
   const wellnessStats = [
     {
       title: "Mood Score",
-      value: dailyStats.score ? `${dailyStats.score}%` : "No data",
+      value: dailyStats.score !== null ? `${dailyStats.score}%` : "No data",
       icon: Brain,
       color: "text-purple-500",
       bgColor: "bg-purple-500/10",
@@ -1011,7 +1059,10 @@ useEffect(() => {
               Move the slider to track your current mood
             </DialogDescription>
           </DialogHeader>
-          <CalmryMoodForm onSuccess={() => setShowMoodModal(false)} />
+          <CalmryMoodForm onSuccess={() => {
+  setShowMoodModal(false)
+  fetchDailyStats()
+}} />
         </DialogContent>
       </Dialog>
 
