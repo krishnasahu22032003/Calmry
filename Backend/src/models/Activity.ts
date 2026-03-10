@@ -8,6 +8,7 @@ userId : mongoose.Types.ObjectId,
 description?:string,
 duration?:number,
 name:string,
+completed:boolean,
 timestamp:Date,
 difficulty:number,
 feedback:string
@@ -31,6 +32,7 @@ const ActivitySchema =  new mongoose.Schema<ActivityType>({
         "reading",
         "journaling",
         "therapy",
+        "game"
       ],
     },
     name: {
@@ -54,7 +56,10 @@ const ActivitySchema =  new mongoose.Schema<ActivityType>({
     feedback:{
       type:String
     }
-  
+  ,completed:{
+     type: Boolean,
+    default: false
+  }
 },{timestamps:true})
 
 ActivitySchema.index({userId:1,timestamp:-1})
