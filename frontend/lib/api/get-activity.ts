@@ -3,16 +3,19 @@ import { ENV } from "../env";
 
 export interface Activity {
   _id: string;
-  userId: string;
-  type?: string;
-  name?: string;
-  description?: string;
-  duration?: number;
-  difficulty?: string;
+  userId: string | null;
+  type: string;
+  name: string;
+  description: string | null;
+  timestamp: string;
+  duration: number | null;
   completed: boolean;
-  feedback?: string;
-  createdAt?: string;
+  score: number | null;
+  moodNote: string | null;
+  createdAt: string;
+  updatedAt: string;
 }
+
 
 interface GetActivitiesResponse {
   success: boolean;

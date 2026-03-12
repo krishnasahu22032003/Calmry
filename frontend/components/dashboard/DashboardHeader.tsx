@@ -18,7 +18,7 @@ import { toast } from "sonner";
 
 const navItems = [
   { href: "/dashboard#activity", label: "Games", icon: Gamepad2 },
-  { href: "/dashboard#activity", label: "Activity", icon: Activity },
+  { href: "/dashboard/activity", label: "Activity", icon: Activity },
 ];
 
 export default function DashboardHeader() {
