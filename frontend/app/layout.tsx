@@ -42,6 +42,11 @@ export const metadata: Metadata = {
   title: "Calmry — AI Mental Therapist",
   description:
     "A calm, private, emotionally intelligent AI therapist designed for reflection, grounding, and mental clarity.",
+  icons: {
+    icon: [
+      { url: "/logo.png", type: "image/png" },
+    ],
+  },
 };
 
 export default function RootLayout({
