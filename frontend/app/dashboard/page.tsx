@@ -72,39 +72,30 @@ interface DailyStats {
   lastUpdated: Date;
 }
 
-const calculateDailyStats = (activities: Activity[]): DailyStats => {
-  const today = startOfDay(new Date())
+const calculateOverallStats = (activities: Activity[]): DailyStats => {
+  const totalActivities = activities.length;
 
-  const todaysActivities = activities.filter((activity) =>
-    isWithinInterval(new Date(activity.timestamp), {
-      start: today,
-      end: addDays(today, 1),
-    })
-  )
-
-  const completedActivities = todaysActivities.filter(
+  const completedActivities = activities.filter(
     (a) => a.completed === true
-  )
+  );
 
   const completionRate =
-    todaysActivities.length > 0
-      ? Math.round(
-          (completedActivities.length / todaysActivities.length) * 100
-        )
-      : 0
+    totalActivities > 0
+      ? Math.round((completedActivities.length / totalActivities) * 100)
+      : 0;
 
-  const therapySessions = todaysActivities.filter(
+  const therapySessions = activities.filter(
     (a) => a.type === "therapy"
-  ).length
+  ).length;
 
   return {
-    score: null, // mood comes from Mood API
+    score: null,
     completionRate,
     mindfulnessCount: therapySessions,
-    totalActivities: todaysActivities.length,
+    totalActivities,
     lastUpdated: new Date(),
-  }
-}
+  };
+};
 
 const generateInsights = (activities: Activity[], moods: Mood[]=[]) => {
   activities = Array.isArray(activities) ? activities : []
@@ -368,7 +359,7 @@ export const Dashboard = () => {
 
     useEffect(() => {
     if (activities.length > 0) {
-      setDailyStats(calculateDailyStats(activities));
+      setDailyStats(calculateOverallStats(activities));
     }
   }, [activities]);
 
@@ -448,13 +439,15 @@ const fetchDailyStats = useCallback(async () => {
         : null;
 
     // 5️⃣ Update dashboard
-    setDailyStats({
-      score: averageMood,
-      completionRate: 100,
-      mindfulnessCount: sessions.length,
-      totalActivities: activities.length,
-      lastUpdated: new Date(),
-    });
+const calculated = calculateOverallStats(activities);
+
+setDailyStats({
+  score: averageMood,
+  completionRate: calculated.completionRate,
+  mindfulnessCount: sessions.length,
+  totalActivities: calculated.totalActivities,
+  lastUpdated: new Date(),
+});
 
   } catch (error: any) {
     console.error(
@@ -514,14 +507,14 @@ const fetchDailyStats = useCallback(async () => {
       bgColor: "bg-purple-500/10",
       description: "Today's average mood",
     },
-    {
-      title: "Completion Rate",
-      value: "100%",
-      icon: Trophy,
-      color: "text-yellow-500",
-      bgColor: "bg-yellow-500/10",
-      description: "Perfect completion rate",
-    },
+{
+  title: "Completion Rate",
+  value: `${dailyStats.completionRate}%`,
+  icon: Trophy,
+  color: "text-yellow-500",
+  bgColor: "bg-yellow-500/10",
+  description: "Overall activity completion",
+},
     {
       title: "Therapy Sessions",
       value: `${dailyStats.mindfulnessCount} sessions`,
