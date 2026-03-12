@@ -14,6 +14,4 @@ export const signout = async () => {
 
         throw new Error(message);
     }
-
-
 }

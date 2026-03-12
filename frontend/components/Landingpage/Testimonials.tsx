@@ -139,7 +139,7 @@ export default function TestimonialsSection() {
               className="group"
             >
               <div className="relative h-full rounded-3xl border border-border bg-surface backdrop-blur p-8 transition-all duration-700 group-hover:-translate-y-1 group-hover:shadow-[0_40px_140px_rgba(0,0,0,0.65)]">
-                {/* Glow */}
+
                 <div
                   className="absolute inset-0 rounded-3xl opacity-70 group-hover:opacity-100 transition-opacity duration-700"
                   style={{

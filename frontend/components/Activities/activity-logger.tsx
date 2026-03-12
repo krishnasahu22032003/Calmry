@@ -19,7 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/Select";
-import { toast } from "sonner"; // ✅ CHANGED
+import { toast } from "sonner";
 import { useSession } from "@/lib/contexts/session-context";
 import { logActivity } from "@/lib/api/activity";
 
@@ -78,7 +78,7 @@ const { isAuthenticated, loading } = useSession();
       setDuration("");
       setDescription("");
 
-      toast.success("Your wellness activity has been recorded."); // ✅ Sonner
+      toast.success("Your wellness activity has been recorded."); 
 
       onActivityLogged();
       onOpenChange(false);
@@ -87,7 +87,7 @@ const { isAuthenticated, loading } = useSession();
         error instanceof Error
           ? error.message
           : "Failed to log activity"
-      ); // ✅ Sonner
+      ); 
     } finally {
       setIsLoading(false);
     }
@@ -117,7 +117,7 @@ const { isAuthenticated, loading } = useSession();
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Activity Type */}
+
           <div className="space-y-2">
             <Label className="text-sm text-muted">
               Activity Type
@@ -137,7 +137,6 @@ const { isAuthenticated, loading } = useSession();
             </Select>
           </div>
 
-          {/* Name */}
           <div className="space-y-2">
             <Label className="text-sm text-muted">
               Name
@@ -150,7 +149,6 @@ const { isAuthenticated, loading } = useSession();
             />
           </div>
 
-          {/* Duration */}
           <div className="space-y-2">
             <Label className="text-sm text-muted">
               Duration (minutes)
@@ -164,7 +162,6 @@ const { isAuthenticated, loading } = useSession();
             />
           </div>
 
-          {/* Description */}
           <div className="space-y-2">
             <Label className="text-sm text-muted">
               Description (optional)
@@ -177,7 +174,6 @@ const { isAuthenticated, loading } = useSession();
             />
           </div>
 
-          {/* Submit */}
           <div className="flex justify-center gap-3 pt-4">
             <Button
               type="submit"

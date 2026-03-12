@@ -27,9 +27,6 @@ const SessionContext = createContext<
   SessionContextType | undefined
 >(undefined);
 
-/* ================= AXIOS CONFIG ================= */
-
-// Always send cookies
 axios.defaults.withCredentials = true;
 
 export function SessionProvider({
@@ -43,13 +40,10 @@ export function SessionProvider({
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  /* ================= CHECK SESSION ================= */
-
   const checkSession = async () => {
     try {
       setLoading(true);
 
-      // Cookie automatically sent
       const response = await axios.get(
         ENV.BACKEND_ME_URL as string,
         { withCredentials: true }
@@ -64,14 +58,12 @@ export function SessionProvider({
         setUser(null);
       }
     } catch (error) {
-      // 401 automatically lands here
+   
       setUser(null);
     } finally {
       setLoading(false);
     }
   };
-
-  /* ================= INITIAL CHECK ================= */
 
   useEffect(() => {
     checkSession();
@@ -90,8 +82,6 @@ export function SessionProvider({
     </SessionContext.Provider>
   );
 }
-
-/* ================= HOOK ================= */
 
 export function useSession() {
   const context = useContext(SessionContext);

@@ -27,7 +27,7 @@ export const getUserActivities = async (): Promise<Activity[]> => {
     const res = await axios.get<GetActivitiesResponse>(
       ENV.BACKEND_ACTIVITY_URL as string ,
       {
-        withCredentials: true, // required for cookie auth
+        withCredentials: true,
       }
     );
 

@@ -4,7 +4,7 @@ import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import Button from "@/components/ui/Button";
 import { ChatMessage, ChatSession, createChatSession, getAllChatSessions, getChatHistory, sendChatMessage } from "@/lib/api/chat";
 import { formatDistanceToNow } from "date-fns";
-import { AnimatePresence , motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { Bot, BrainCircuit, Loader2, MessageSquare, PlusCircle, Send, Sparkles, User } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
@@ -78,7 +78,7 @@ const SUGGESTED_QUESTIONS: SuggestedQuestion[] = [
 ];
 
 
-export default function TherapyPage () {
+export default function TherapyPage() {
 
   const router = useRouter();
   const [message, setMessage] = useState("");
@@ -92,420 +92,415 @@ export default function TherapyPage () {
   const [isChatPaused, setIsChatPaused] = useState(false);
   const [showNFTCelebration, setShowNFTCelebration] = useState(false);
   const [isCompletingSession, setIsCompletingSession] = useState(false);
- const params = useParams();
+  const params = useParams();
 
-const [sessionId, setSessionId] = useState<string | null>(
-  typeof params?.sessionId === "string" ? params.sessionId : null
-);;
+  const [sessionId, setSessionId] = useState<string | null>(
+    typeof params?.sessionId === "string" ? params.sessionId : null
+  );;
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const chatContainerRef = useRef<HTMLDivElement>(null);
- const handleNewSession = async () => {
-  try {
-    setIsLoading(true);
-
-    const newSessionId = await createChatSession();
-
-    setSessionId(newSessionId);
-    setMessages([]);
-
-    // reload sessions from backend
-    const updatedSessions = await getAllChatSessions();
-    setSessions(updatedSessions);
-
-    window.history.pushState({}, "", `/therapy/${newSessionId}`);
-
-  } catch (error) {
-    console.error("Failed to create new session:", error);
-  } finally {
-    setIsLoading(false);
-  }
-};
-
-// Initialize chat session and load history
-
-useEffect(() => {
-  const initChat = async () => {
+  const handleNewSession = async () => {
     try {
       setIsLoading(true);
 
-      // Create new session if needed
-    if (!sessionId || sessionId === "new") {
-  const newSessionId = await createChatSession();
+      const newSessionId = await createChatSession();
 
-  setSessionId(newSessionId);
+      setSessionId(newSessionId);
+      setMessages([]);
 
-  router.replace(`/therapy/${newSessionId}`);
+      const updatedSessions = await getAllChatSessions();
+      setSessions(updatedSessions);
 
-  return;
-}
-
-      // Load existing chat history
-      const history = await getChatHistory(sessionId);
-
-      if (Array.isArray(history)) {
-        setMessages(history);
-      } else {
-        console.error("Invalid chat history format:", history);
-        setMessages([]);
-      }
+      window.history.pushState({}, "", `/therapy/${newSessionId}`);
 
     } catch (error) {
-
-      console.error("Failed to initialize chat:", error);
-
-      setMessages([
-        {
-          role: "assistant",
-          content:
-            "I'm having trouble loading this conversation. Please refresh the page.",
-          timestamp: new Date(),
-        },
-      ]);
-
+      console.error("Failed to create new session:", error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  initChat();
 
-}, [sessionId]);
+  useEffect(() => {
+    const initChat = async () => {
+      try {
+        setIsLoading(true);
 
-// Load all chat sessions
+        if (!sessionId || sessionId === "new") {
+          const newSessionId = await createChatSession();
 
-useEffect(() => {
-  const loadSessions = async () => {
-    try {
-      const allSessions = await getAllChatSessions();
-      setSessions(allSessions);
-    } catch (error) {
-      console.error("Failed to load sessions:", error);
-    }
-  };
+          setSessionId(newSessionId);
 
-  loadSessions();
-}, []);
+          router.replace(`/therapy/${newSessionId}`);
 
-useEffect(() => {
-  if (chatContainerRef.current) {
-  chatContainerRef.current.scrollTop =
-    chatContainerRef.current.scrollHeight;
-}
-}, [messages, isTyping]);
+          return;
+        }
 
-const STRESS_KEYWORDS = [
-  "stress",
-  "anxiety",
-  "worried",
-  "panic",
-  "overwhelmed",
-  "nervous",
-  "tense",
-  "pressure",
-  "cant cope",
-  "can't cope",
-  "exhausted",
-];
+        const history = await getChatHistory(sessionId);
 
-const STRESS_ACTIVITIES: StressPrompt["activity"][] = [
-  {
-    type: "breathing",
-    title: "Guided Breathing",
-    description:
-      "Slow your breathing with a calming visual rhythm designed to reduce anxiety.",
-  },
-  {
-    type: "garden",
-    title: "Zen Garden",
-    description:
-      "Create a peaceful digital garden and let your thoughts settle naturally.",
-  },
-  {
-    type: "forest",
-    title: "Mindful Forest Walk",
-    description:
-      "Take a slow, grounding walk through a calming virtual forest.",
-  },
-  {
-    type: "waves",
-    title: "Ocean Waves",
-    description:
-      "Sync your breath with gentle ocean waves to release tension.",
-  },
-];
+        if (Array.isArray(history)) {
+          setMessages(history);
+        } else {
+          console.error("Invalid chat history format:", history);
+          setMessages([]);
+        }
 
-const detectStressSignals = React.useCallback(
-  (message: string): StressPrompt | null => {
-    const lowercaseMsg = message.toLowerCase();
+      } catch (error) {
 
-    const foundKeyword = STRESS_KEYWORDS.find((keyword) =>
-      lowercaseMsg.includes(keyword)
-    );
+        console.error("Failed to initialize chat:", error);
 
-    if (!foundKeyword) return null;
+        setMessages([
+          {
+            role: "assistant",
+            content:
+              "I'm having trouble loading this conversation. Please refresh the page.",
+            timestamp: new Date(),
+          },
+        ]);
 
-    const randomActivity =
-      STRESS_ACTIVITIES[Math.floor(Math.random() * STRESS_ACTIVITIES.length)];
-
-    return {
-      trigger: foundKeyword,
-      activity: randomActivity,
+      } finally {
+        setIsLoading(false);
+      }
     };
-  },
-  []
-);
+
+    initChat();
+
+  }, [sessionId]);
+
+  // Load all chat sessions
+
+  useEffect(() => {
+    const loadSessions = async () => {
+      try {
+        const allSessions = await getAllChatSessions();
+        setSessions(allSessions);
+      } catch (error) {
+        console.error("Failed to load sessions:", error);
+      }
+    };
+
+    loadSessions();
+  }, []);
+
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }
+  }, [messages, isTyping]);
+
+  const STRESS_KEYWORDS = [
+    "stress",
+    "anxiety",
+    "worried",
+    "panic",
+    "overwhelmed",
+    "nervous",
+    "tense",
+    "pressure",
+    "cant cope",
+    "can't cope",
+    "exhausted",
+  ];
+
+  const STRESS_ACTIVITIES: StressPrompt["activity"][] = [
+    {
+      type: "breathing",
+      title: "Guided Breathing",
+      description:
+        "Slow your breathing with a calming visual rhythm designed to reduce anxiety.",
+    },
+    {
+      type: "garden",
+      title: "Zen Garden",
+      description:
+        "Create a peaceful digital garden and let your thoughts settle naturally.",
+    },
+    {
+      type: "forest",
+      title: "Mindful Forest Walk",
+      description:
+        "Take a slow, grounding walk through a calming virtual forest.",
+    },
+    {
+      type: "waves",
+      title: "Ocean Waves",
+      description:
+        "Sync your breath with gentle ocean waves to release tension.",
+    },
+  ];
+
+  const detectStressSignals = React.useCallback(
+    (message: string): StressPrompt | null => {
+      const lowercaseMsg = message.toLowerCase();
+
+      const foundKeyword = STRESS_KEYWORDS.find((keyword) =>
+        lowercaseMsg.includes(keyword)
+      );
+
+      if (!foundKeyword) return null;
+
+      const randomActivity =
+        STRESS_ACTIVITIES[Math.floor(Math.random() * STRESS_ACTIVITIES.length)];
+
+      return {
+        trigger: foundKeyword,
+        activity: randomActivity,
+      };
+    },
+    []
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  console.log("Form submitted");
+    console.log("Form submitted");
 
-  const currentMessage = message.trim();
+    const currentMessage = message.trim();
 
-  console.log("Current message:", currentMessage);
-  console.log("Session ID:", sessionId);
-  console.log("Is typing:", isTyping);
-  console.log("Is chat paused:", isChatPaused);
+    console.log("Current message:", currentMessage);
+    console.log("Session ID:", sessionId);
+    console.log("Is typing:", isTyping);
+    console.log("Is chat paused:", isChatPaused);
 
-  // Prevent invalid submissions
-  if (!currentMessage || isTyping || isChatPaused || !sessionId) {
-    console.log("Submission blocked:", {
-      noMessage: !currentMessage,
-      isTyping,
-      isChatPaused,
-      noSessionId: !sessionId,
-    });
-    return;
-  }
-
-  // Clear input immediately
-  setMessage("");
-
-  // Add user message immediately (optimistic UI)
-  const userMessage: ChatMessage = {
-    role: "user",
-    content: currentMessage,
-    timestamp: new Date(),
-  };
-
-  setMessages((prev) => [...prev, userMessage]);
-
-  // Show typing indicator
-  setIsTyping(true);
-
-  try {
-    // Detect stress signals first
-    const stressCheck = detectStressSignals(currentMessage);
-
-if (stressCheck) {
-  setStressPrompt(stressCheck);
-  setShowActivity(true);
-  setIsChatPaused(true);
-  setIsTyping(false);
-  return;
-}
-
-    console.log("Sending message to API...");
-
-    // Send message to backend
-    const response = await sendChatMessage(sessionId, currentMessage);
-
-    console.log("API response:", response);
-
-    // Build assistant message
-    const assistantMessage: ChatMessage = {
-      role: "assistant",
-      content:
-        response?.response ||
-        response?.message ||
-        "I'm here to support you. Could you tell me more about what's on your mind?",
-      timestamp: new Date(),
-    metadata: response.metadata
-  ? {
-      technique: response.metadata.technique,
-      goal: response.metadata.goal,
-      progress: response.metadata.progress,
-      analysis: response.analysis,
-    }
-  : undefined
-    };
-
-    console.log("Assistant message:", assistantMessage);
-
-    // Add assistant message
-    setMessages((prev) => [...prev, assistantMessage]);
-
-  } catch (error) {
-    console.error("Error in chat:", error);
-
-    // Fallback assistant response
-    setMessages((prev) => [
-      ...prev,
-      {
-        role: "assistant",
-        content:
-          "I apologize, but I'm having trouble connecting right now. Please try again in a moment.",
-        timestamp: new Date(),
-      },
-    ]);
-  } finally {
-    // Always stop typing indicator
-    setIsTyping(false);
-
-    // Scroll chat to bottom
-   if (chatContainerRef.current) {
-  chatContainerRef.current.scrollTop =
-    chatContainerRef.current.scrollHeight;
-}
-  }
-};
-
-useEffect(() => {
-  setMounted(true);
-}, []);
-
-if (!mounted || isLoading) {
-  return (
-    <div className="min-h-screen flex items-center justify-center">
-
-      <div className="glass px-10 py-8 rounded-2xl flex flex-col items-center gap-4">
-
-        <div className="w-10 h-10 rounded-full border-2 border-border border-t-(--accent-core) animate-spin" />
-
-        <p className="text-sm text-muted tracking-wide">
-          Preparing your therapy space...
-        </p>
-
-      </div>
-
-    </div>
-  );
-}
-
-const handleSuggestedQuestion = async (text: string) => {
-  try {
-    let activeSessionId = sessionId;
-
-    // Create session if none exists
-    if (!activeSessionId) {
-      const newSessionId = await createChatSession();
-      setSessionId(newSessionId);
-      router.push(`/therapy/${newSessionId}`);
-      activeSessionId = newSessionId;
+    // Prevent invalid submissions
+    if (!currentMessage || isTyping || isChatPaused || !sessionId) {
+      console.log("Submission blocked:", {
+        noMessage: !currentMessage,
+        isTyping,
+        isChatPaused,
+        noSessionId: !sessionId,
+      });
+      return;
     }
 
-    // Immediately send message
+    // Clear input immediately
+    setMessage("");
+
+    // Add user message immediately (optimistic UI)
     const userMessage: ChatMessage = {
       role: "user",
-      content: text,
+      content: currentMessage,
       timestamp: new Date(),
     };
 
     setMessages((prev) => [...prev, userMessage]);
 
+    // Show typing indicator
     setIsTyping(true);
 
-    const response = await sendChatMessage(activeSessionId, text);
+    try {
+      // Detect stress signals first
+      const stressCheck = detectStressSignals(currentMessage);
 
-    const assistantMessage: ChatMessage = {
-      role: "assistant",
-      content:
-        response.response ||
-        response.message ||
-        "I'm here to support you.",
-      timestamp: new Date(),
-      metadata: response.metadata
-        ? {
+      if (stressCheck) {
+        setStressPrompt(stressCheck);
+        setShowActivity(true);
+        setIsChatPaused(true);
+        setIsTyping(false);
+        return;
+      }
+
+      console.log("Sending message to API...");
+
+      // Send message to backend
+      const response = await sendChatMessage(sessionId, currentMessage);
+
+      console.log("API response:", response);
+
+      // Build assistant message
+      const assistantMessage: ChatMessage = {
+        role: "assistant",
+        content:
+          response?.response ||
+          response?.message ||
+          "I'm here to support you. Could you tell me more about what's on your mind?",
+        timestamp: new Date(),
+        metadata: response.metadata
+          ? {
             technique: response.metadata.technique,
             goal: response.metadata.goal,
             progress: response.metadata.progress,
             analysis: response.analysis,
           }
-        : undefined,
-    };
+          : undefined
+      };
 
-    setMessages((prev) => [...prev, assistantMessage]);
+      console.log("Assistant message:", assistantMessage);
 
-  } catch (error) {
-    console.error("Error sending suggested question:", error);
+      // Add assistant message
+      setMessages((prev) => [...prev, assistantMessage]);
 
-    setMessages((prev) => [
-      ...prev,
-      {
-        role: "assistant",
-        content:
-          "I couldn't send that message right now. Please try again.",
-        timestamp: new Date(),
-      },
-    ]);
-  } finally {
-    setIsTyping(false);
-  }
-};
+    } catch (error) {
+      console.error("Error in chat:", error);
 
-const handleCompleteSession = async () => {
-  if (isCompletingSession) return;
+      // Fallback assistant response
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content:
+            "I apologize, but I'm having trouble connecting right now. Please try again in a moment.",
+          timestamp: new Date(),
+        },
+      ]);
+    } finally {
+      // Always stop typing indicator
+      setIsTyping(false);
 
-  try {
-    setIsCompletingSession(true);
-    setIsChatPaused(true);
-    setShowNFTCelebration(true);
-  } finally {
-    setIsCompletingSession(false);
-  }
-};
-
-const handleSessionSelect = async (selectedSessionId: string) => {
-  if (!selectedSessionId || selectedSessionId === sessionId) return;
-
-  try {
-    setIsLoading(true);
-
-    const history = await getChatHistory(selectedSessionId);
-
-    if (!Array.isArray(history)) {
-      throw new Error("Invalid chat history format");
+      // Scroll chat to bottom
+      if (chatContainerRef.current) {
+        chatContainerRef.current.scrollTop =
+          chatContainerRef.current.scrollHeight;
+      }
     }
+  };
 
-    const formattedHistory: ChatMessage[] = history.map((msg) => ({
-      ...msg,
-      timestamp: new Date(msg.timestamp),
-    }));
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-    setMessages(formattedHistory);
-    setSessionId(selectedSessionId);
+  if (!mounted || isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
 
-    window.history.pushState({}, "", `/therapy/${selectedSessionId}`);
+        <div className="glass px-10 py-8 rounded-2xl flex flex-col items-center gap-4">
 
-  } catch (error) {
-    console.error("Failed to load session:", error);
+          <div className="w-10 h-10 rounded-full border-2 border-border border-t-(--accent-core) animate-spin" />
 
-    setMessages([
-      {
+          <p className="text-sm text-muted tracking-wide">
+            Preparing your therapy space...
+          </p>
+
+        </div>
+
+      </div>
+    );
+  }
+
+  const handleSuggestedQuestion = async (text: string) => {
+    try {
+      let activeSessionId = sessionId;
+
+      // Create session if none exists
+      if (!activeSessionId) {
+        const newSessionId = await createChatSession();
+        setSessionId(newSessionId);
+        router.push(`/therapy/${newSessionId}`);
+        activeSessionId = newSessionId;
+      }
+
+      // Immediately send message
+      const userMessage: ChatMessage = {
+        role: "user",
+        content: text,
+        timestamp: new Date(),
+      };
+
+      setMessages((prev) => [...prev, userMessage]);
+
+      setIsTyping(true);
+
+      const response = await sendChatMessage(activeSessionId, text);
+
+      const assistantMessage: ChatMessage = {
         role: "assistant",
         content:
-          "I couldn't load that conversation. Please try again.",
+          response.response ||
+          response.message ||
+          "I'm here to support you.",
         timestamp: new Date(),
-      },
-    ]);
-  } finally {
-    setIsLoading(false);
-  }
-};
+        metadata: response.metadata
+          ? {
+            technique: response.metadata.technique,
+            goal: response.metadata.goal,
+            progress: response.metadata.progress,
+            analysis: response.analysis,
+          }
+          : undefined,
+      };
 
-return(
+      setMessages((prev) => [...prev, assistantMessage]);
 
-<div className="relative min-h-screen">
+    } catch (error) {
+      console.error("Error sending suggested question:", error);
 
-<DashboardHeader />
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content:
+            "I couldn't send that message right now. Please try again.",
+          timestamp: new Date(),
+        },
+      ]);
+    } finally {
+      setIsTyping(false);
+    }
+  };
 
-<main className="pt-22 pb-24">
-<div className="relative max-w-7xl mx-auto px-4">
+  const handleCompleteSession = async () => {
+    if (isCompletingSession) return;
 
-<div className="flex h-[calc(100vh-7rem)] gap-6">
+    try {
+      setIsCompletingSession(true);
+      setIsChatPaused(true);
+      setShowNFTCelebration(true);
+    } finally {
+      setIsCompletingSession(false);
+    }
+  };
 
-{/* SIDEBAR */}
-<div className="
+  const handleSessionSelect = async (selectedSessionId: string) => {
+    if (!selectedSessionId || selectedSessionId === sessionId) return;
+
+    try {
+      setIsLoading(true);
+
+      const history = await getChatHistory(selectedSessionId);
+
+      if (!Array.isArray(history)) {
+        throw new Error("Invalid chat history format");
+      }
+
+      const formattedHistory: ChatMessage[] = history.map((msg) => ({
+        ...msg,
+        timestamp: new Date(msg.timestamp),
+      }));
+
+      setMessages(formattedHistory);
+      setSessionId(selectedSessionId);
+
+      window.history.pushState({}, "", `/therapy/${selectedSessionId}`);
+
+    } catch (error) {
+      console.error("Failed to load session:", error);
+
+      setMessages([
+        {
+          role: "assistant",
+          content:
+            "I couldn't load that conversation. Please try again.",
+          timestamp: new Date(),
+        },
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+
+    <div className="relative min-h-screen">
+
+      <DashboardHeader />
+
+      <main className="pt-22 pb-24">
+        <div className="relative max-w-7xl mx-auto px-4">
+
+          <div className="flex h-[calc(100vh-7rem)] gap-6">
+
+            <div className="
 hidden lg:flex
 w-80 flex-col
 rounded-2xl
@@ -514,130 +509,124 @@ bg-surface-soft
 overflow-hidden
 ">
 
-{/* Sidebar Header */}
-<div className="p-5 border-b border-border flex items-center justify-between">
+              <div className="p-5 border-b border-border flex items-center justify-between">
 
-<div>
-<h2 className="font-accent text-[1.05rem] tracking-tight">
-Sessions
-</h2>
-<p className="text-xs text-muted">
-Your therapy conversations
-</p>
-</div>
+                <div>
+                  <h2 className="font-accent text-[1.05rem] tracking-tight">
+                    Sessions
+                  </h2>
+                  <p className="text-xs text-muted">
+                    Your therapy conversations
+                  </p>
+                </div>
 
-<Button
-variant="secondary"
-onClick={handleNewSession}
-className="rounded-xl bg-(--accent-core)/10 hover:bg-(--accent-core)/20"
->
-{isLoading ? (
-<Loader2 className="w-4 h-4 animate-spin"/>
-) : (
-<PlusCircle className="w-4 h-4 text-accent"/>
-)}
-</Button>
+                <Button
+                  variant="secondary"
+                  onClick={handleNewSession}
+                  className="rounded-xl bg-(--accent-core)/10 hover:bg-(--accent-core)/20"
+                >
+                  {isLoading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <PlusCircle className="w-4 h-4 text-accent" />
+                  )}
+                </Button>
 
-</div>
+              </div>
 
+              <ScrollArea className="flex-1 h-full p-4">
 
-{/* Sessions */}
-<ScrollArea className="flex-1 h-full p-4">
+                <div className="space-y-3">
 
-<div className="space-y-3">
+                  {sessions.map((session) => (
+                    <div
+                      key={session.sessionId}
+                      onClick={() => handleSessionSelect(session.sessionId)}
+                      className={cn(
+                        "group relative p-4 rounded-2xl cursor-pointer transition-all duration-500",
+                        "border border-border",
+                        "hover:-translate-y-0.5 hover:shadow-[0_0_35px_rgba(47,63,168,0.12)]",
 
-{sessions.map((session)=>(
-<div
-key={session.sessionId}
-onClick={()=>handleSessionSelect(session.sessionId)}
-className={cn(
-"group relative p-4 rounded-2xl cursor-pointer transition-all duration-500",
-"border border-border",
-"hover:-translate-y-0.5 hover:shadow-[0_0_35px_rgba(47,63,168,0.12)]",
+                        session.sessionId === sessionId
+                          ? "bg-(--accent-core)/10 border-(--accent-core)/20"
+                          : "bg-surface-soft"
+                      )}
+                    >
 
-session.sessionId===sessionId
-? "bg-(--accent-core)/10 border-(--accent-core)/20"
-: "bg-surface-soft"
-)}
->
+                      <div className="space-y-1">
 
-<div className="space-y-1">
+                        <div className="flex items-center gap-2 text-sm font-medium">
 
-<div className="flex items-center gap-2 text-sm font-medium">
+                          <MessageSquare className="w-4 h-4 text-muted" />
 
-<MessageSquare className="w-4 h-4 text-muted"/>
+                          <span className="line-clamp-1">
+                            {session.messages[0]?.content.slice(0, 28) || "New Session"}
+                          </span>
 
-<span className="line-clamp-1">
-{session.messages[0]?.content.slice(0,28) || "New Session"}
-</span>
+                        </div>
 
-</div>
+                        <p className="text-xs text-muted line-clamp-2">
+                          {session.messages.at(-1)?.content || "Start your reflection"}
+                        </p>
 
-<p className="text-xs text-muted line-clamp-2">
-{session.messages.at(-1)?.content || "Start your reflection"}
-</p>
+                      </div>
 
-</div>
+                      <div className="flex items-center justify-between mt-3 text-xs text-muted">
 
-<div className="flex items-center justify-between mt-3 text-xs text-muted">
+                        <span>
+                          {session.messages.length} messages
+                        </span>
 
-<span>
-{session.messages.length} messages
-</span>
+                        <span>
+                          {session.updatedAt && !isNaN(new Date(session.updatedAt).getTime())
+                            ? formatDistanceToNow(new Date(session.updatedAt), { addSuffix: true })
+                            : "just now"}
+                        </span>
 
-<span>
-{session.updatedAt && !isNaN(new Date(session.updatedAt).getTime())
-  ? formatDistanceToNow(new Date(session.updatedAt), { addSuffix: true })
-  : "just now"}
-</span>
+                      </div>
 
-</div>
+                    </div>
+                  ))}
 
-</div>
-))}
+                </div>
 
-</div>
+              </ScrollArea>
 
-</ScrollArea>
+            </div>
 
-</div>
+            {showNFTCelebration && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="absolute inset-0 z-40 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+              >
+                <div className="bg-background border border-border rounded-2xl p-8 text-center space-y-4 shadow-xl">
 
+                  <Sparkles className="w-8 h-8 text-accent mx-auto" />
 
+                  <h3 className="text-lg font-semibold">
+                    Session Completed
+                  </h3>
 
-{/* CHAT AREA */}
-{showNFTCelebration && (
-  <motion.div
-    initial={{ opacity: 0, scale: 0.9 }}
-    animate={{ opacity: 1, scale: 1 }}
-    className="absolute inset-0 z-40 flex items-center justify-center bg-black/40 backdrop-blur-sm"
-  >
-    <div className="bg-background border border-border rounded-2xl p-8 text-center space-y-4 shadow-xl">
+                  <p className="text-sm text-muted">
+                    Great job taking time for reflection today.
+                  </p>
 
-      <Sparkles className="w-8 h-8 text-accent mx-auto" />
+                  <Button
+                    onClick={() => {
+                      setShowNFTCelebration(false)
+                      setIsChatPaused(false)
+                      handleNewSession()
+                    }}
+                    className="mt-2 bg-(--accent-core)"
+                  >
+                    Start New Session
+                  </Button>
 
-      <h3 className="text-lg font-semibold">
-        Session Completed
-      </h3>
-
-      <p className="text-sm text-muted">
-        Great job taking time for reflection today.
-      </p>
-
-    <Button
-onClick={() => {
-  setShowNFTCelebration(false)
-  setIsChatPaused(false)
-  handleNewSession()
-}}
-        className="mt-2 bg-(--accent-core)"
-      >
-        Start New Session
-      </Button>
-
-    </div>
-  </motion.div>
-)}
-<div className="
+                </div>
+              </motion.div>
+            )}
+            <div className="
 flex-1
 flex flex-col
 rounded-2xl
@@ -647,262 +636,250 @@ overflow-hidden
 relative
 min-h-0
 ">
-{/* Emotional Glow Layer */}
-<div
-className="pointer-events-none absolute inset-0 opacity-30"
-style={{
-background:
-"radial-gradient(900px 400px at 0% 0%, rgba(47,63,168,0.16), transparent 60%), radial-gradient(700px 300px at 100% 100%, rgba(22,106,94,0.14), transparent 60%)"
-}}
-/>
 
+              <div
+                className="pointer-events-none absolute inset-0 opacity-30"
+                style={{
+                  background:
+                    "radial-gradient(900px 400px at 0% 0%, rgba(47,63,168,0.16), transparent 60%), radial-gradient(700px 300px at 100% 100%, rgba(22,106,94,0.14), transparent 60%)"
+                }}
+              />
 
-{/* HEADER */}
-<div className="relative p-5 border-b border-border flex items-center gap-3">
+              <div className="relative p-5 border-b border-border flex items-center gap-3">
 
-<div className="
+                <div className="
 w-10 h-10 rounded-xl
 bg-(--accent-core)/10
 flex items-center justify-center
 ">
-<BrainCircuit className="w-5 h-5 text-accent"/>
-</div>
+                  <BrainCircuit className="w-5 h-5 text-accent" />
+                </div>
 
-<div>
+                <div>
 
-<h2 className="font-accent text-[1.05rem] tracking-tight">
-AI Therapist
-</h2>
+                  <h2 className="font-accent text-[1.05rem] tracking-tight">
+                    AI Therapist
+                  </h2>
 
-<p className="text-xs text-muted">
-{messages.length} messages
-</p>
+                  <p className="text-xs text-muted">
+                    {messages.length} messages
+                  </p>
 
-</div>
-<Button
-onClick={handleCompleteSession}
-disabled={isCompletingSession}
-className="ml-auto rounded-xl bg-(--accent-calm)/10"
->
-{isCompletingSession ? "Ending..." : "End Session"}
-</Button>
-</div>
+                </div>
+                <Button
+                  onClick={handleCompleteSession}
+                  disabled={isCompletingSession}
+                  className="ml-auto rounded-xl bg-(--accent-calm)/10"
+                >
+                  {isCompletingSession ? "Ending..." : "End Session"}
+                </Button>
+              </div>
 
+              {messages.length === 0 ? (
 
+                <div className="flex-1 flex items-center justify-center px-6">
 
-{/* CHAT CONTENT */}
-{messages.length===0 ? (
+                  <div className="max-w-xl text-center space-y-4">
 
-<div className="flex-1 flex items-center justify-center px-6">
+                    <div className="space-y-2">
 
-<div className="max-w-xl text-center space-y-4">
-
-<div className="space-y-2">
-
-<div className="
+                      <div className="
 w-14 h-14 mx-auto rounded-2xl
 bg-(--accent-core)/10
 flex items-center justify-center
 ">
 
-<Sparkles className="w-6 h-6 text-accent"/>
+                        <Sparkles className="w-6 h-6 text-accent" />
 
-</div>
+                      </div>
 
-<h3 className="font-accent text-xl tracking-tight">
-Begin a Reflection
-</h3>
+                      <h3 className="font-accent text-xl tracking-tight">
+                        Begin a Reflection
+                      </h3>
 
-<p className="text-sm text-muted leading-relaxed">
-Share what’s on your mind. I’ll help you reflect, process, and explore your thoughts.
-</p>
+                      <p className="text-sm text-muted leading-relaxed">
+                        Share what’s on your mind. I’ll help you reflect, process, and explore your thoughts.
+                      </p>
 
-</div>
+                    </div>
 
 
-<div className="grid gap-3">
+                    <div className="grid gap-3">
 
-{SUGGESTED_QUESTIONS.map((q,index)=>(
-<motion.div
-key={q.id}
-initial={{opacity:0,y:10}}
-animate={{opacity:1,y:0}}
-transition={{delay:index*0.1}}
->
+                      {SUGGESTED_QUESTIONS.map((q, index) => (
+                        <motion.div
+                          key={q.id}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.1 }}
+                        >
 
-<Button
-variant="secondary"
-className="
+                          <Button
+                            variant="secondary"
+                            className="
 w-full text-left justify-start py-4
 rounded-2xl
 bg-surface-soft
 hover:bg-(--accent-core)/10
 transition-all duration-500
 "
-onClick={()=>handleSuggestedQuestion(q.text)}
->
-{q.text}
-</Button>
+                            onClick={() => handleSuggestedQuestion(q.text)}
+                          >
+                            {q.text}
+                          </Button>
 
-</motion.div>
-))}
+                        </motion.div>
+                      ))}
 
-</div>
+                    </div>
 
-</div>
+                  </div>
 
-</div>
+                </div>
 
-) : (
+              ) : (
 
-<div ref={chatContainerRef} className="flex-1 overflow-y-auto scroll-smooth pb-32">
+                <div ref={chatContainerRef} className="flex-1 overflow-y-auto scroll-smooth pb-32">
 
-<div className="max-w-3xl mx-auto py-6 px-4">
+                  <div className="max-w-3xl mx-auto py-6 px-4">
 
-<AnimatePresence mode="popLayout">
+                    <AnimatePresence mode="popLayout">
 
-{messages.map((msg,index)=>(
-<motion.div
-key={`${msg.timestamp.toISOString()}-${msg.role}-${index}`}
-initial={{opacity:0,y:16}}
-animate={{opacity:1,y:0}}
-transition={{duration:0.35}}
-className="px-6 py-5"
->
+                      {messages.map((msg, index) => (
+                        <motion.div
+                          key={`${msg.timestamp.toISOString()}-${msg.role}-${index}`}
+                          initial={{ opacity: 0, y: 16 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.35 }}
+                          className="px-6 py-5"
+                        >
 
-<div className="flex gap-4">
+                          <div className="flex gap-4">
 
-{/* Avatar */}
-<div className="w-9 h-9 shrink-0">
+                            <div className="w-9 h-9 shrink-0">
 
-{msg.role==="assistant" ? (
+                              {msg.role === "assistant" ? (
 
-<div className="
+                                <div className="
 w-9 h-9 rounded-xl
 bg-(--accent-core)/10
 flex items-center justify-center
 ">
 
-<Bot className="w-5 h-5 text-accent"/>
+                                  <Bot className="w-5 h-5 text-accent" />
 
-</div>
+                                </div>
 
-) : (
+                              ) : (
 
-<div className="
+                                <div className="
 w-9 h-9 rounded-xl
 bg-surface-soft border border-border
 flex items-center justify-center
 ">
 
-<User className="w-5 h-5 text-muted"/>
+                                  <User className="w-5 h-5 text-muted" />
 
-</div>
+                                </div>
 
-)}
+                              )}
 
-</div>
+                            </div>
 
+                            <div className="flex-1 space-y-2">
 
+                              <div className="flex items-center gap-3">
 
-{/* Message */}
-<div className="flex-1 space-y-2">
+                                <p className="text-sm font-medium">
+                                  {msg.role === "assistant" ? "AI Therapist" : "You"}
+                                </p>
 
-<div className="flex items-center gap-3">
-
-<p className="text-sm font-medium">
-{msg.role==="assistant" ? "AI Therapist" : "You"}
-</p>
-
-{msg.metadata?.technique && (
-<span className="
+                                {msg.metadata?.technique && (
+                                  <span className="
 text-xs px-2 py-1 rounded-lg
 bg-(--accent-calm)/10
 text-(--accent-calm)
 ">
-{msg.metadata.technique}
-</span>
-)}
+                                    {msg.metadata.technique}
+                                  </span>
+                                )}
 
-</div>
+                              </div>
 
-<div className="prose prose-sm dark:prose-invert leading-relaxed">
+                              <div className="prose prose-sm dark:prose-invert leading-relaxed">
 
-<div className="prose prose-sm max-w-none dark:prose-invert">
-  <ReactMarkdown>
-    {msg.content}
-  </ReactMarkdown>
-</div>
+                                <div className="prose prose-sm max-w-none dark:prose-invert">
+                                  <ReactMarkdown>
+                                    {msg.content}
+                                  </ReactMarkdown>
+                                </div>
 
-</div>
+                              </div>
 
-{msg.metadata?.goal && (
-<p className="text-xs text-muted">
-Goal: {msg.metadata.goal}
-</p>
-)}
+                              {msg.metadata?.goal && (
+                                <p className="text-xs text-muted">
+                                  Goal: {msg.metadata.goal}
+                                </p>
+                              )}
 
-</div>
+                            </div>
 
-</div>
+                          </div>
 
-</motion.div>
-))}
+                        </motion.div>
+                      ))}
 
-</AnimatePresence>
+                    </AnimatePresence>
 
 
-{isTyping && (
+                    {isTyping && (
 
-<div className="px-6 py-5 flex gap-4">
+                      <div className="px-6 py-5 flex gap-4">
 
-<div className="
+                        <div className="
 w-9 h-9 rounded-xl
 bg-(--accent-core)/10
 flex items-center justify-center
 ">
 
-<Loader2 className="w-4 h-4 animate-spin text-accent"/>
+                          <Loader2 className="w-4 h-4 animate-spin text-accent" />
 
-</div>
+                        </div>
 
-<p className="text-sm text-muted">
-AI Therapist is thinking...
-</p>
+                        <p className="text-sm text-muted">
+                          AI Therapist is thinking...
+                        </p>
 
-</div>
+                      </div>
 
-)}
+                    )}
 
-<div ref={messagesEndRef}/>
+                    <div ref={messagesEndRef} />
 
-</div>
+                  </div>
 
-</div>
+                </div>
 
-)}
+              )}
 
+              <div className="border-t border-border p-4 bg-background sticky bottom-0 z-20">
 
+                <form
+                  onSubmit={handleSubmit}
+                  className="max-w-3xl mx-auto flex gap-3"
+                >
 
-{/* INPUT */}
-<div className="border-t border-border p-4 bg-background sticky bottom-0 z-20">
-
-<form
-onSubmit={handleSubmit}
-className="max-w-3xl mx-auto flex gap-3"
->
-
-<textarea
-disabled={isChatPaused}
-value={message}
-onChange={(e)=>{
-  setMessage(e.target.value)
-  e.target.style.height="auto"
-  e.target.style.height=e.target.scrollHeight+"px"
-}}
-placeholder="Share what you're feeling..."
-rows={1}
-className="
+                  <textarea
+                    disabled={isChatPaused}
+                    value={message}
+                    onChange={(e) => {
+                      setMessage(e.target.value)
+                      e.target.style.height = "auto"
+                      e.target.style.height = e.target.scrollHeight + "px"
+                    }}
+                    placeholder="Share what you're feeling..."
+                    rows={1}
+                    className="
 flex-1 resize-none
 rounded-2xl
 border border-border
@@ -916,44 +893,44 @@ focus:ring-2
 focus:ring-(--accent-core)/30
 transition-all duration-300
 "
-onKeyDown={(e)=>{
-if(e.key==="Enter" && !e.shiftKey){
-e.preventDefault()
-handleSubmit(e)
-}
-}}
-/>
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault()
+                        handleSubmit(e)
+                      }
+                    }}
+                  />
 
-<Button
-type="submit"
-className="
+                  <Button
+                    type="submit"
+                    className="
 rounded-xl
 px-4
 bg-(--accent-core)
 hover:bg-(--accent-core)/90
 "
-disabled={!message.trim()}
->
+                    disabled={!message.trim()}
+                  >
 
-<Send className="w-4 h-4"/>
+                    <Send className="w-4 h-4" />
 
-</Button>
+                  </Button>
 
-</form>
+                </form>
 
-<p className="text-xs text-center text-muted mt-2">
-Enter to send • Shift + Enter for newline
-</p>
+                <p className="text-xs text-center text-muted mt-2">
+                  Enter to send • Shift + Enter for newline
+                </p>
 
-</div>
+              </div>
 
-</div>
+            </div>
 
-</div>
+          </div>
 
-</div>
-</main>
-</div>
+        </div>
+      </main>
+    </div>
 
-)
+  )
 }

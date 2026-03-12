@@ -35,22 +35,22 @@ export default function SignInPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState("")
-  const [email , setEmail]=useState("")
-   const [loading, setLoading] = useState(false);
-  const handlesignin = async (e: React.FormEvent)=>{
-  e.preventDefault();
-  setLoading(true)
-try{
-  await Signin({email:email.trim(),password})
-   toast.success("Signed in successfully");
-            router.push("/dashboard");
-}catch (err: any) {
-            toast.error(err.message || "Signup failed");
-        } finally {
-            setLoading(false);
-        }
+  const [email, setEmail] = useState("")
+  const [loading, setLoading] = useState(false);
+  const handlesignin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true)
+    try {
+      await Signin({ email: email.trim(), password })
+      toast.success("Signed in successfully");
+      router.push("/dashboard");
+    } catch (err: any) {
+      toast.error(err.message || "Signup failed");
+    } finally {
+      setLoading(false);
+    }
   }
-   
+
   return (
     <main className="relative min-h-screen flex items-center justify-center px-6">
       <motion.section
@@ -70,12 +70,12 @@ try{
 
         <motion.form variants={container} className="space-y-6" onSubmit={handlesignin}>
           <motion.div variants={fadeUp} className="space-y-2">
-            <label  className="text-xs tracking-wide text-muted">Email</label>
+            <label className="text-xs tracking-wide text-muted">Email</label>
             <div className="relative">
               <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted" />
               <input
-              value={email}
-               onChange={(e)=> setEmail(e.target.value)}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 type="email"
                 required
                 placeholder="you@calmry.app"
@@ -89,8 +89,8 @@ try{
             <div className="relative">
               <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted" />
               <input
-              value={password}
-              onChange={(e)=> setPassword(e.target.value)}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 type={showPassword ? "text" : "password"}
                 required
                 placeholder="••••••••"
@@ -107,10 +107,10 @@ try{
           </motion.div>
 
           <motion.div variants={fadeUp} className="pt-4">
-            <Button   disabled={loading} type="submit"  className="w-full ">
+            <Button disabled={loading} type="submit" className="w-full ">
               {loading ? "Signing In" : "SignIn"}
               {!loading && <ArrowRight className="h-4 w-4" />}
-          
+
             </Button>
           </motion.div>
         </motion.form>

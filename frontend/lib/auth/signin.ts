@@ -28,11 +28,4 @@ export const Signin = async (data: SigninData) => {
         throw new Error(message);
     }
 
-
-
-
-
-
-
-
 }

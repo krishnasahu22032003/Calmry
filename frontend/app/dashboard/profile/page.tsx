@@ -183,9 +183,8 @@ export default function ProfilePage() {
               <div className="mt-2 space-y-1 flex gap-4 flex-wrap">
                 <div className="flex items-center gap-2 text-[11px]">
                   <span
-                    className={`h-1.5 w-1.5 rounded-full transition-colors ${
-                      newpassword.length >= 8 ? "bg-accent" : "bg-border"
-                    }`}
+                    className={`h-1.5 w-1.5 rounded-full transition-colors ${newpassword.length >= 8 ? "bg-accent" : "bg-border"
+                      }`}
                   />
                   <span
                     className={
@@ -204,9 +203,8 @@ export default function ProfilePage() {
                     className="flex items-center gap-2 text-[11px] "
                   >
                     <span
-                      className={`h-1.5 w-1.5 rounded-full transition-colors ${
-                        rule.valid ? "bg-accent" : "bg-border"
-                      }`}
+                      className={`h-1.5 w-1.5 rounded-full transition-colors ${rule.valid ? "bg-accent" : "bg-border"
+                        }`}
                     />
                     <span
                       className={
@@ -222,14 +220,14 @@ export default function ProfilePage() {
           </motion.div>
 
           <motion.div variants={fadeUp} className="pt-3 ">
-          <Button
-  type="submit"
-  className="w-full disabled:opacity-60 disabled:cursor-not-allowed font-bold" 
-  disabled={loading || (newpassword.length > 0 && !validPassword)}
- >
-  {loading ? "Updating…" : "Save changes"}
-  {!loading && <ArrowRight className="h-4 w-4" />}
-</Button>
+            <Button
+              type="submit"
+              className="w-full disabled:opacity-60 disabled:cursor-not-allowed font-bold"
+              disabled={loading || (newpassword.length > 0 && !validPassword)}
+            >
+              {loading ? "Updating…" : "Save changes"}
+              {!loading && <ArrowRight className="h-4 w-4" />}
+            </Button>
           </motion.div>
         </motion.form>
       </motion.section>

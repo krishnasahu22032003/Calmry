@@ -52,7 +52,7 @@ const cardIdle = {
 export default function AboutSection() {
   return (
     <section id="about" className="relative py-32 px-6">
-      {/* Ambient background */}
+
       <div className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute inset-0 bg-[radial-gradient(700px_360px_at_50%_0%,rgba(22,106,94,0.12),transparent_70%)]" />
       </div>
@@ -64,7 +64,6 @@ export default function AboutSection() {
         viewport={{ once: true, margin: "-120px" }}
         className="mx-auto max-w-6xl"
       >
-        {/* Section header */}
         <motion.div
           variants={fadeUp}
           className="mx-auto max-w-2xl text-center mb-24"
@@ -140,7 +139,6 @@ export default function AboutSection() {
             </div>
           </motion.div>
 
-          {/* Empathy */}
           <motion.div variants={fadeUp} className="group">
             <div className="relative h-full rounded-3xl border border-border bg-surface-soft p-8 transition-all duration-500 group-hover:bg-surface group-hover:-translate-y-1">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-surface">
@@ -158,8 +156,6 @@ export default function AboutSection() {
             </div>
           </motion.div>
 
-
-          {/* Closing thought */}
           <motion.div variants={fadeUp} className="md:col-span-2 group">
             <div className="relative h-full rounded-3xl border border-border bg-surface backdrop-blur p-8 transition-all duration-700 group-hover:-translate-y-1 group-hover:shadow-[0_40px_140px_rgba(0,0,0,0.65)]">
               <div className="absolute inset-0 rounded-3xl bg-[radial-gradient(420px_180px_at_80%_0%,rgba(22,106,94,0.25),transparent_70%)] opacity-70 group-hover:opacity-100 transition-opacity duration-700" />

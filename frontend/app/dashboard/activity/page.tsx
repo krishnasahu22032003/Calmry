@@ -69,8 +69,6 @@ export default function ActivityPage() {
         <Container>
           <div className="ml-10 md:ml-24 max-w-350 px-6 space-y-10">
 
-            {/* Header */}
-
             <motion.div
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
@@ -95,15 +93,11 @@ export default function ActivityPage() {
               </div>
             </motion.div>
 
-            {/* Loading */}
-
             {loading && (
               <div className="flex justify-center py-20">
                 <Loader2 className="w-6 h-6 animate-spin text-accent" />
               </div>
             )}
-
-            {/* Empty */}
 
             {!loading && activities.length === 0 && (
               <Card>
@@ -121,8 +115,6 @@ export default function ActivityPage() {
               </Card>
             )}
 
-            {/* Grid */}
-
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
 
               {activities.map((activity) => (
@@ -131,8 +123,6 @@ export default function ActivityPage() {
                   key={activity._id}
                   className="relative flex flex-col overflow-hidden group transition-all duration-500 hover:-translate-y-1"
                 >
-
-                  {/* Glow */}
 
                   <div
                     className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700"
@@ -143,8 +133,6 @@ export default function ActivityPage() {
                   />
 
                   <CardContent className="relative p-6 flex flex-col gap-6">
-
-                    {/* Header */}
 
                     <div className="flex justify-between">
 
@@ -184,15 +172,11 @@ export default function ActivityPage() {
 
                     </div>
 
-                    {/* Description */}
-
                     {activity.description && (
                       <p className="text-sm text-muted">
                         {activity.description}
                       </p>
                     )}
-
-                    {/* Meta */}
 
                     <div className="flex gap-4 text-xs text-muted">
 
@@ -209,8 +193,6 @@ export default function ActivityPage() {
                       )}
 
                     </div>
-
-                    {/* Status */}
 
                     <div className="pt-4 border-t border-border/50 text-xs">
 

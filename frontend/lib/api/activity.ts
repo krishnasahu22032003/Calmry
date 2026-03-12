@@ -26,9 +26,9 @@ export async function logActivity(
   try {
     const response = await axios.post(
       ENV.BACKEND_ACTIVITY_URL as string,
-      data, // axios automatically JSON stringifies
+      data,
       {
-        withCredentials: true, // send httpOnly cookie
+        withCredentials: true,
         headers: {
           "Content-Type": "application/json",
         },

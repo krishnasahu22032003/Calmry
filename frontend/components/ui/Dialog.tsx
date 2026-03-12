@@ -4,12 +4,8 @@ import * as React from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { cn } from "@/lib/utils";
 
-/* ---------------- Root ---------------- */
-
 const Dialog = DialogPrimitive.Root;
 const DialogTrigger = DialogPrimitive.Trigger;
-
-/* ---------------- Overlay ---------------- */
 
 const DialogOverlay = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Overlay>,
@@ -29,8 +25,6 @@ const DialogOverlay = React.forwardRef<
 ));
 DialogOverlay.displayName = "DialogOverlay";
 
-/* ---------------- Content ---------------- */
-
 const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
@@ -38,10 +32,8 @@ const DialogContent = React.forwardRef<
   return (
     <DialogPrimitive.Portal>
 
-      {/* Overlay */}
       <DialogOverlay />
 
-      {/* Centering wrapper */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
 
         <DialogPrimitive.Content
@@ -65,8 +57,6 @@ const DialogContent = React.forwardRef<
 });
 DialogContent.displayName = "DialogContent";
 
-/* ---------------- Header ---------------- */
-
 function DialogHeader({
   className,
   ...props
@@ -81,8 +71,6 @@ function DialogHeader({
     />
   );
 }
-
-/* ---------------- Title ---------------- */
 
 const DialogTitle = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Title>,
@@ -99,8 +87,6 @@ const DialogTitle = React.forwardRef<
 ));
 DialogTitle.displayName = "DialogTitle";
 
-/* ---------------- Description ---------------- */
-
 const DialogDescription = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Description>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description>
@@ -115,8 +101,6 @@ const DialogDescription = React.forwardRef<
   />
 ));
 DialogDescription.displayName = "DialogDescription";
-
-/* ---------------- Exports ---------------- */
 
 export {
   Dialog,

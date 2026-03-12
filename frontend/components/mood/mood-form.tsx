@@ -105,7 +105,6 @@ try {
 return ( 
 <div className="space-y-5">
 
-  {/* Emotion */}
   <div className="text-center space-y-1">
     <div className="text-3xl">{currentEmotion.label}</div>
     <div className="text-xs text-muted">
@@ -113,7 +112,6 @@ return (
     </div>
   </div>
 
-  {/* Slider */}
   <div className="space-y-3">
 
     <div className="flex justify-between px-1">
@@ -163,7 +161,6 @@ return (
     </div>
   </div>
 
-  {/* Context */}
   <div className="space-y-1">
     <Label className="text-xs text-muted">Context</Label>
 
@@ -182,7 +179,6 @@ return (
     </Select>
   </div>
 
-  {/* Activities */}
   <div className="space-y-1">
     <Label className="text-xs text-muted">Activities</Label>
 
@@ -209,7 +205,6 @@ return (
     </div>
   </div>
 
-  {/* Note */}
   <div className="space-y-1">
     <Label className="text-xs text-muted">Note</Label>
 
@@ -221,7 +216,6 @@ return (
     />
   </div>
 
-  {/* Button */}
   <Button
     variant="primary"
     className="w-full h-10 text-sm"

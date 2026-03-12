@@ -27,8 +27,6 @@ export function CalmryForestExperience() {
     leaves: new Audio("/sounds/leaves.mp3"),
   });
 
-  /* ================= AUDIO SETUP ================= */
-
   useEffect(() => {
     Object.values(audioElements).forEach((audio) => {
       audio.loop = true;
@@ -49,8 +47,6 @@ export function CalmryForestExperience() {
     });
   }, [volume]);
 
-  /* ================= TIMER ================= */
-
   useEffect(() => {
     let timer: NodeJS.Timeout;
 
@@ -62,7 +58,7 @@ export function CalmryForestExperience() {
           setProgress(
             ((MEDITATION_DURATION - updated) /
               MEDITATION_DURATION) *
-              100
+            100
           );
 
           return updated;
@@ -94,12 +90,9 @@ export function CalmryForestExperience() {
       .padStart(2, "0")}`;
   };
 
-  /* ================= UI ================= */
-
   return (
     <div className="flex flex-col items-center justify-center h-115 space-y-10">
 
-      {/* Forest Orb */}
       <div className="relative w-56 h-56">
 
         <motion.div
@@ -138,10 +131,8 @@ export function CalmryForestExperience() {
 
       </div>
 
-      {/* Controls */}
       <div className="w-80 space-y-8">
 
-        {/* Volume */}
         <div className="space-y-3">
 
           <div className="flex justify-between text-sm text-muted tracking-wide">
@@ -157,7 +148,6 @@ export function CalmryForestExperience() {
               <Volume2 className="w-4 h-4 text-muted" />
             )}
 
-            {/* Custom Calmry Slider */}
             <div className="relative w-full h-2 rounded-full bg-surface-soft border border-border">
 
               <div
@@ -181,8 +171,6 @@ export function CalmryForestExperience() {
 
           </div>
         </div>
-
-        {/* Progress */}
         <div className="space-y-3">
 
           <div className="h-2 w-full rounded-full bg-surface-soft border border-border overflow-hidden">
@@ -200,7 +188,6 @@ export function CalmryForestExperience() {
 
         </div>
 
-        {/* Play Button */}
         <div className="flex justify-center pt-2">
 
           <Button

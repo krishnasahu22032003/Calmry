@@ -141,7 +141,6 @@ export const CalmryMindActivities=({
 
         <CardContent className="relative p-6 space-y-6">
 
-          {/* Header */}
           <div className="space-y-3">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-(--accent-core)/10 flex items-center justify-center transition-all duration-500 group-hover:bg-(--accent-core)/20">
@@ -158,7 +157,6 @@ export const CalmryMindActivities=({
             </p>
           </div>
 
-          {/* Activity Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {activities.map((activity) => {
               const styles = getAccentStyles(activity.accent);
@@ -224,7 +222,6 @@ export const CalmryMindActivities=({
             })}
           </div>
 
-          {/* CTA */}
           <div className="pt-4 text-center">
             <Button
               variant="primary"
@@ -240,9 +237,6 @@ export const CalmryMindActivities=({
 
         </CardContent>
       </Card>
-
-      {/* Dialog */}
-
 
 <Dialog open={open} onOpenChange={setOpen}>
   <DialogContent>

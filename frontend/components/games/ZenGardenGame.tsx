@@ -44,7 +44,6 @@ export function CalmryZenGarden() {
   return (
     <div className="space-y-8">
 
-      {/* Header */}
       <div className="text-center space-y-2">
         <div className="flex items-center justify-center gap-2">
           <Flower2 className="w-5 h-5 text-(--accent-warm)" />
@@ -57,7 +56,6 @@ export function CalmryZenGarden() {
         </p>
       </div>
 
-      {/* Item Selector */}
       <div className="flex justify-center gap-5">
 
         {items.map((item) => {
@@ -99,7 +97,6 @@ export function CalmryZenGarden() {
 
       </div>
 
-      {/* Garden Canvas */}
       <div
         onClick={handleCanvasClick}
         className="
@@ -114,7 +111,6 @@ export function CalmryZenGarden() {
         "
       >
 
-        {/* Subtle Warm Glow */}
         <div
           className="
             pointer-events-none absolute inset-0
@@ -146,7 +142,6 @@ export function CalmryZenGarden() {
           </motion.div>
         ))}
 
-        {/* Empty State */}
         {placedItems.length === 0 && (
           <div className="absolute inset-0 flex items-center justify-center text-muted text-sm">
             Click anywhere to place your first element.

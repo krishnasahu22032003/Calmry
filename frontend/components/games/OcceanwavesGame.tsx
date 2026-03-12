@@ -27,8 +27,6 @@ export function CalmryOceanWaves() {
     new Audio("/sounds/waves.mp3")
   );
 
-  /* ================= AUDIO SETUP ================= */
-
   useEffect(() => {
     audio.loop = true;
     audio.volume = volume / 100;
@@ -42,8 +40,6 @@ export function CalmryOceanWaves() {
   useEffect(() => {
     audio.volume = volume / 100;
   }, [volume]);
-
-  /* ================= TIMER + ANIMATION ================= */
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -95,12 +91,9 @@ export function CalmryOceanWaves() {
       .padStart(2, "0")}`;
   };
 
-  /* ================= UI ================= */
-
   return (
     <div className="flex flex-col items-center justify-center h-115 space-y-10">
 
-      {/* Wave Orb */}
       <div className="relative w-56 h-56">
 
         <div
@@ -148,10 +141,8 @@ export function CalmryOceanWaves() {
 
       </div>
 
-      {/* Controls */}
       <div className="w-80 space-y-8">
 
-        {/* Volume */}
         <div className="space-y-3">
 
           <div className="flex justify-between text-sm text-muted tracking-wide">
@@ -167,7 +158,6 @@ export function CalmryOceanWaves() {
               <Volume2 className="w-4 h-4 text-muted" />
             )}
 
-            {/* Custom Calmry Slider */}
             <div className="relative w-full h-2 rounded-full bg-surface-soft border border-border">
 
               <div
@@ -192,7 +182,6 @@ export function CalmryOceanWaves() {
 
         </div>
 
-        {/* Progress */}
         <div className="space-y-3">
 
           <div className="h-2 w-full rounded-full bg-surface-soft border border-border overflow-hidden">
@@ -212,7 +201,6 @@ export function CalmryOceanWaves() {
 
         </div>
 
-        {/* Play / Pause */}
         <div className="flex justify-center pt-2">
 
           <Button

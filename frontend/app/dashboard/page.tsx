@@ -11,7 +11,7 @@ import { CalmryMindActivities } from "@/components/games/AnxietyGames";
 import {
   ArrowRight,
   BrainCircuit,
-  Heart,  
+  Heart,
   MessageSquare,
   Sparkles,
   BarChart3,
@@ -97,9 +97,9 @@ const calculateOverallStats = (activities: Activity[]): DailyStats => {
   };
 };
 
-const generateInsights = (activities: Activity[], moods: Mood[]=[]) => {
+const generateInsights = (activities: Activity[], moods: Mood[] = []) => {
   activities = Array.isArray(activities) ? activities : []
-moods = Array.isArray(moods) ? moods : []
+  moods = Array.isArray(moods) ? moods : []
   const insights: {
     title: string
     description: string
@@ -123,13 +123,12 @@ moods = Array.isArray(moods) ? moods : []
       recentMoods.reduce((acc, m) => acc + m.score, 0) /
       recentMoods.length
 
-   const sortedMoods = [...recentMoods].sort(
-  (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
-)
+    const sortedMoods = [...recentMoods].sort(
+      (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+    )
 
-const latestMood = sortedMoods[sortedMoods.length - 1].score
+    const latestMood = sortedMoods[sortedMoods.length - 1].score
 
-    // Mood Improvement
     if (latestMood > averageMood + 5) {
       insights.push({
         title: "Mood Improvement",
@@ -140,7 +139,6 @@ const latestMood = sortedMoods[sortedMoods.length - 1].score
       })
     }
 
-    // Mood Dip
     else if (latestMood < averageMood - 20) {
       insights.push({
         title: "Mood Dip Detected",
@@ -151,7 +149,6 @@ const latestMood = sortedMoods[sortedMoods.length - 1].score
       })
     }
 
-    // Mood Stability
     const maxMood = Math.max(...recentMoods.map((m) => m.score))
     const minMood = Math.min(...recentMoods.map((m) => m.score))
 
@@ -166,16 +163,16 @@ const latestMood = sortedMoods[sortedMoods.length - 1].score
     }
   }
   const mindfulnessActivities = recentActivities.filter((a) =>
-   ["meditation","exercise","walking","journaling","reading","therapy"].includes(a.type)
+    ["meditation", "exercise", "walking", "journaling", "reading", "therapy"].includes(a.type)
   );
   if (mindfulnessActivities.length > 0) {
     const activeDays = new Set(
-  mindfulnessActivities.map(a =>
-    new Date(a.timestamp).toDateString()
-  )
-).size
+      mindfulnessActivities.map(a =>
+        new Date(a.timestamp).toDateString()
+      )
+    ).size
 
-const dailyAverage = mindfulnessActivities.length / activeDays
+    const dailyAverage = mindfulnessActivities.length / activeDays
     if (dailyAverage >= 1) {
       insights.push({
         title: "Consistent Practice",
@@ -218,8 +215,7 @@ const dailyAverage = mindfulnessActivities.length / activeDays
       priority: "medium",
     });
   }
-  
-  // Time pattern analysis
+
   const morningActivities = recentActivities.filter(
     (a) => new Date(a.timestamp).getHours() < 12
   );
@@ -245,7 +241,6 @@ const dailyAverage = mindfulnessActivities.length / activeDays
     });
   }
 
-  // Sort insights by priority and return top 3
   return insights
     .sort((a, b) => {
       const priorityOrder = { high: 0, medium: 1, low: 2 };
@@ -277,7 +272,7 @@ export const Dashboard = () => {
   const [showMoodModal, setShowMoodModal] = useState(false);
   const [showActivityLogger, setShowActivityLogger] = useState(false);
   const [thoughtIndex, setThoughtIndex] = useState(0);
-    const [dailyStats, setDailyStats] = useState<DailyStats>({
+  const [dailyStats, setDailyStats] = useState<DailyStats>({
     score: null,
     completionRate: 100,
     mindfulnessCount: 0,
@@ -302,7 +297,6 @@ export const Dashboard = () => {
     const days: DayActivity[] = [];
     const today = new Date();
 
-    // Create array for last 28 days
     for (let i = 27; i >= 0; i--) {
       const date = startOfDay(subDays(today, i));
       const dayActivities = activities.filter((activity) =>
@@ -312,7 +306,6 @@ export const Dashboard = () => {
         })
       );
 
-      // Determine activity level based on number of activities
       let level: ActivityLevel = "none";
       if (dayActivities.length > 0) {
         if (dayActivities.length <= 2) level = "low";
@@ -335,37 +328,37 @@ export const Dashboard = () => {
     return days;
   };
 
- const loadActivities = useCallback(async () => {
-  try {
-    const response = await axios.get(
-      ENV.BACKEND_ACTIVITY_URL as string,
-      { withCredentials: true }
-    );
+  const loadActivities = useCallback(async () => {
+    try {
+      const response = await axios.get(
+        ENV.BACKEND_ACTIVITY_URL as string,
+        { withCredentials: true }
+      );
 
-    const userActivities = response.data.data;
+      const userActivities = response.data.data;
 
-    setActivities(userActivities);
-    setActivityHistory(transformActivitiesToDayActivity(userActivities));
-  } catch (error) {
-    console.error("Error loading activities:", error);
-  }
-}, []);
+      setActivities(userActivities);
+      setActivityHistory(transformActivitiesToDayActivity(userActivities));
+    } catch (error) {
+      console.error("Error loading activities:", error);
+    }
+  }, []);
 
-   useEffect(() => {
+  useEffect(() => {
     setMounted(true);
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
 
-    useEffect(() => {
+  useEffect(() => {
     if (activities.length > 0) {
       setDailyStats(calculateOverallStats(activities));
     }
   }, [activities]);
 
-useEffect(() => {
-  setInsights(generateInsights(activities, moods))
-}, [activities, moods])
+  useEffect(() => {
+    setInsights(generateInsights(activities, moods))
+  }, [activities, moods])
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -392,72 +385,65 @@ useEffect(() => {
     router.push("/therapy/new");
   };
 
-// assuming you already have this axios instance
-// import { api } from "@/services/api";
+  const fetchDailyStats = useCallback(async () => {
+    try {
+      setStatsLoading(true);
 
-const fetchDailyStats = useCallback(async () => {
-  try {
-    setStatsLoading(true);
+      const sessions = await getAllChatSessions();
 
-    // 1️⃣ Therapy sessions
-    const sessions = await getAllChatSessions();
+      const activitiesResponse = await axios.get(
+        ENV.BACKEND_ACTIVITY_URL as string,
+        { withCredentials: true }
+      );
 
-    // 2️⃣ Activities
-    const activitiesResponse = await axios.get(
-      ENV.BACKEND_ACTIVITY_URL as string,
-      { withCredentials: true }
-    );
+      const activities = activitiesResponse.data.data;
 
-    const activities = activitiesResponse.data.data;
+      const moodsResponse = await axios.get(
+        ENV.BACKEND_MOOD_URL as string,
+        { withCredentials: true }
+      );
 
-    // 3️⃣ Moods
-    const moodsResponse = await axios.get(
-      ENV.BACKEND_MOOD_URL as string,
-      { withCredentials: true }
-    );
+      const moods = moodsResponse.data.data;
+      setMoods(moods)
 
-    const moods = moodsResponse.data.data;
-     setMoods(moods)
-    // 4️⃣ Calculate today's mood score
-    const today = startOfDay(new Date());
+      const today = startOfDay(new Date());
 
-    const todaysMoods = moods.filter((m: any) =>
-      isWithinInterval(new Date(m.timestamp), {
-        start: today,
-        end: addDays(today, 1),
-      })
-    );
+      const todaysMoods = moods.filter((m: any) =>
+        isWithinInterval(new Date(m.timestamp), {
+          start: today,
+          end: addDays(today, 1),
+        })
+      );
 
-    const averageMood =
-      todaysMoods.length > 0
-        ? Math.round(
+      const averageMood =
+        todaysMoods.length > 0
+          ? Math.round(
             todaysMoods.reduce(
               (acc: number, curr: any) => acc + curr.score,
               0
             ) / todaysMoods.length
           )
-        : null;
+          : null;
 
-    // 5️⃣ Update dashboard
-const calculated = calculateOverallStats(activities);
+      const calculated = calculateOverallStats(activities);
 
-setDailyStats({
-  score: averageMood,
-  completionRate: calculated.completionRate,
-  mindfulnessCount: sessions.length,
-  totalActivities: calculated.totalActivities,
-  lastUpdated: new Date(),
-});
+      setDailyStats({
+        score: averageMood,
+        completionRate: calculated.completionRate,
+        mindfulnessCount: sessions.length,
+        totalActivities: calculated.totalActivities,
+        lastUpdated: new Date(),
+      });
 
-  } catch (error: any) {
-    console.error(
-      "Error fetching daily stats:",
-      error.response?.data || error.message
-    );
-  } finally {
-    setStatsLoading(false);
-  }
-}, []);
+    } catch (error: any) {
+      console.error(
+        "Error fetching daily stats:",
+        error.response?.data || error.message
+      );
+    } finally {
+      setStatsLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     fetchDailyStats();
@@ -465,38 +451,37 @@ setDailyStats({
     return () => clearInterval(interval);
   }, [fetchDailyStats]);
 
-    useEffect(() => {
+  useEffect(() => {
     loadActivities();
   }, [loadActivities]);
 
   const handleAICheckIn = () => {
     setShowActivityLogger(true);
   };
-  
- const handleGamePlayed = useCallback(
-  async (gameName: string, description: string) => {
-    try {
-      await axios.post(
-        ENV.BACKEND_ACTIVITY_URL as string,
-        {
-          type: "game",
-          name: gameName,
-          description,
-          duration: 0,
-        },
-        { withCredentials: true }
-      );
 
-      // refresh dashboard data
-      await loadActivities();
-      await fetchDailyStats();
+  const handleGamePlayed = useCallback(
+    async (gameName: string, description: string) => {
+      try {
+        await axios.post(
+          ENV.BACKEND_ACTIVITY_URL as string,
+          {
+            type: "game",
+            name: gameName,
+            description,
+            duration: 0,
+          },
+          { withCredentials: true }
+        );
 
-    } catch (error) {
-      console.error("Error logging game activity:", error);
-    }
-  },
-  [loadActivities, fetchDailyStats]
-);
+        await loadActivities();
+        await fetchDailyStats();
+
+      } catch (error) {
+        console.error("Error logging game activity:", error);
+      }
+    },
+    [loadActivities, fetchDailyStats]
+  );
 
   const wellnessStats = [
     {
@@ -507,14 +492,14 @@ setDailyStats({
       bgColor: "bg-purple-500/10",
       description: "Today's average mood",
     },
-{
-  title: "Completion Rate",
-  value: `${dailyStats.completionRate}%`,
-  icon: Trophy,
-  color: "text-yellow-500",
-  bgColor: "bg-yellow-500/10",
-  description: "Overall activity completion",
-},
+    {
+      title: "Completion Rate",
+      value: `${dailyStats.completionRate}%`,
+      icon: Trophy,
+      color: "text-yellow-500",
+      bgColor: "bg-yellow-500/10",
+      description: "Overall activity completion",
+    },
     {
       title: "Therapy Sessions",
       value: `${dailyStats.mindfulnessCount} sessions`,
@@ -533,22 +518,22 @@ setDailyStats({
     },
   ];
   const quickThoughts = [
-  "Clarity begins with a single breath.",
-  "Small reflections create lasting change.",
-  "You are allowed to pause.",
-  "Progress is quiet, but powerful.",
-  "Consistency compounds silently.",
-];
+    "Clarity begins with a single breath.",
+    "Small reflections create lasting change.",
+    "You are allowed to pause.",
+    "Progress is quiet, but powerful.",
+    "Consistency compounds silently.",
+  ];
 
-useEffect(() => {
-  const interval = setInterval(() => {
-    setThoughtIndex((prev) => (prev + 1) % quickThoughts.length);
-  }, 4000);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setThoughtIndex((prev) => (prev + 1) % quickThoughts.length);
+    }, 4000);
 
-  return () => clearInterval(interval);
-}, []);
+    return () => clearInterval(interval);
+  }, []);
 
-   if (!mounted) {
+  if (!mounted) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
@@ -558,71 +543,71 @@ useEffect(() => {
 
   return (
     <div className="relative min-h-screen">
-      
+
       <DashboardHeader />
 
       <main className="pt-22 pb-24">
         <Container>
-        <div className="ml-10 md:ml-24 max-w-350 px-6 space-y-4">
+          <div className="ml-10 md:ml-24 max-w-350 px-6 space-y-4">
 
-          <motion.h1
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: easeOrganic }}
-            className="font-accent text-[1.7rem] md:text-[2rem] leading-snug tracking-tight"
-          >
-            {loading ? (
-              <span className="text-muted text-base">Loading...</span>
-            ) : (
-              <>
-                Welcome back,{" "}
-                <span className="text-accent">{username}</span>
-              </>
-            )}
-          </motion.h1>
+            <motion.h1
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, ease: easeOrganic }}
+              className="font-accent text-[1.7rem] md:text-[2rem] leading-snug tracking-tight"
+            >
+              {loading ? (
+                <span className="text-muted text-base">Loading...</span>
+              ) : (
+                <>
+                  Welcome back,{" "}
+                  <span className="text-accent">{username}</span>
+                </>
+              )}
+            </motion.h1>
 
-          <div className="h-6 relative overflow-hidden">
-            <AnimatePresence mode="wait">
-              <motion.p
-                key={index}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.5, ease: easeOrganic }}
-                className="absolute text-[14px] text-muted leading-relaxed"
-              >
-                {lines[index]}
-              </motion.p>
-            </AnimatePresence>
-          </div>
+            <div className="h-6 relative overflow-hidden">
+              <AnimatePresence mode="wait">
+                <motion.p
+                  key={index}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.5, ease: easeOrganic }}
+                  className="absolute text-[14px] text-muted leading-relaxed"
+                >
+                  {lines[index]}
+                </motion.p>
+              </AnimatePresence>
+            </div>
 
-          <div className="text-sm text-muted tracking-wide pb-3">
-            {currentTime.toLocaleDateString("en-US", {
-              weekday: "long",
-              month: "long",
-              day: "numeric",
-            })}
-          </div>
+            <div className="text-sm text-muted tracking-wide pb-3">
+              {currentTime.toLocaleDateString("en-US", {
+                weekday: "long",
+                month: "long",
+                day: "numeric",
+              })}
+            </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 items-stretch">
-            <Card className="relative h-full flex flex-col overflow-hidden group transition-all duration-500 hover:-translate-y-1">
-              <div
-                className="
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 items-stretch">
+              <Card className="relative h-full flex flex-col overflow-hidden group transition-all duration-500 hover:-translate-y-1">
+                <div
+                  className="
       pointer-events-none absolute inset-0
       opacity-0 group-hover:opacity-100
       transition-opacity duration-700
     "
-                style={{
-                  background:
-                    "radial-gradient(900px 400px at -10% -20%, rgba(47,63,168,0.18), transparent 60%), radial-gradient(600px 300px at 120% 120%, rgba(22,106,94,0.15), transparent 60%)",
-                }}
-              />
+                  style={{
+                    background:
+                      "radial-gradient(900px 400px at -10% -20%, rgba(47,63,168,0.18), transparent 60%), radial-gradient(600px 300px at 120% 120%, rgba(22,106,94,0.15), transparent 60%)",
+                  }}
+                />
 
-              <CardContent className="relative p-6 flex flex-col gap-6 ">
-                <div className="flex items-center gap-4">
+                <CardContent className="relative p-6 flex flex-col gap-6 ">
+                  <div className="flex items-center gap-4">
 
-                  <div
-                    className="
+                    <div
+                      className="
           w-12 h-12 rounded-2xl
           bg-(--accent-core)/10
           flex items-center justify-center
@@ -630,75 +615,75 @@ useEffect(() => {
           group-hover:bg-(--accent-core)/20
           group-hover:scale-105
         "
-                  >
-                    <Sparkles className="w-5 h-5 text-accent" />
-                  </div>
+                    >
+                      <Sparkles className="w-5 h-5 text-accent" />
+                    </div>
 
-                  <div>
-                    <h3 className="font-accent text-[1.1rem] tracking-tight">
-                      Quick Actions
-                    </h3>
-                    <p className="text-[14px] text-muted leading-relaxed">
-                      Continue your clarity journey with intention.
-                    </p>
-                  </div>
+                    <div>
+                      <h3 className="font-accent text-[1.1rem] tracking-tight">
+                        Quick Actions
+                      </h3>
+                      <p className="text-[14px] text-muted leading-relaxed">
+                        Continue your clarity journey with intention.
+                      </p>
+                    </div>
 
-                </div>
-                <Button
-                  variant="primary"
-                  className="
+                  </div>
+                  <Button
+                    variant="primary"
+                    className="
         w-full justify-between px-6 py-7 text-base
         group/button
       "
-                  onClick={handleStartTherapy}
-                >
-                  <div className="flex items-center gap-4">
+                    onClick={handleStartTherapy}
+                  >
+                    <div className="flex items-center gap-4">
 
-                    <div className="
+                      <div className="
           w-10 h-10 rounded-xl
           bg-white/10
           flex items-center justify-center
         ">
-                      <MessageSquare className="w-5 h-5 text-foreground" />
+                        <MessageSquare className="w-5 h-5 text-foreground" />
+                      </div>
+
+                      <div className="text-left">
+                        <div className="font-semibold">
+                          Begin Session
+                        </div>
+                        <div className="text-sm opacity-80">
+                          Start a guided reflection
+                        </div>
+                      </div>
+
                     </div>
 
-                    <div className="text-left">
-                      <div className="font-semibold">
-                        Begin Session
-                      </div>
-                      <div className="text-sm opacity-80">
-                        Start a guided reflection
-                      </div>
-                    </div>
-
-                  </div>
-
-                  <ArrowRight
-                    className="
+                    <ArrowRight
+                      className="
           w-5 h-5 opacity-60
           transition-all duration-300
           group-hover/button:translate-x-1
           group-hover/button:opacity-100
           font-bold
         "
-                  />
-                </Button>
+                    />
+                  </Button>
 
-              <div className="grid grid-cols-2 gap-4 ">
-                  <Button
-                    variant="secondary"
-                    className="
+                  <div className="grid grid-cols-2 gap-4 ">
+                    <Button
+                      variant="secondary"
+                      className="
       py-20 p-4
       flex flex-col items-center justify-center
       text-center
       transition-all duration-500
       hover:-translate-y-1
     "
-                    onClick={() => setShowMoodModal(true)}
-                  >
-                    <div className="flex flex-col items-center gap-3  ">
+                      onClick={() => setShowMoodModal(true)}
+                    >
+                      <div className="flex flex-col items-center gap-3  ">
 
-                      <div className="
+                        <div className="
                      
         w-12 h-12 rounded-2xl
         bg-(--accent-warm)/10
@@ -706,24 +691,23 @@ useEffect(() => {
         transition-all duration-500
        hover:bg-(--accent-warm)/20
       ">
-                        <Heart className="w-5 h-5 text-(--accent-warm)" />
+                          <Heart className="w-5 h-5 text-(--accent-warm)" />
+                        </div>
+
+                        <div className="font-medium text-sm">
+                          Track Mood
+                        </div>
+
+                        <div className="text-xs text-muted ">
+                          How are you feeling?
+                        </div>
+
                       </div>
+                    </Button>
 
-                      <div className="font-medium text-sm">
-                        Track Mood
-                      </div>
-
-                      <div className="text-xs text-muted ">
-                        How are you feeling?
-                      </div>
-
-                    </div>
-                  </Button>
-
-                  {/* AI */}
-                  <Button
-                    variant="secondary"
-                    className="
+                    <Button
+                      variant="secondary"
+                      className="
                     
      py-20 p-4
       flex flex-col items-center justify-center
@@ -731,11 +715,11 @@ useEffect(() => {
       transition-all duration-500
       hover:-translate-y-1
     "
-                    onClick={handleAICheckIn}
-                  >
-                    <div className="flex flex-col items-center gap-3">
+                      onClick={handleAICheckIn}
+                    >
+                      <div className="flex flex-col items-center gap-3">
 
-                      <div className="
+                        <div className="
                  
         w-12 h-12 rounded-2xl
         bg-(--accent-calm)/10
@@ -743,100 +727,96 @@ useEffect(() => {
         transition-all duration-500
         hover:bg-(--accent-calm)/20
       ">
-                        <BrainCircuit className="w-5 h-5 text-(--accent-calm)" />
-                      </div>
+                          <BrainCircuit className="w-5 h-5 text-(--accent-calm)" />
+                        </div>
 
-                      <div className="font-medium text-sm">
-                        Check-In
-                      </div>
+                        <div className="font-medium text-sm">
+                          Check-In
+                        </div>
 
-                      <div className="text-xs text-muted">
-                        Quick wellness reset
+                        <div className="text-xs text-muted">
+                          Quick wellness reset
+                        </div>
+
                       </div>
+                    </Button>
+
+                  </div>
+                  <div className="mt-auto pt-6 border-t border-border/50">
+
+                    <div className="relative overflow-hidden h-6">
+
+                      <AnimatePresence mode="wait">
+                        <motion.p
+                          key={thoughtIndex}
+                          initial={{ opacity: 0, y: 8 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -8 }}
+                          transition={{ duration: 0.6, ease: easeOrganic }}
+                          className="absolute text-md text-muted tracking-wide"
+                        >
+                          {quickThoughts[thoughtIndex]}
+                        </motion.p>
+                      </AnimatePresence>
 
                     </div>
-                  </Button>
 
-                </div>
-                <div className="mt-auto pt-6 border-t border-border/50">
-
-  <div className="relative overflow-hidden h-6">
-
-    <AnimatePresence mode="wait">
-      <motion.p
-        key={thoughtIndex}
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -8 }}
-        transition={{ duration: 0.6, ease: easeOrganic }}
-        className="absolute text-md text-muted tracking-wide"
-      >
-        {quickThoughts[thoughtIndex]}
-      </motion.p>
-    </AnimatePresence>
-
-  </div>
-
-</div>
-              </CardContent>
-            </Card>
-             {/*Second card */}
-           <Card className="relative h-full flex flex-col overflow-hidden group transition-all duration-500 hover:-translate-y-1">
-
-  {/* Subtle Emotional Glow Layer */}
-  <div
-    className="
+                  </div>
+                </CardContent>
+              </Card>
+              {/*Second card */}
+              <Card className="relative h-full flex flex-col overflow-hidden group transition-all duration-500 hover:-translate-y-1">
+                <div
+                  className="
       pointer-events-none absolute inset-0
       opacity-0 group-hover:opacity-100
       transition-opacity duration-700
     "
-    style={{
-      background:
-        "radial-gradient(900px 400px at 0% 0%, rgba(47,63,168,0.16), transparent 60%), radial-gradient(600px 300px at 100% 100%, rgba(22,106,94,0.14), transparent 60%)",
-    }}
-  />
-<CardContent className="relative p-6 flex flex-col gap-6 flex-1">
+                  style={{
+                    background:
+                      "radial-gradient(900px 400px at 0% 0%, rgba(47,63,168,0.16), transparent 60%), radial-gradient(600px 300px at 100% 100%, rgba(22,106,94,0.14), transparent 60%)",
+                  }}
+                />
+                <CardContent className="relative p-6 flex flex-col gap-6 flex-1">
 
-    {/* Header Section */}
-    <div className="flex items-stretch justify-between gap-6">
+                  <div className="flex items-stretch justify-between gap-6">
 
-      <div className="space-y-2">
-        <h3 className="font-accent text-[1.15rem] tracking-tight">
-          Today’s Overview
-        </h3>
+                    <div className="space-y-2">
+                      <h3 className="font-accent text-[1.15rem] tracking-tight">
+                        Today’s Overview
+                      </h3>
 
-        <p className="text-[14px] text-muted leading-relaxed">
-          Your wellness metrics for{" "}
-          {format(new Date(), "MMMM d, yyyy")}
-        </p>
-      </div>
+                      <p className="text-[14px] text-muted leading-relaxed">
+                        Your wellness metrics for{" "}
+                        {format(new Date(), "MMMM d, yyyy")}
+                      </p>
+                    </div>
 
-      <Button
-        variant="secondary"
-        onClick={fetchDailyStats}
-        className="
+                    <Button
+                      variant="secondary"
+                      onClick={fetchDailyStats}
+                      className="
           h-10 w-10 rounded-xl
           bg-(--accent-core)/10
           hover:bg-(--accent-core)/20
           transition-all duration-500
         "
-      >
-       {statsLoading ? (
-    <Loader2 className="w-4 h-4 animate-spin" />
-  ) : (
-    <BarChart3 className="w-4 h-4" />
-  )}
-      </Button>
+                    >
+                      {statsLoading ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <BarChart3 className="w-4 h-4" />
+                      )}
+                    </Button>
 
-    </div>
+                  </div>
 
-    {/* Metrics Grid */}
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-stretch">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-stretch">
 
-      {wellnessStats.map((stat) => (
-        <div
-          key={stat.title}
-          className="
+                    {wellnessStats.map((stat) => (
+                      <div
+                        key={stat.title}
+                        className="
             relative group/stat
           p-4 rounded-2xl
            bg-surface-soft
@@ -845,132 +825,122 @@ useEffect(() => {
             hover:-translate-y-1
             hover:shadow-[0_0_40px_rgba(47,63,168,0.15)]
           "
-        >
+                      >
 
-          {/* Soft Glow on Hover */}
-          <div
-            className="
+                        <div
+                          className="
               absolute inset-0 rounded-2xl
               opacity-0 group-hover/stat:opacity-100
               transition-opacity duration-700
             "
-            style={{
-              background:
-                "radial-gradient(500px 200px at 50% 0%, rgba(47,63,168,0.15), transparent 70%)",
-            }}
-          />
+                          style={{
+                            background:
+                              "radial-gradient(500px 200px at 50% 0%, rgba(47,63,168,0.15), transparent 70%)",
+                          }}
+                        />
 
-          <div className="relative space-y-4">
+                        <div className="relative space-y-4">
 
-            {/* Icon + Title */}
-            <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-3">
 
-              <div
-                className="
+                            <div
+                              className="
                   w-14 h-10 rounded-xl
                   flex items-center justify-center
                   bg-(--accent-calm)/10
                   transition-all duration-500
                   group-hover/stat:bg-(--accent-calm)/20
                 "
-              >
-                <stat.icon className="w-5 h-5 text-(--accent-calm)" />
-              </div>
+                            >
+                              <stat.icon className="w-5 h-5 text-(--accent-calm)" />
+                            </div>
 
-              <p className="text-sm font-medium tracking-tight">
-                {stat.title}
-              </p>
+                            <p className="text-sm font-medium tracking-tight">
+                              {stat.title}
+                            </p>
 
-            </div>
+                          </div>
 
-            {/* Main Value */}
-            <div className="text-2xl font-semibold tracking-tight -mt-2">
-              {stat.value}
-            </div>
+                          <div className="text-2xl font-semibold tracking-tight -mt-2">
+                            {stat.value}
+                          </div>
 
-            {/* Description */}
-            <p className="text-sm text-muted leading-tight -mt-2" >
-              {stat.description}
-            </p>
+                          <p className="text-sm text-muted leading-tight -mt-2" >
+                            {stat.description}
+                          </p>
 
-          </div>
+                        </div>
 
-        </div>
-      ))}
+                      </div>
+                    ))}
 
-    </div>
+                  </div>
 
-    {/* Footer */}
-    <div className="pt-4 mt-auto border-t border-border text-xs text-muted text-right tracking-wide">
-      Last updated: {format(dailyStats.lastUpdated, "h:mm a")}
-    </div>
+                  <div className="pt-4 mt-auto border-t border-border text-xs text-muted text-right tracking-wide">
+                    Last updated: {format(dailyStats.lastUpdated, "h:mm a")}
+                  </div>
 
-  </CardContent>
-</Card>
+                </CardContent>
+              </Card>
 
+              <Card className="relative h-full flex flex-col overflow-hidden group transition-all duration-500 hover:-translate-y-1">
 
-{/* Third Card – Insights */}
-<Card className="relative h-full flex flex-col overflow-hidden group transition-all duration-500 hover:-translate-y-1">
-
-  {/* Emotional Glow Layer */}
-  <div
-    className="
+                <div
+                  className="
       pointer-events-none absolute inset-0
       opacity-0 group-hover:opacity-100
       transition-opacity duration-700
     "
-    style={{
-      background:
-        "radial-gradient(900px 400px at 10% 0%, rgba(47,63,168,0.18), transparent 60%), radial-gradient(600px 300px at 100% 100%, rgba(22,106,94,0.14), transparent 60%)",
-    }}
-  />
+                  style={{
+                    background:
+                      "radial-gradient(900px 400px at 10% 0%, rgba(47,63,168,0.18), transparent 60%), radial-gradient(600px 300px at 100% 100%, rgba(22,106,94,0.14), transparent 60%)",
+                  }}
+                />
 
-<CardContent className="relative p-6 flex flex-col gap-6 flex-1">
+                <CardContent className="relative p-6 flex flex-col gap-6 flex-1">
 
-    {/* Header */}
-    <div className="space-y-2">
-      <div className="flex items-center gap-3">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-3">
 
-        <div
-          className="
+                      <div
+                        className="
             w-10 h-10 rounded-xl
             bg-(--accent-core)/10
             flex items-center justify-center
             transition-all duration-500
             group-hover:bg-(--accent-core)/20
           "
-        >
-          <BrainCircuit className="w-5 h-5 text-accent" />
-        </div>
+                      >
+                        <BrainCircuit className="w-5 h-5 text-accent" />
+                      </div>
 
-        <h3 className="font-accent text-[1.15rem] tracking-tight">
-          Insights
-        </h3>
+                      <h3 className="font-accent text-[1.15rem] tracking-tight">
+                        Insights
+                      </h3>
 
-      </div>
+                    </div>
 
-      <p className="text-[14px] text-muted leading-tight">
-        Personalized recommendations based on your activity patterns.
-      </p>
-    </div>
+                    <p className="text-[14px] text-muted leading-tight">
+                      Personalized recommendations based on your activity patterns.
+                    </p>
+                  </div>
 
-    {/* Insights Content */}
-   <div className="space-y-3 flex-1 overflow-auto">
+                  <div className="space-y-3 flex-1 overflow-auto">
 
-      {insights.length > 0 ? (
-        insights.map((insight, index) => {
+                    {insights.length > 0 ? (
+                      insights.map((insight, index) => {
 
-          const priorityStyles =
-            insight.priority === "high"
-              ? "bg-(--accent-core)/10 border border-(--accent-core)/20"
-              : insight.priority === "medium"
-              ? "bg-(--accent-calm)/10 border border-(--accent-calm)/20"
-              : "bg-surface-soft border border-border";
+                        const priorityStyles =
+                          insight.priority === "high"
+                            ? "bg-(--accent-core)/10 border border-(--accent-core)/20"
+                            : insight.priority === "medium"
+                              ? "bg-(--accent-calm)/10 border border-(--accent-calm)/20"
+                              : "bg-surface-soft border border-border";
 
-          return (
-            <div
-              key={index}
-              className={`
+                        return (
+                          <div
+                            key={index}
+                            className={`
                 relative group/insight
                 p-4 rounded-2xl
                 transition-all duration-500
@@ -978,112 +948,110 @@ useEffect(() => {
                 hover:shadow-[0_0_40px_rgba(47,63,168,0.12)]
                 ${priorityStyles}
               `}
-            >
+                          >
 
-              <div className="space-y-2">
+                            <div className="space-y-2">
 
-                <div className="flex items-center gap-3">
+                              <div className="flex items-center gap-3">
 
-                  <div
-                    className="
+                                <div
+                                  className="
                       w-9 h-9 rounded-xl
                       bg-white/5
                       flex items-center justify-center
                     "
-                  >
-                    <insight.icon className="w-4 h-4 text-foreground" />
-                  </div>
+                                >
+                                  <insight.icon className="w-4 h-4 text-foreground" />
+                                </div>
 
-                  <p className="font-medium tracking-tight">
-                    {insight.title}
-                  </p>
+                                <p className="font-medium tracking-tight">
+                                  {insight.title}
+                                </p>
 
-                </div>
+                              </div>
 
-                <p className="text-sm text-muted leading-tight">
-                  {insight.description}
-                </p>
+                              <p className="text-sm text-muted leading-tight">
+                                {insight.description}
+                              </p>
 
-              </div>
+                            </div>
 
-            </div>
-          );
-        })
-      ) : (
-        <div className="text-center py-10 space-y-4">
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <div className="text-center py-10 space-y-4">
 
-          <div
-            className="
+                        <div
+                          className="
               w-14 h-14 mx-auto rounded-2xl
               bg-(--accent-calm)/10
               flex items-center justify-center
             "
-          >
-            <Activity className="w-6 h-6 text-(--accent-calm)" />
-          </div>
+                        >
+                          <Activity className="w-6 h-6 text-(--accent-calm)" />
+                        </div>
 
-          <p className="text-muted text-sm leading-relaxed max-w-xs mx-auto">
-            Complete more activities to receive personalized insights tailored to your emotional rhythm.
-          </p>
+                        <p className="text-muted text-sm leading-relaxed max-w-xs mx-auto">
+                          Complete more activities to receive personalized insights tailored to your emotional rhythm.
+                        </p>
 
-        </div>
-      )}
+                      </div>
+                    )}
 
-    </div>
-  </CardContent>
-</Card>
-    </div>
-
-           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-stretch mt-24">
-            {/* Left side - Spans 2 columns */}
-            <div  id="activity" className="lg:col-span-3 space-y-10">
-              {/* Anxiety Games - Now directly below Fitbit */}
-              <CalmryMindActivities onGamePlayed={handleGamePlayed} />
+                  </div>
+                </CardContent>
+              </Card>
             </div>
-          </div>
-        </div>
-   
-          </Container>
-          <Dialog open={showMoodModal} onOpenChange={setShowMoodModal}>
-        <DialogContent className="sm:max-w-106.25 flex flex-col gap-6">
-          <DialogHeader>
-            <DialogTitle>How are you feeling?</DialogTitle>
-            <DialogDescription>
-              Move the slider to track your current mood
-            </DialogDescription>
-          </DialogHeader>
-          <CalmryMoodForm onSuccess={() => {
-  setShowMoodModal(false)
-  fetchDailyStats()
-}} />
-        </DialogContent>
-      </Dialog>
 
-       {showCheckInChat && (
-        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50">
-          <div className="fixed inset-y-0 right-0 w-full max-w-sm bg-background border-l shadow-lg">
-            <div className="flex h-full flex-col">
-              <div className="flex items-center justify-between px-4 py-3 border-b">
-                <h3 className="font-semibold">AI Check-in</h3>
-                <Button
-                  variant="primary"
-                  onClick={() => setShowCheckInChat(false)}
-                >
-                  <X className="w-4 h-4" />
-                </Button>
-              </div>
-              <div className="flex-1 overflow-y-auto p-4">
-                
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-stretch mt-24">
+              <div id="activity" className="lg:col-span-3 space-y-10">
+                <CalmryMindActivities onGamePlayed={handleGamePlayed} />
               </div>
             </div>
           </div>
-        </div>
-      )}
-<ActivityLogger
-  open={showActivityLogger}
-  onOpenChange={setShowActivityLogger}
-  onActivityLogged={loadActivities}
-/>
+
+        </Container>
+        <Dialog open={showMoodModal} onOpenChange={setShowMoodModal}>
+          <DialogContent className="sm:max-w-106.25 flex flex-col gap-6">
+            <DialogHeader>
+              <DialogTitle>How are you feeling?</DialogTitle>
+              <DialogDescription>
+                Move the slider to track your current mood
+              </DialogDescription>
+            </DialogHeader>
+            <CalmryMoodForm onSuccess={() => {
+              setShowMoodModal(false)
+              fetchDailyStats()
+            }} />
+          </DialogContent>
+        </Dialog>
+
+        {showCheckInChat && (
+          <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50">
+            <div className="fixed inset-y-0 right-0 w-full max-w-sm bg-background border-l shadow-lg">
+              <div className="flex h-full flex-col">
+                <div className="flex items-center justify-between px-4 py-3 border-b">
+                  <h3 className="font-semibold">AI Check-in</h3>
+                  <Button
+                    variant="primary"
+                    onClick={() => setShowCheckInChat(false)}
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+                <div className="flex-1 overflow-y-auto p-4">
+
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        <ActivityLogger
+          open={showActivityLogger}
+          onOpenChange={setShowActivityLogger}
+          onActivityLogged={loadActivities}
+        />
       </main>
     </div>
   );
