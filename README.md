@@ -113,11 +113,11 @@ This separation allows independent scaling and deployment.
 
 **Frontend**
 
-git clone https://github.com/YOUR_USERNAME/calmry-frontend.git
+git clone https://github.com/krishnasahu22032003/Calmry/tree/main/frontend
 
 **Backend**
 
-git clone https://github.com/YOUR_USERNAME/calmry-backend.git
+git clone https://github.com/krishnasahu22032003/Calmry/tree/main/Backend
 
 ### 🔧 Backend Setup
 
@@ -182,7 +182,11 @@ This project is licensed under the MIT License.
 
 See the LICENSE file for details.
 
-## Author
+## 👨‍💻 Author
 
-### Krishna Sahu
-### Email: krishna.sahu.work@gmail.com
+**Krishna Sahu**
+
+Made with ❤️ by Krishna Sahu  
+
+📧 Email: krishna.sahu.work@gmail.com  
+💼 Open to opportunities and collaboration
