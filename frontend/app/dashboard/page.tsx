@@ -73,37 +73,38 @@ interface DailyStats {
 }
 
 const calculateDailyStats = (activities: Activity[]): DailyStats => {
-  const today = startOfDay(new Date());
+  const today = startOfDay(new Date())
+
   const todaysActivities = activities.filter((activity) =>
     isWithinInterval(new Date(activity.timestamp), {
       start: today,
       end: addDays(today, 1),
     })
-  );
+  )
 
-  // Calculate mood score (average of today's mood entries)
-  const moodEntries = todaysActivities.filter(
-    (a) => a.type === "mood" && a.score !== null
-  );
-  const averageMood =
-    moodEntries.length > 0
+  const completedActivities = todaysActivities.filter(
+    (a) => a.completed === true
+  )
+
+  const completionRate =
+    todaysActivities.length > 0
       ? Math.round(
-          moodEntries.reduce((acc, curr) => acc + (curr.score || 0), 0) /
-            moodEntries.length
+          (completedActivities.length / todaysActivities.length) * 100
         )
-      : null;
+      : 0
 
-  // Count therapy sessions (all sessions ever)
-  const therapySessions = activities.filter((a) => a.type === "therapy").length;
+  const therapySessions = todaysActivities.filter(
+    (a) => a.type === "therapy"
+  ).length
 
   return {
-    score: averageMood,
-    completionRate: 100, // Always 100% as requested
-    mindfulnessCount: therapySessions, // Total number of therapy sessions
+    score: null, // mood comes from Mood API
+    completionRate,
+    mindfulnessCount: therapySessions,
     totalActivities: todaysActivities.length,
     lastUpdated: new Date(),
-  };
-};
+  }
+}
 
 const generateInsights = (activities: Activity[], moods: Mood[]=[]) => {
   activities = Array.isArray(activities) ? activities : []
@@ -273,6 +274,7 @@ const lines = [
 ];
 
 export const Dashboard = () => {
+  const [moods, setMoods] = useState<Mood[]>([])
   const [currentTime, setCurrentTime] = useState(new Date());
   const [mounted, setMounted] = useState(false);
   const [username, setUsername] = useState("");
@@ -370,11 +372,9 @@ export const Dashboard = () => {
     }
   }, [activities]);
 
-  useEffect(() => {
-    if (activities.length > 0) {
-      setInsights(generateInsights(activities));
-    }
-  }, [activities]);
+useEffect(() => {
+  setInsights(generateInsights(activities, moods))
+}, [activities, moods])
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -426,7 +426,7 @@ const fetchDailyStats = useCallback(async () => {
     );
 
     const moods = moodsResponse.data.data;
-
+     setMoods(moods)
     // 4️⃣ Calculate today's mood score
     const today = startOfDay(new Date());
 
