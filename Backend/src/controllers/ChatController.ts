@@ -2,17 +2,16 @@ import type { Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
 import { inngest } from "../inngest/client.js";
 import { UserModel } from "../models/UserModel.js";
-import { Types } from "mongoose";
-import OpenAI from "openai";
+import { GoogleGenAI } from "@google/genai";
 import { ENV } from "../lib/ENV.js";
 import ChatSession from "../models/ChatSession.js";
 import type { ChatSessionInterface } from "../models/ChatSession.js";
 import type { InngestEvent } from "../types/inngest.js";
+import { Types } from "mongoose";
 
-const client = new OpenAI({
-    apiKey: ENV.OPENAI_API_KEY
-})
-
+const client = new GoogleGenAI({
+    apiKey: ENV.GEMINI_API_KEY
+});
 
 export const createChatSession = async (req: Request, res: Response) => {
 
@@ -130,14 +129,19 @@ export const sendMessage = async (req: Request, res: Response) => {
       "progressIndicators": ["string"]
     }`;
 
-        const response = await client.responses.create({ model: "gpt-4.1-nano", input: analysisPrompt })
+        // NEW
+        const response = await client.models.generateContent({
+            model: "gemini-2.5-flash",
+            contents: analysisPrompt,
+            config: { responseMimeType: "application/json" },
+        });
 
-        const analysisText = response.output_text.trim()
-        const cleanAnalysisText = analysisText
-            .replace(/```json\n|\n```/g, "")
-            .trim();
-
-        const analysis = JSON.parse(cleanAnalysisText)
+        const analysisText = response.text?.trim();
+        if (!analysisText) {
+            throw new Error("Gemini returned no text for analysis prompt");
+        }
+        const cleanAnalysisText = analysisText.replace(/```json\n|\n```/g, "").trim();
+        const analysis = JSON.parse(cleanAnalysisText);
         console.log("Message analysis:", analysis)
 
 
@@ -156,9 +160,17 @@ export const sendMessage = async (req: Request, res: Response) => {
     4. Maintains professional boundaries
     5. Considers safety and well-being`;
 
+        // NEW
+        const responseResult = await client.models.generateContent({
+            model: "gemini-2.5-flash",
+            contents: responsePrompt,
+        });
 
-        const responseResult = await client.responses.create({ model: "gpt-4.1-nano", input: responsePrompt })
-        const result = responseResult.output_text.trim()
+        const result = responseResult.text?.trim();
+        if (!result) {
+            throw new Error("Gemini returned no text for therapeutic response prompt");
+        }
+
         console.info("Generated response:", result);
 
         session.messages.push({
@@ -183,17 +195,17 @@ export const sendMessage = async (req: Request, res: Response) => {
         await session.save()
         console.info("Session updated successfully:", { sessionId })
 
-     res.json({
-  response: result,
-  message: result,
-  analysis,
-  metadata: {
-    progress: {
-      emotionalState: analysis.emotionalState,
-      riskLevel: analysis.riskLevel,
-    },
-  },
-});
+        res.json({
+            response: result,
+            message: result,
+            analysis,
+            metadata: {
+                progress: {
+                    emotionalState: analysis.emotionalState,
+                    riskLevel: analysis.riskLevel,
+                },
+            },
+        });
     } catch (err) {
         console.error("Error in sendMessage:", err);
         res.status(500).json({
@@ -203,94 +215,94 @@ export const sendMessage = async (req: Request, res: Response) => {
     }
 }
 
-export const getSessionHistory =async (req:Request,res:Response)=>{
-    try{
+export const getSessionHistory = async (req: Request, res: Response) => {
+    try {
 
-        const {sessionId} = req.params
+        const { sessionId } = req.params
 
-if (!sessionId || typeof sessionId !== "string") {
-  return res.status(400).json({ message: "Invalid sessionId" });
-}
+        if (!sessionId || typeof sessionId !== "string") {
+            return res.status(400).json({ message: "Invalid sessionId" });
+        }
         const userId = new Types.ObjectId(req.user.id);
 
-            const session = (await ChatSession.findOne({ sessionId }).exec()) as ChatSessionInterface;
-   if (!session) {
-      return res.status(404).json({success:false, message: "Session not found" });
-    }
- if (session.userId.toString() !== userId.toString()) {
-      return res.status(403).json({ message: "Unauthorized" });
-    }
+        const session = (await ChatSession.findOne({ sessionId }).exec()) as ChatSessionInterface;
+        if (!session) {
+            return res.status(404).json({ success: false, message: "Session not found" });
+        }
+        if (session.userId.toString() !== userId.toString()) {
+            return res.status(403).json({ message: "Unauthorized" });
+        }
         res.json({
-      messages: session.messages,
-      startTime: session.startTime,
-      status: session.status,
-    });
-    }catch(err){
-         console.error("Error fetching session history:", err);
-    res.status(500).json({ message: "Error fetching session history" });
-  }
+            messages: session.messages,
+            startTime: session.startTime,
+            status: session.status,
+        });
+    } catch (err) {
+        console.error("Error fetching session history:", err);
+        res.status(500).json({ message: "Error fetching session history" });
     }
-
-export const getChatSession  = async (req: Request, res: Response) => {
-  try {
-    const { sessionId } = req.params;
-    if (typeof sessionId !== "string") {
-  return res.status(400).json({ message: "Invalid sessionId" });
 }
-    console.info(`Getting chat session: ${sessionId}`);
-    const chatSession = await ChatSession.findOne({ sessionId });
-    if (!chatSession) {
-      console.warn(`Chat session not found: ${sessionId}`);
-      return res.status(404).json({ error: "Chat session not found" });
+
+export const getChatSession = async (req: Request, res: Response) => {
+    try {
+        const { sessionId } = req.params;
+        if (typeof sessionId !== "string") {
+            return res.status(400).json({ message: "Invalid sessionId" });
+        }
+        console.info(`Getting chat session: ${sessionId}`);
+        const chatSession = await ChatSession.findOne({ sessionId });
+        if (!chatSession) {
+            console.warn(`Chat session not found: ${sessionId}`);
+            return res.status(404).json({ error: "Chat session not found" });
+        }
+        console.info(`Found chat session: ${sessionId}`);
+        res.json(chatSession);
+    } catch (error) {
+        console.error("Failed to get chat session:", error);
+        res.status(500).json({ error: "Failed to get chat session" });
     }
-    console.info(`Found chat session: ${sessionId}`);
-    res.json(chatSession);
-  } catch (error) {
-    console.error("Failed to get chat session:", error);
-    res.status(500).json({ error: "Failed to get chat session" });
-  }
 };
 
 export const getChatHistory = async (req: Request, res: Response) => {
-  try {
-    const { sessionId } = req.params;
-    if(typeof sessionId !== "string"){
-return res.status(400).json({ message: "Invalid sessionId" });
-    }
-    const userId = new Types.ObjectId(req.user.id);
+    try {
+        const { sessionId } = req.params;
+        if (typeof sessionId !== "string") {
+            return res.status(400).json({ message: "Invalid sessionId" });
+        }
+        const userId = new Types.ObjectId(req.user.id);
 
-    // Find session by sessionId instead of _id
-    const session = await ChatSession.findOne({ sessionId });
-    if (!session) {
-      return res.status(404).json({ message: "Session not found" });
-    }
+        // Find session by sessionId instead of _id
+        const session = await ChatSession.findOne({ sessionId });
+        if (!session) {
+            return res.status(404).json({ message: "Session not found" });
+        }
 
-    if (session.userId.toString() !== userId.toString()) {
-      return res.status(403).json({ message: "Unauthorized" });
-    }
+        if (session.userId.toString() !== userId.toString()) {
+            return res.status(403).json({ message: "Unauthorized" });
+        }
 
-    res.json(session.messages);
-  } catch (error) {
-    console.error("Error fetching chat history:", error);
-    res.status(500).json({ message: "Error fetching chat history" });
-  }
+        res.json(session.messages);
+    } catch (error) {
+        console.error("Error fetching chat history:", error);
+        res.status(500).json({ message: "Error fetching chat history" });
+    }
 };
 
 export const getAllChatSessions = async (req: Request, res: Response) => {
-  try {
-    const userId = new Types.ObjectId(req.user.id);
+    try {
+        const userId = new Types.ObjectId(req.user.id);
 
-      const sessions = await ChatSession.find({ userId })
-  .sort({ updatedAt: -1 })
-  .lean();
-    res.json(sessions);
+        const sessions = await ChatSession.find({ userId })
+            .sort({ updatedAt: -1 })
+            .lean();
+        res.json(sessions);
 
-  } catch (error) {
-    console.error("Error fetching chat sessions:", error);
-    res.status(500).json({
-      message: "Failed to fetch chat sessions"
-    });
-  }
+    } catch (error) {
+        console.error("Error fetching chat sessions:", error);
+        res.status(500).json({
+            message: "Failed to fetch chat sessions"
+        });
+    }
 };
 
 

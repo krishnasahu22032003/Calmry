@@ -1,10 +1,9 @@
 import { inngest } from "./client.js";
 import { ENV } from "../lib/ENV.js"
-import OpenAI from "openai"
+import { GoogleGenAI } from "@google/genai"
 
-
-const client = new OpenAI({
-   apiKey:ENV.OPENAI_API_KEY
+const client = new GoogleGenAI({
+   apiKey: ENV.GEMINI_API_KEY
 })
 
 
@@ -55,12 +54,19 @@ export const processChatMessage = inngest.createFunction(
             "progressIndicators": ["string"]
           }`;
 
-                    const response = await client.responses.create({ model: "gpt-4.1-nano", input: prompt,temperature: 0.2 });
-
-                    if (!response.output_text) {
-                        throw new Error("Empty response from OpenAI");
-                    }
-                    const text = response.output_text.trim();
+              // NEW
+const response = await client.models.generateContent({
+    model: "gemini-2.5-flash",
+    contents: prompt,
+    config: {
+        temperature: 0.2,
+        responseMimeType: "application/json", // only for prompts that must return JSON
+    },
+});
+const text = response.text?.trim();
+if (!text) {
+    throw new Error("Empty response from Gemini");
+}
 
                     console.log("Received analysis from OpenAI:", { text });
 

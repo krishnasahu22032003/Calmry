@@ -651,9 +651,7 @@ export const Dashboard = () => {
                         <div className="font-semibold">
                           Begin Session
                         </div>
-                        <div className="text-sm opacity-80">
-                          Start a guided reflection
-                        </div>
+                    
                       </div>
 
                     </div>

@@ -65,8 +65,6 @@ export default function Home() {
           </div>
         </DialogContent>
       </Dialog>
-
-      <Footer />
     </main>
   );
 }
