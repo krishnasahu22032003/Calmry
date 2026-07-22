@@ -1,0 +1,15 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    image: calmry-backend
+
+    ports:
+      - "3005:3005"
+
+    env_file:
+      - .env
+
+    restart: unless-stopped
