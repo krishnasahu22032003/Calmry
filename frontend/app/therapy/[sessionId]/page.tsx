@@ -253,16 +253,7 @@ export default function TherapyPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    console.log("Form submitted");
-
     const currentMessage = message.trim();
-
-    console.log("Current message:", currentMessage);
-    console.log("Session ID:", sessionId);
-    console.log("Is typing:", isTyping);
-    console.log("Is chat paused:", isChatPaused);
-
     // Prevent invalid submissions
     if (!currentMessage || isTyping || isChatPaused || !sessionId) {
       console.log("Submission blocked:", {

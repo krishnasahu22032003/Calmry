@@ -9,7 +9,7 @@ await mongoose.connect(ENV.MONGO_URL as string)
     console.log("connected to database")
 })
 .catch((err)=>{
-    console.log(err, "Error while connecting to the database")
+    console.error(err, "Error while connecting to the database")
     process.exit(1)
 })
 }
