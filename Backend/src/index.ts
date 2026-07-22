@@ -13,7 +13,7 @@ import helmet from "helmet";
 import HealthRouter from "./routes/HealthRoute.js";
 
 const app = express()
-app.use(cors({origin:'http://localhost:3000',credentials:true}))
+app.use(cors({origin:'https://calmry.krishnastack.com',credentials:true}))
 app.use(helmet())
 app.use(express.json())
 app.use(cookieParser())
