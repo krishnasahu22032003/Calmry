@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, Variants } from "framer-motion";
-import { User, Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
+import { User, Mail, Lock, Eye, EyeOff, ArrowRight,X } from "lucide-react";
 import { useState } from "react";
 import { updateUserDetails } from "@/lib/update/updateuserdetails";
 import { toast } from "sonner";
@@ -89,6 +89,14 @@ export default function ProfilePage() {
         animate="show"
         className="glass breathe w-full max-w-105 px-7 py-8"
       >
+          <button
+    type="button"
+    onClick={() => router.back()}
+    aria-label="Close"
+    className="absolute cursor-pointer right-4 top-4 rounded-full p-1.5 text-muted hover:text-foreground hover:bg-surface-soft transition-colors"
+  >
+    <X className="h-6 w-6" />
+  </button>
         <motion.div variants={fadeUp} className="text-center mb-7">
           <h1 className="font-accent text-[clamp(1.75rem,3.5vw,2.1rem)]">
             Profile & Settings

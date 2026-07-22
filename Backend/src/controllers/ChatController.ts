@@ -131,7 +131,7 @@ export const sendMessage = async (req: Request, res: Response) => {
 
         // NEW
         const response = await client.models.generateContent({
-            model: "gemini-2.5-flash",
+            model: "gemini-3.1-flash-lite",
             contents: analysisPrompt,
             config: { responseMimeType: "application/json" },
         });
@@ -162,7 +162,7 @@ export const sendMessage = async (req: Request, res: Response) => {
 
         // NEW
         const responseResult = await client.models.generateContent({
-            model: "gemini-2.5-flash",
+            model: "gemini-3.1-flash-lite",
             contents: responsePrompt,
         });
 

@@ -8,6 +8,7 @@ export const startServer = async (app :Express ) => {
 
         const PORT = ENV.PORT || 3002;
         app.listen(PORT, () => {
+            console.log(`Server is running on port ${PORT}`)
             logger.info(`Server is running on port ${PORT}`);
             logger.info(
                 `Inngest endpoint available at http://localhost:${PORT}/api/inngest`

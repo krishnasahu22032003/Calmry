@@ -56,7 +56,7 @@ export const processChatMessage = inngest.createFunction(
           }`;
 
                     const response = await client.models.generateContent({
-                        model: "gemini-2.5-flash",
+                        model: "gemini-3.1-flash-lite",
                         contents: prompt,
                         config: { temperature: 0.2, responseMimeType: "application/json" },
                     });
@@ -138,7 +138,7 @@ export const processChatMessage = inngest.createFunction(
           5. Considers safety and well-being`;
 
                     const response = await client.models.generateContent({
-                        model: "gemini-2.5-flash",
+                        model: "gemini-3.1-flash-lite",
                         contents: prompt,
                         config: { temperature: 0.2 },
                     });
@@ -211,7 +211,7 @@ export const analyzeTherapySession = inngest.createFunction(
         
         Format the response as a JSON object.`;
                 const response = await client.models.generateContent({
-                    model: "gemini-2.5-flash",
+                    model: "gemini-3.1-flash-lite",
                     contents: prompt,
                     config: { temperature: 0.2, responseMimeType: "application/json" },
                 });
@@ -293,7 +293,7 @@ export const generateActivityRecommendations = inngest.createFunction(
         Format the response as a JSON object.`;
 
                     const response = await client.models.generateContent({
-                        model: "gemini-2.5-flash",
+                        model: "gemini-3.1-flash-lite",
                         contents: prompt,
                         config: { temperature: 0.2, responseMimeType: "application/json" },
                     });
