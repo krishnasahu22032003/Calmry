@@ -84,7 +84,7 @@ export default function AboutSection() {
             {...cardIdle}
             className="md:col-span-2 md:row-span-2 group"
           >
-            <div className="relative h-full rounded-3xl border border-border bg-surface backdrop-blur p-10 transition-all duration-700 group-hover:-translate-y-1 group-hover:shadow-[0_40px_140px_rgba(0,0,0,0.65)]">
+            <div className="relative h-full rounded-3xl border border-border bg-surface backdrop-blur p-6 transition-all duration-700 group-hover:-translate-y-1 group-hover:shadow-[0_40px_140px_rgba(0,0,0,0.65)]">
               <div className="absolute inset-0 rounded-3xl bg-[radial-gradient(520px_260px_at_20%_0%,rgba(47,63,168,0.28),transparent_70%)] opacity-80 group-hover:opacity-100 transition-opacity duration-700" />
 
               <div className="relative z-10 space-y-6 max-w-md">
@@ -97,16 +97,15 @@ export default function AboutSection() {
                 </h3>
 
                 <p className="text-sm leading-relaxed text-muted">
-                  Calmry is not designed to diagnose, fix, or rush you. It’s a
-                  reflective space that listens carefully, adapts gently, and
-                  responds with emotional awareness rather than automation.
+                 Calmry isn't designed to diagnose, replace professional care, or rush you toward quick answers. It's a private, reflective space where you can slow down, organize your thoughts, and express yourself without judgment. Through thoughtful, empathetic conversations, Calmry adapts to your needs, encourages self-reflection, and offers supportive guidance with care and emotional awareness—helping you feel heard, understood, and more grounded one conversation at a time.
+
                 </p>
               </div>
             </div>
           </motion.div>
 
           <motion.div variants={fadeUp} className="md:col-span-2 group">
-            <div className="relative h-full rounded-3xl border border-border bg-surface-soft p-8 transition-all duration-500 group-hover:bg-surface group-hover:-translate-y-1">
+            <div className="relative h-full rounded-3xl border border-border bg-surface-soft p-6 transition-all duration-500 group-hover:bg-surface group-hover:-translate-y-1">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-surface">
                 <Compass className="h-5 w-5 text-(--accent-calm)" />
               </div>
@@ -123,7 +122,7 @@ export default function AboutSection() {
           </motion.div>
 
           <motion.div variants={fadeUp} className="group">
-            <div className="relative h-full rounded-3xl border border-border bg-surface-soft p-8 transition-all duration-500 group-hover:bg-surface group-hover:-translate-y-1 group-hover:shadow-[0_30px_100px_rgba(0,0,0,0.6)]">
+            <div className="relative h-full rounded-3xl border border-border bg-surface-soft p-6 transition-all duration-500 group-hover:bg-surface group-hover:-translate-y-1 group-hover:shadow-[0_30px_100px_rgba(0,0,0,0.6)]">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-surface">
                 <UserCheck className="h-5 w-5 text-accent" />
               </div>
@@ -140,7 +139,7 @@ export default function AboutSection() {
           </motion.div>
 
           <motion.div variants={fadeUp} className="group">
-            <div className="relative h-full rounded-3xl border border-border bg-surface-soft p-8 transition-all duration-500 group-hover:bg-surface group-hover:-translate-y-1">
+            <div className="relative h-full rounded-3xl border border-border bg-surface-soft p-6 transition-all duration-500 group-hover:bg-surface group-hover:-translate-y-1">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-surface">
                 <HeartHandshake className="h-5 w-5 text-(--accent-calm)" />
               </div>
@@ -157,7 +156,7 @@ export default function AboutSection() {
           </motion.div>
 
           <motion.div variants={fadeUp} className="md:col-span-2 group">
-            <div className="relative h-full rounded-3xl border border-border bg-surface backdrop-blur p-8 transition-all duration-700 group-hover:-translate-y-1 group-hover:shadow-[0_40px_140px_rgba(0,0,0,0.65)]">
+            <div className="relative h-full rounded-3xl border border-border bg-surface backdrop-blur p-6 transition-all duration-700 group-hover:-translate-y-1 group-hover:shadow-[0_40px_140px_rgba(0,0,0,0.65)]">
               <div className="absolute inset-0 rounded-3xl bg-[radial-gradient(420px_180px_at_80%_0%,rgba(22,106,94,0.25),transparent_70%)] opacity-70 group-hover:opacity-100 transition-opacity duration-700" />
 
               <div className="relative z-10 space-y-4 max-w-sm">
@@ -173,6 +172,25 @@ export default function AboutSection() {
                   Calmry represents a future where technology feels supportive,
                   gentle, and human — not loud, addictive, or invasive.
                 </p>
+              </div>
+            </div>
+          </motion.div>
+          <motion.div variants={fadeUp} className="md:col-span-2 group">
+            <div className="relative h-full rounded-3xl border border-border bg-surface backdrop-blur p-6 transition-all duration-700 group-hover:-translate-y-1 group-hover:shadow-[0_40px_140px_rgba(0,0,0,0.65)]">
+              <div className="absolute inset-0 rounded-3xl bg-[radial-gradient(420px_180px_at_80%_0%,rgba(22,106,94,0.25),transparent_70%)] opacity-70 group-hover:opacity-100 transition-opacity duration-700" />
+
+              <div className="relative z-10 space-y-4 max-w-sm">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-surface-soft">
+                  <Sparkles className="h-5 w-5 text-(--accent-calm)" />
+                </div>
+
+              <h4 className="text-lg font-semibold text-foreground">
+  Your space to breathe
+</h4>
+
+<p className="mt-2 text-sm text-muted leading-relaxed">
+  Calmry is designed to help you slow down, reflect, and navigate life's challenges with thoughtful AI-guided conversations whenever you need support.
+</p>
               </div>
             </div>
           </motion.div>

@@ -5,8 +5,8 @@ export default function Logo() {
     <Image
       src="/logo-calmry.png"
       alt="Calmry logo"
-      width={80}
-      height={80}
+      width={70}
+      height={70}
       priority
     />
   );
