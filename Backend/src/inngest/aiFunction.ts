@@ -2,6 +2,7 @@ import { inngest } from "./client.js";
 import { ENV } from "../lib/ENV.js"
 import { GoogleGenAI } from "@google/genai"
 
+
 const client = new GoogleGenAI({
    apiKey: ENV.GEMINI_API_KEY
 })
@@ -54,21 +55,18 @@ export const processChatMessage = inngest.createFunction(
             "progressIndicators": ["string"]
           }`;
 
-              // NEW
-const response = await client.models.generateContent({
-    model: "gemini-2.5-flash",
-    contents: prompt,
-    config: {
-        temperature: 0.2,
-        responseMimeType: "application/json", // only for prompts that must return JSON
-    },
-});
-const text = response.text?.trim();
-if (!text) {
-    throw new Error("Empty response from Gemini");
-}
+                    const response = await client.models.generateContent({
+                        model: "gemini-2.5-flash",
+                        contents: prompt,
+                        config: { temperature: 0.2, responseMimeType: "application/json" },
+                    });
 
-                    console.log("Received analysis from OpenAI:", { text });
+                    if (!response.text) {
+                        throw new Error("Empty response from Gemini");
+                    }
+                    const text = response.text.trim();
+
+                    console.log("Received analysis from Gemini:", { text });
 
                     // Clean the response text to ensure it's valid JSON
                     const cleanText = text.replace(/```json\n|\n```/g, "").trim();
@@ -139,11 +137,16 @@ if (!text) {
           4. Maintains professional boundaries
           5. Considers safety and well-being`;
 
-                    const response = await client.responses.create({ model: "gpt-4.1-nano", input: prompt ,temperature: 0.2})
-if (!response.output_text) {
-  throw new Error("Empty response from OpenAI");
-}
-                    const text =  response.output_text.trim()
+                    const response = await client.models.generateContent({
+                        model: "gemini-2.5-flash",
+                        contents: prompt,
+                        config: { temperature: 0.2 },
+                    });
+
+                    if (!response.text) {
+                        throw new Error("Empty response from Gemini");
+                    }
+                    const text = response.text.trim();
 
                     console.log("Generated response:", { text });
                     return text;
@@ -193,8 +196,8 @@ export const analyzeTherapySession = inngest.createFunction(
                 return event.data.notes || event.data.transcript;
             });
 
-            // Analyze the session using OPENAI
-            const analysis = await step.run("analyze-with-OpenAI", async () => {
+            // Analyze the session using Gemini
+            const analysis = await step.run("analyze-with-gemini", async () => {
 
                 const prompt = `Analyze this therapy session and provide insights:
         Session Content: ${sessionContent}
@@ -207,17 +210,22 @@ export const analyzeTherapySession = inngest.createFunction(
         5. Progress indicators
         
         Format the response as a JSON object.`;
-                const response = await client.responses.create({ model: "gpt-4.1-nano", input: prompt,temperature: 0.2 })
-if (!response.output_text) {
-  throw new Error("Empty response from OpenAI");
-}
-                const text =  response.output_text.trim();
+                const response = await client.models.generateContent({
+                    model: "gemini-2.5-flash",
+                    contents: prompt,
+                    config: { temperature: 0.2, responseMimeType: "application/json" },
+                });
+
+                if (!response.text) {
+                    throw new Error("Empty response from Gemini");
+                }
+                const text = response.text.trim();
 
         let parsed;
 try {
   parsed = JSON.parse(text);
 } catch {
-  throw new Error("Invalid JSON returned by OpenAI");
+  throw new Error("Invalid JSON returned by Gemini");
 }
 return parsed;
             });
@@ -267,7 +275,7 @@ export const generateActivityRecommendations = inngest.createFunction(
                 };
             });
 
-            // Generate recommendations using OPENAI
+            // Generate recommendations using Gemini
             const recommendations = await step.run(
                 "generate-recommendations",
                 async () => {
@@ -284,16 +292,21 @@ export const generateActivityRecommendations = inngest.createFunction(
         
         Format the response as a JSON object.`;
 
-                    const response = await client.responses.create({ model: "gpt-4.1-nano", input: prompt ,  temperature: 0.2})
-                    if (!response.output_text) {
-                        throw new Error("Empty response from OpenAI");
+                    const response = await client.models.generateContent({
+                        model: "gemini-2.5-flash",
+                        contents: prompt,
+                        config: { temperature: 0.2, responseMimeType: "application/json" },
+                    });
+
+                    if (!response.text) {
+                        throw new Error("Empty response from Gemini");
                     }
-                    const text = response.output_text.trim();
+                    const text = response.text.trim();
                     let parsed;
 try {
   parsed = JSON.parse(text);
 } catch {
-  throw new Error("Invalid JSON returned by OpenAI");
+  throw new Error("Invalid JSON returned by Gemini");
 }
 return parsed;
                 }
