@@ -4,15 +4,18 @@ import { GoogleGenAI } from "@google/genai"
 
 
 const client = new GoogleGenAI({
-   apiKey: ENV.GEMINI_API_KEY
+    apiKey: ENV.GEMINI_API_KEY
 })
 
 
 export const processChatMessage = inngest.createFunction(
     {
         id: "process-chat-message",
+        triggers: {
+            event: "therapy/session.message",
+        }
     },
-    { event: "therapy/session.message" },
+
     async ({ event, step }) => {
         try {
             const {
@@ -89,23 +92,23 @@ export const processChatMessage = inngest.createFunction(
 
             // Update memory based on analysis
             const updatedMemory = await step.run("update-memory", async () => {
-           return {
-    ...memory,
-    userProfile: {
-      ...memory.userProfile,
-      emotionalState: analysis.emotionalState
-        ? [...memory.userProfile.emotionalState, analysis.emotionalState]
-        : memory.userProfile.emotionalState,
-      riskLevel: analysis.riskLevel,
-    },
-    sessionContext: {
-      ...memory.sessionContext,
-      conversationThemes: analysis.themes
-        ? [...memory.sessionContext.conversationThemes, ...analysis.themes]
-        : memory.sessionContext.conversationThemes,
-    },
-  };
-});
+                return {
+                    ...memory,
+                    userProfile: {
+                        ...memory.userProfile,
+                        emotionalState: analysis.emotionalState
+                            ? [...memory.userProfile.emotionalState, analysis.emotionalState]
+                            : memory.userProfile.emotionalState,
+                        riskLevel: analysis.riskLevel,
+                    },
+                    sessionContext: {
+                        ...memory.sessionContext,
+                        conversationThemes: analysis.themes
+                            ? [...memory.sessionContext.conversationThemes, ...analysis.themes]
+                            : memory.sessionContext.conversationThemes,
+                    },
+                };
+            });
 
             // If high risk is detected, trigger an alert
             if (typeof analysis.riskLevel === "number" && analysis.riskLevel > 4) {
@@ -187,8 +190,12 @@ export const processChatMessage = inngest.createFunction(
 
 // Function to analyze therapy session content
 export const analyzeTherapySession = inngest.createFunction(
-    { id: "analyze-therapy-session" },
-    { event: "therapy/session.created" },
+    {
+        id: "analyze-therapy-session",
+        triggers: {
+            event: "therapy/session.created"
+        }
+    },
     async ({ event, step }) => {
         try {
             // Get the session content
@@ -221,13 +228,13 @@ export const analyzeTherapySession = inngest.createFunction(
                 }
                 const text = response.text.trim();
 
-        let parsed;
-try {
-  parsed = JSON.parse(text);
-} catch {
-  throw new Error("Invalid JSON returned by Gemini");
-}
-return parsed;
+                let parsed;
+                try {
+                    parsed = JSON.parse(text);
+                } catch {
+                    throw new Error("Invalid JSON returned by Gemini");
+                }
+                return parsed;
             });
 
             // Store the analysis
@@ -261,8 +268,11 @@ return parsed;
 
 // Function to generate personalized activity recommendations
 export const generateActivityRecommendations = inngest.createFunction(
-    { id: "generate-activity-recommendations" },
-    { event: "mood/updated" },
+    { id: "generate-activity-recommendations" ,
+        triggers:{
+event: "mood/updated" 
+        }
+    },
     async ({ event, step }) => {
         try {
             // Get user's mood history and activity history
@@ -303,12 +313,12 @@ export const generateActivityRecommendations = inngest.createFunction(
                     }
                     const text = response.text.trim();
                     let parsed;
-try {
-  parsed = JSON.parse(text);
-} catch {
-  throw new Error("Invalid JSON returned by Gemini");
-}
-return parsed;
+                    try {
+                        parsed = JSON.parse(text);
+                    } catch {
+                        throw new Error("Invalid JSON returned by Gemini");
+                    }
+                    return parsed;
                 }
             );
 
