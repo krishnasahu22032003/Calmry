@@ -156,11 +156,16 @@ export const UserSignIn = async (req: Request, res: Response) => {
 export const UserLogOut = (req: Request, res: Response) => {
 
     try {
-        res.clearCookie("auth_token", {
-            httpOnly: true,
-            secure: ENV.NODE_ENV === "production",
-            sameSite: ENV.NODE_ENV === "production" ? "none" : "lax",
-        })
+      res.clearCookie("auth_token", {
+  httpOnly: true,
+  secure: ENV.NODE_ENV === "production",
+  sameSite: ENV.NODE_ENV === "production" ? "none" : "lax",
+  domain:
+    ENV.NODE_ENV === "production"
+      ? ".krishnastack.com"
+      : undefined,
+  path: "/",
+});
         return res.status(200).json({
             success: true,
             message: "Logout successful"
