@@ -121,6 +121,11 @@ export const UserSignIn = async (req: Request, res: Response) => {
             httpOnly: true,
             secure: ENV.NODE_ENV === "production",
             sameSite: ENV.NODE_ENV === "production" ? "none" : "lax",
+            domain:
+                process.env.NODE_ENV === "production"
+                    ? ".krishnastack.com"
+                    : undefined,
+            path: "/",
             maxAge: 7 * 24 * 60 * 60 * 1000,
         })
         const expiresAt = new Date()
@@ -194,109 +199,109 @@ export const checkUser = async (req: Request, res: Response) => {
 
 
 export const UpdateUserDetails = async (req: Request, res: Response) => {
-  const schema = z.object({
-    currentpassword: z.string(),
-    newusername: z.string().trim().min(3).max(50).optional(),
-    newemail: z.string().trim().email().optional(),
-    newpassword: z.string()
-      .min(8)
-      .max(128)
-      .regex(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])/,
-        "Password must include uppercase, lowercase, number, and special character"
-      )
-      .optional(),
-  }).refine(
-    (data) => data.newusername || data.newemail || data.newpassword,
-    {
-      message: "At least one field must be updated",
-    }
-  );
-
-  const parsed = schema.safeParse(req.body);
-
-  if (!parsed.success) {
-    return res.status(400).json({
-      success: false,
-      errors: parsed.error.flatten(),
-    });
-  }
-
-  if (!req.user?._id) {
-    return res.status(401).json({
-      success: false,
-      message: "Unauthorized",
-    });
-  }
-
-  const { currentpassword, newusername, newemail, newpassword } = parsed.data;
-
-  try {
-    const user = await UserModel.findById(req.user._id);
-
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    }
-
-    const isMatch = await bcrypt.compare(currentpassword, user.password);
-
-    if (!isMatch) {
-      return res.status(401).json({
-        success: false,
-        message: "Current password incorrect",
-      });
-    }
-    
-    const updateData: any = {};
-
-    if (newusername) {
-      updateData.username = newusername;
-    }
-
-    if (newemail) {
-      const existingEmail = await UserModel.findOne({ email: newemail });
-
-      if (
-        existingEmail &&
-        existingEmail._id.toString() !== user._id.toString()
-      ) {
-        return res.status(409).json({
-          success: false,
-          message: "Email already in use",
-        });
-      }
-
-      updateData.email = newemail;
-    }
-
-    if (newpassword) {
-      const hashed = await bcrypt.hash(newpassword, 10);
-      updateData.password = hashed;
-    }
-
-    const updatedUser = await UserModel.findByIdAndUpdate(
-      user._id,
-      updateData,
-      { new: true }
+    const schema = z.object({
+        currentpassword: z.string(),
+        newusername: z.string().trim().min(3).max(50).optional(),
+        newemail: z.string().trim().email().optional(),
+        newpassword: z.string()
+            .min(8)
+            .max(128)
+            .regex(
+                /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])/,
+                "Password must include uppercase, lowercase, number, and special character"
+            )
+            .optional(),
+    }).refine(
+        (data) => data.newusername || data.newemail || data.newpassword,
+        {
+            message: "At least one field must be updated",
+        }
     );
 
-    return res.status(200).json({
-      success: true,
-      message: "User updated successfully",
-      user: {
-        id: updatedUser?._id,
-        email: updatedUser?.email,
-        username: updatedUser?.username,
-      },
-    });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({
-      success: false,
-      message: "Server error",
-    });
-  }
+    const parsed = schema.safeParse(req.body);
+
+    if (!parsed.success) {
+        return res.status(400).json({
+            success: false,
+            errors: parsed.error.flatten(),
+        });
+    }
+
+    if (!req.user?._id) {
+        return res.status(401).json({
+            success: false,
+            message: "Unauthorized",
+        });
+    }
+
+    const { currentpassword, newusername, newemail, newpassword } = parsed.data;
+
+    try {
+        const user = await UserModel.findById(req.user._id);
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found",
+            });
+        }
+
+        const isMatch = await bcrypt.compare(currentpassword, user.password);
+
+        if (!isMatch) {
+            return res.status(401).json({
+                success: false,
+                message: "Current password incorrect",
+            });
+        }
+
+        const updateData: any = {};
+
+        if (newusername) {
+            updateData.username = newusername;
+        }
+
+        if (newemail) {
+            const existingEmail = await UserModel.findOne({ email: newemail });
+
+            if (
+                existingEmail &&
+                existingEmail._id.toString() !== user._id.toString()
+            ) {
+                return res.status(409).json({
+                    success: false,
+                    message: "Email already in use",
+                });
+            }
+
+            updateData.email = newemail;
+        }
+
+        if (newpassword) {
+            const hashed = await bcrypt.hash(newpassword, 10);
+            updateData.password = hashed;
+        }
+
+        const updatedUser = await UserModel.findByIdAndUpdate(
+            user._id,
+            updateData,
+            { new: true }
+        );
+
+        return res.status(200).json({
+            success: true,
+            message: "User updated successfully",
+            user: {
+                id: updatedUser?._id,
+                email: updatedUser?.email,
+                username: updatedUser?.username,
+            },
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({
+            success: false,
+            message: "Server error",
+        });
+    }
 };
